@@ -1,0 +1,33 @@
+# Version control
+.git
+.gitignore
+
+# Dependencies
+node_modules
+npm-debug.log
+
+# Environment variables
+.env
+.env.*
+
+# Build output
+dist
+build
+
+# IDE specific files
+.idea
+.vscode
+*.swp
+*.swo
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Test coverage
+coverage
+
+# Docker specific
+Dockerfile
+docker-compose.yml
+.dockerignore 

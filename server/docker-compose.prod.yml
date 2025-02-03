@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  api:
+    command: npm run start:prod
+    restart: unless-stopped
+
+  collector:
+    command: npm run collect:prod
+    restart: unless-stopped
+
+  postgres:
+    restart: unless-stopped 
