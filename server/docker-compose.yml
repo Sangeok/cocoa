@@ -10,6 +10,7 @@ services:
       - "${PORT:-3000}:3000"
     environment:
       - NODE_ENV=${NODE_ENV:-development}
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/cocoa_dev
       - POSTGRES_HOST=postgres
       - POSTGRES_PORT=${POSTGRES_PORT:-5432}
       - POSTGRES_USER=${POSTGRES_USER:-postgres}
@@ -19,10 +20,18 @@ services:
       - .:/app
       - /app/node_modules
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
       - cocoa-network
-    command: npm run start:dev  # 개발 환경용 명령어
+    command: >
+      sh -c "
+        npm run db:generate &&
+        npm run db:migrate &&
+        npm run start:dev
+      "
 
   collector:
     container_name: cocoa-collector
@@ -40,14 +49,17 @@ services:
       - .:/app
       - /app/node_modules
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     networks:
       - cocoa-network
     command: npm run collect:dev  # 개발 환경용 명령어
 
   postgres:
     container_name: cocoa-postgres
-    image: postgres:16-alpine
+    image: postgres:15-alpine
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     environment:
@@ -56,6 +68,7 @@ services:
       - POSTGRES_DB=${POSTGRES_DB:-cocoa_dev}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - cocoa-network
     healthcheck:

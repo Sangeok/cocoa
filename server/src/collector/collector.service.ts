@@ -5,7 +5,7 @@ import { DrizzleClient } from '../database/database.module';
 import { UpbitClient } from './clients/upbit.client';
 import { upbitMarkets } from '../database/schema/market';
 import { ExchangeRateClient } from './clients/exchange-rate.client';
-import { RedisService } from './services/redis.service';
+import { RedisService } from '../redis/redis.service';
 import { exchangeRates } from '../database/schema/exchange-rate';
 import { exchangeFees } from '../database/schema/fee';
 import { FeeClient } from './clients/fee.client';
@@ -17,7 +17,7 @@ export class CollectorService {
   constructor(
     private readonly configService: ConfigService,
     private readonly upbitClient: UpbitClient,
-    @Inject('DATABASE') private readonly db: DrizzleClient,
+    @Inject('DATABASE') private readonly db: typeof DrizzleClient,
     private readonly exchangeRateClient: ExchangeRateClient,
     private readonly redisService: RedisService,
     private readonly feeClient: FeeClient,
@@ -51,19 +51,21 @@ export class CollectorService {
     try {
       this.logger.debug('Collecting Upbit markets...');
       const markets = await this.upbitClient.getMarkets();
-      
+
       // Upsert markets data
       await this.db.transaction(async (tx) => {
         for (const market of markets) {
+          const payload = {
+            market: market.market,
+            koreanName: market.korean_name,
+            englishName: market.english_name,
+            marketWarning: market.market_warning,
+            updatedAt: new Date(),
+          };
+
           await tx
             .insert(upbitMarkets)
-            .values({
-              market: market.market,
-              koreanName: market.korean_name,
-              englishName: market.english_name,
-              marketWarning: market.market_warning,
-              updatedAt: new Date(),
-            })
+            .values(payload)
             .onConflictDoUpdate({
               target: upbitMarkets.market,
               set: {
@@ -75,7 +77,6 @@ export class CollectorService {
             });
         }
       });
-
       this.logger.debug(`Updated ${markets.length} Upbit markets`);
     } catch (error) {
       this.logger.error('Failed to collect Upbit markets', error);
@@ -97,12 +98,10 @@ export class CollectorService {
   async storeExchangeRateHistory() {
     try {
       const rate = await this.exchangeRateClient.getUsdKrwRate();
-      await this.db
-        .insert(exchangeRates)
-        .values({
-          rate: rate.toString(),
-          timestamp: new Date(),
-        });
+      await this.db.insert(exchangeRates).values({
+        rate: rate.toString(),
+        timestamp: new Date(),
+      });
       this.logger.debug(`Stored USD-KRW rate history: ${rate}`);
     } catch (error) {
       this.logger.error('Failed to store exchange rate history', error);
@@ -114,9 +113,9 @@ export class CollectorService {
     try {
       // Upbit 수수료 수집
       const upbitFees = await this.feeClient.getUpbitFees();
-      
+
       // Binance 수수료 수집 (Upbit에서 지원하는 코인만)
-      const upbitSymbols = upbitFees.map(fee => fee.symbol);
+      const upbitSymbols = upbitFees.map((fee) => fee.symbol);
       const binanceFees = await this.feeClient.getBinanceFees(upbitSymbols);
 
       // 수수료 정보 저장
@@ -184,4 +183,4 @@ export class CollectorService {
       this.logger.error('Failed to collect Bithumb data', error);
     }
   }
-} 
+}

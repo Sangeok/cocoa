@@ -11,7 +11,7 @@ export class UpbitClient {
     try {
       const { data } = await axios.get<UpbitMarketResponse[]>(
         `${this.baseUrl}/market/all`,
-      );
+      );  
       return data;
     } catch (error) {
       this.logger.error('Failed to fetch Upbit markets', error);

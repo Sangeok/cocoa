@@ -1,0 +1,42 @@
+# Dependencies
+client/node_modules
+server/node_modules
+
+# Environment Variables
+client/.env
+client/.env.local
+client/.env.development
+client/.env.production
+server/.env
+server/.env.development
+server/.env.production
+
+# Next.js (Client)
+client/.next/
+client/out/
+client/build
+client/.vercel
+client/*.log
+client/.DS_Store
+
+# Nest.js (Server)
+server/dist
+server/build
+server/coverage
+server/*.log
+server/.DS_Store
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# System Files
+.DS_Store
+Thumbs.db

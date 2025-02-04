@@ -10,4 +10,5 @@ services:
     restart: unless-stopped
 
   postgres:
+    image: postgres:15-alpine
     restart: unless-stopped 

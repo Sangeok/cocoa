@@ -4,7 +4,8 @@ import { CollectorService } from './collector.service';
 import { UpbitClient } from './clients/upbit.client';
 import { DatabaseModule } from '../database/database.module';
 import { ExchangeRateClient } from './clients/exchange-rate.client';
-import { RedisService } from './services/redis.service';
+import { RedisService } from '../redis/redis.service';
+import { FeeClient } from './clients/fee.client';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { RedisService } from './services/redis.service';
     UpbitClient,
     ExchangeRateClient,
     RedisService,
+    FeeClient,
   ],
 })
 export class CollectorModule {} 
