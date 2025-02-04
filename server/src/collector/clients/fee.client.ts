@@ -1,74 +1,75 @@
 import { Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
-import * as cheerio from 'cheerio';
+import * as path from 'path';
+import * as fs from 'fs';
 
 @Injectable()
 export class FeeClient {
   private readonly logger = new Logger(FeeClient.name);
+  private readonly upbitFees: any;
+  private readonly binanceFees: any;
 
-  async getUpbitFees(): Promise<Array<{
-    symbol: string;
-    network: string;
-    withdrawalFee: string;
-    minimumWithdrawal: string;
-    depositFee: string;
-  }>> {
-    try {
-      const { data } = await axios.get('https://upbit.com/service_center/guide');
-      const $ = cheerio.load(data);
-      const fees: any[] = [];
+  constructor() {
+    const upbitJsonPath = path.join(process.cwd(), 'config', 'upbit-fees.json');
+    const binanceJsonPath = path.join(
+      process.cwd(),
+      'config',
+      'binance-fees.json',
+    );
 
-      // Upbit의 수수료 테이블 파싱 로직
-      $('.table tbody tr').each((_, row) => {
-        const columns = $(row).find('td');
-        fees.push({
-          symbol: $(columns[0]).text().trim(),
-          network: $(columns[1]).text().trim(),
-          minimumWithdrawal: $(columns[2]).text().trim(),
-          withdrawalFee: $(columns[3]).text().trim(),
-          depositFee: '0', // Upbit는 입금 수수료 없음
-        });
-      });
-
-      return fees;
-    } catch (error) {
-      this.logger.error('Failed to fetch Upbit fees', error);
-      throw error;
-    }
+    this.upbitFees = JSON.parse(fs.readFileSync(upbitJsonPath, 'utf-8'));
+    this.binanceFees = JSON.parse(fs.readFileSync(binanceJsonPath, 'utf-8'));
   }
 
-  async getBinanceFees(symbols: string[]): Promise<Array<{
-    symbol: string;
-    network: string;
-    withdrawalFee: string;
-    minimumWithdrawal: string;
-    depositFee: string;
-  }>> {
-    try {
-      const { data } = await axios.get('https://www.binance.com/api/v3/exchangeInfo');
-      const fees: any[] = [];
+  async getUpbitFees(): Promise<
+    Array<{
+      symbol: string;
+      network: string;
+      withdrawalFee: string;
+      minimumWithdrawal: string;
+      depositFee: string;
+    }>
+  > {
+    return this.upbitFees.currencies.map((fee) => ({
+      symbol: fee.currency,
+      network: fee.network,
+      withdrawalFee: fee.withdrawalFee,
+      minimumWithdrawal: fee.minimumWithdrawal,
+      depositFee: fee.depositFee,
+    }));
+  }
 
-      // Binance API를 통한 수수료 정보 수집
-      for (const symbol of symbols) {
-        const feeData = await axios.get(`https://www.binance.com/api/v3/asset/assetDetail`, {
-          params: { asset: symbol }
-        });
-        
-        if (feeData.data[symbol]) {
+  async getBinanceFees(symbols?: string[]): Promise<
+    Array<{
+      symbol: string;
+      network: string;
+      withdrawalFee: string;
+      minimumWithdrawal: string;
+      depositFee: string;
+    }>
+  > {
+    const targetSymbols =
+      symbols || this.binanceFees.currencies.map((c) => c.symbol);
+    const fees: any[] = [];
+
+    for (const symbol of targetSymbols) {
+      const currencyData = this.binanceFees.currencies.find(
+        (c: any) => c.symbol === symbol,
+      );
+
+      if (currencyData) {
+        currencyData.networks.forEach((network: any) => {
           fees.push({
             symbol,
-            network: feeData.data[symbol].network,
-            withdrawalFee: feeData.data[symbol].withdrawFee,
-            minimumWithdrawal: feeData.data[symbol].minWithdrawAmount,
-            depositFee: '0', // Binance는 입금 수수료 없음
+            network: network.network,
+            withdrawalFee: network.withdrawalFee,
+            minimumWithdrawal: network.minimumWithdrawal,
+            depositFee: network.depositFee,
           });
-        }
+        });
       }
-
-      return fees;
-    } catch (error) {
-      this.logger.error('Failed to fetch Binance fees', error);
-      throw error;
     }
+
+    return fees;
   }
-} 
+}

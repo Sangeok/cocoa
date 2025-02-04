@@ -1,9 +1,15 @@
-import { Controller, Post } from '@nestjs/common';
+import { Controller, Post, Get, Query } from '@nestjs/common';
 import { CollectorService } from '../collector/collector.service';
+import { FeeClient } from '../collector/clients/fee.client';
+import { UpbitClient } from '../collector/clients/upbit.client';
 
 @Controller('test')
 export class TestController {
-  constructor(private readonly collectorService: CollectorService) {}
+  constructor(
+    private readonly collectorService: CollectorService,
+    private readonly feeClient: FeeClient,
+    private readonly upbitClient: UpbitClient,
+  ) {}
 
   @Post('collect/upbit-markets')
   async testCollectUpbitMarkets() {
@@ -29,6 +35,17 @@ export class TestController {
     return { message: 'Exchange fees collection completed' };
   }
 
+  @Get('collect/fees')
+  async getExchangeFees() {
+    const upbitFees = await this.feeClient.getUpbitFees();
+    const binanceFees = await this.feeClient.getBinanceFees();
+
+    return {
+      upbit: upbitFees,
+      binance: binanceFees
+    };
+  }
+
   @Post('collect/minute-data')
   async testCollectMinuteData() {
     await this.collectorService.collectMinuteData();
@@ -45,5 +62,25 @@ export class TestController {
   async testCollectDailyData() {
     await this.collectorService.collectDailyData();
     return { message: 'Daily data collection completed' };
+  }
+
+  @Get('top-coins')
+  async getTopCoins(@Query('limit') limit = '10') {
+    try {
+      const topCoins = await this.upbitClient.getTopVolumeCoins(Number(limit));
+      return {
+        success: true,
+        data: topCoins.map(coin => ({
+          ...coin,
+          volume: Number(coin.volume.toFixed(0)), // 거래량을 정수로 표시
+          priceChange: Number(coin.priceChange.toFixed(2)), // 변동률을 소수점 2자리까지 표시
+        })),
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
   }
 }
