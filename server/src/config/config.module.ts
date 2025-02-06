@@ -26,6 +26,13 @@ const envSchema = z.object({
   // OpenRouter
   OPENROUTER_API_KEY: z.string(),
   OPENROUTER_HTTP_REFERER: z.string(),
+
+  // Twitter
+  TWITTER_BEARER_TOKEN: z.string(),
+
+  // News API
+  NEWS_API_KEY: z.string(),
+  
 });
 
 @Global()

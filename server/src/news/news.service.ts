@@ -95,25 +95,16 @@ export class NewsService {
         throw new Error(`No data found for coin: ${symbol}`);
       }
 
-      // 데이터 수집
-      const [twitterData, newsData] = await Promise.all([
-        this.twitterClient.searchTweets(symbol),
-        this.webSearchClient.searchNews(symbol)
-      ]);
+      // 1. 소셜 데이터 수집
+      const twitterData = await this.collectTwitterData(symbol);
       
-      // LLM 분석 요청
-      const analysisPrompt = this.createAnalysisPrompt(
-        coin,
-        twitterData,
-        newsData
-      );
+      // 2. 뉴스 데이터 수집
+      const newsData = await this.collectNewsData(symbol);
       
-      const article = await this.openAIClient.generateArticle(
-        this.newsPrompt,
-        analysisPrompt
-      );
+      // 3. LLM 분석 및 기사 생성
+      const article = await this.generateArticle(coin, twitterData, newsData);
       
-      // 뉴스 저장
+      // 4. 저장
       const savedNews = await this.newsRepository.saveNews({
         symbol: coin.symbol,
         content: article,
@@ -125,11 +116,46 @@ export class NewsService {
         }
       });
       
-      this.logger.debug(`Generated news for ${symbol}`);
       return savedNews;
-      
     } catch (error) {
       this.logger.error(`Failed to generate news for ${symbol}`, error);
+      throw error;
+    }
+  }
+
+  async collectTwitterData(symbol: string) {
+    try {
+      this.logger.debug(`Collecting Twitter data for ${symbol}...`);
+      const twitterData = await this.twitterClient.searchTweets(symbol);
+      return twitterData;
+    } catch (error) {
+      this.logger.error(`Failed to collect Twitter data for ${symbol}`, error);
+      throw error;
+    }
+  }
+
+  async collectNewsData(symbol: string) {
+    try {
+      this.logger.debug(`Collecting news data for ${symbol}...`);
+      const newsData = await this.webSearchClient.searchNews(symbol);
+      return newsData;
+    } catch (error) {
+      this.logger.error(`Failed to collect news data for ${symbol}`, error);
+      throw error;
+    }
+  }
+
+  async generateArticle(coin: any, twitterData: any, newsData: any) {
+    try {
+      this.logger.debug(`Generating article for ${coin.symbol}...`);
+      const analysisPrompt = this.createAnalysisPrompt(coin, twitterData, newsData);
+      const article = await this.openAIClient.generateArticle(
+        this.newsPrompt,
+        analysisPrompt
+      );
+      return article;
+    } catch (error) {
+      this.logger.error(`Failed to generate article for ${coin.symbol}`, error);
       throw error;
     }
   }

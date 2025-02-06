@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { TwitterApi } from 'twitter-api-v2';
+import { TwitterApi, TweetSearchRecentV2Paginator } from 'twitter-api-v2';
 
 @Injectable()
 export class TwitterClient {
@@ -13,23 +13,33 @@ export class TwitterClient {
     );
   }
 
-  async searchTweets(symbol: string): Promise<any[]> {
+  async searchTweets(symbol: string): Promise<[]> {
     try {
       const searchQuery = `${symbol} crypto -is:retweet lang:en`;
       const tweets = await this.client.v2.search({
         query: searchQuery,
-        'tweet.fields': ['author_id', 'created_at', 'public_metrics'],
         max_results: 20,
+        'tweet.fields': [
+          'created_at',
+          'public_metrics',
+          'author_id',
+          'conversation_id',
+        ],
+        'user.fields': ['name', 'username', 'public_metrics'],
+        expansions: ['author_id'],
       });
 
-      return tweets.data.data.map((tweet) => ({
-        text: tweet.text,
-        metrics: tweet.public_metrics,
-        createdAt: tweet.created_at,
-      }));
+      this.logger.debug(`Tweets: ${JSON.stringify(tweets)}`);
+
+      // if (!tweets.success) {
+      //   this.logger.error(`Failed to fetch tweets for ${symbol}`, tweets);
+      //   return [];
+      // }
+      // return tweets.data._realData.data;
+      return [];
     } catch (error) {
       this.logger.error(`Failed to fetch tweets for ${symbol}`, error);
-      return [];
+      throw error;
     }
   }
 }

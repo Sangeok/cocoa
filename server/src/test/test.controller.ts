@@ -101,4 +101,69 @@ export class TestController {
       };
     }
   }
+
+  @Get('twitter-data')
+  async getTwitterData(@Query('symbol') symbol: string) {
+    try {
+      const twitterData = await this.newsService.collectTwitterData(symbol);
+      return {
+        success: true,
+        data: twitterData,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+  }
+
+  @Get('news-data')
+  async getNewsData(@Query('symbol') symbol: string) {
+    try {
+      const newsData = await this.newsService.collectNewsData(symbol);
+      return {
+        success: true,
+        data: newsData,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+  }
+
+  @Post('generate-article')
+  async generateArticle(
+    @Body() data: { 
+      symbol: string,
+      twitterData?: any,
+      newsData?: any 
+    }
+  ) {
+    try {
+      const coinData = await this.upbitClient.getTopVolumeCoins(20);
+      const coin = coinData.find(c => c.symbol === data.symbol);
+      
+      if (!coin) {
+        throw new Error(`No data found for coin: ${data.symbol}`);
+      }
+
+      // 트위터와 뉴스 데이터가 제공되지 않은 경우 수집
+      const twitterData = data.twitterData || await this.newsService.collectTwitterData(data.symbol);
+      const newsData = data.newsData || await this.newsService.collectNewsData(data.symbol);
+
+      const article = await this.newsService.generateArticle(coin, twitterData, newsData);
+      return {
+        success: true,
+        data: article,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+  }
 }
