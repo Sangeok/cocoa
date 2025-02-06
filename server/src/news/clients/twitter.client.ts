@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { TwitterApi, TweetSearchRecentV2Paginator } from 'twitter-api-v2';
+import { TwitterApi } from 'twitter-api-v2';
 
 @Injectable()
 export class TwitterClient {
@@ -29,14 +29,8 @@ export class TwitterClient {
         expansions: ['author_id'],
       });
 
-      this.logger.debug(`Tweets: ${JSON.stringify(tweets)}`);
-
-      // if (!tweets.success) {
-      //   this.logger.error(`Failed to fetch tweets for ${symbol}`, tweets);
-      //   return [];
-      // }
-      // return tweets.data._realData.data;
-      return [];
+      // @ts-ignore
+      return tweets._realData.data;
     } catch (error) {
       this.logger.error(`Failed to fetch tweets for ${symbol}`, error);
       throw error;

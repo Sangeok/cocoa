@@ -43,38 +43,48 @@ export class NewsService {
       // 1. 업비트 상위 10개 거래량 코인 조회
       const topCoins = await this.upbitClient.getTopVolumeCoins(10);
       
-      for (const coin of topCoins) {
-        // 2. 각 코인에 대한 데이터 수집
-        const [twitterData, newsData] = await Promise.all([
-          this.twitterClient.searchTweets(coin.symbol),
-          this.webSearchClient.searchNews(coin.symbol)
-        ]);
+      // 코인별로 15분 간격으로 처리
+      for (let i = 0; i < topCoins.length; i++) {
+        const coin = topCoins[i];
         
-        // 3. 수집된 데이터를 기반으로 LLM에 분석 요청
-        const analysisPrompt = this.createAnalysisPrompt(
-          coin,
-          twitterData,
-          newsData
-        );
-        
-        const article = await this.openAIClient.generateArticle(
-          this.newsPrompt,
-          analysisPrompt
-        );
-        
-        // 4. 생성된 뉴스 저장
-        await this.newsRepository.saveNews({
-          symbol: coin.symbol,
-          content: article,
-          timestamp: new Date(),
-          marketData: {
-            volume: coin.volume,
-            priceChange: coin.priceChange,
-            currentPrice: coin.currentPrice
-          }
-        });
-        
-        this.logger.debug(`Generated news for ${coin.symbol}`);
+        // 15분 대기 (첫 번째 코인은 제외)
+        if (i > 0) {
+          this.logger.debug(`Waiting 15 minutes before processing ${coin.symbol}...`);
+          await new Promise(resolve => setTimeout(resolve, 15 * 60 * 1000));
+        }
+
+        try {
+          // 2. 각 코인에 대한 데이터 수집
+          const [twitterData, newsData] = await Promise.all([
+            this.twitterClient.searchTweets(coin.symbol),
+            this.webSearchClient.searchNews(coin.symbol)
+          ]);
+          
+          // 3. 수집된 데이터를 기반으로 LLM에 분석 요청
+          const analysisPrompt = this.createAnalysisPrompt(coin, twitterData, newsData);
+          const article = await this.openAIClient.generateArticle(
+            this.newsPrompt,
+            analysisPrompt
+          );
+          
+          // 4. 생성된 뉴스 저장
+          await this.newsRepository.saveNews({
+            symbol: coin.symbol,
+            content: article,
+            timestamp: new Date(),
+            marketData: {
+              volume: coin.volume,
+              priceChange: coin.priceChange,
+              currentPrice: coin.currentPrice
+            }
+          });
+          
+          this.logger.debug(`Generated news for ${coin.symbol}`);
+        } catch (error) {
+          this.logger.error(`Failed to generate news for ${coin.symbol}`, error);
+          // 개별 코인 처리 실패 시에도 계속 진행
+          continue;
+        }
       }
       
       this.logger.debug('Completed news generation process');
