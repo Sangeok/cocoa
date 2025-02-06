@@ -74,10 +74,11 @@ export class UpbitWebsocketClient implements OnModuleInit {
   }
 
   private async handleTickerData(data: UpbitTickerResponse) {
-    const redisKey = `ticker-${data.code}`;
+    const redisKey = `ticker-upbit-${data.code}`;
     
     // Redis에 데이터 저장
     await this.redisService.set(redisKey, JSON.stringify({
+      exchange: 'upbit',
       price: data.trade_price,
       change: data.signed_change_rate,
       timestamp: data.timestamp,
@@ -86,6 +87,7 @@ export class UpbitWebsocketClient implements OnModuleInit {
 
     // 웹소켓 클라이언트에게 데이터 전송
     this.appGateway.emitCoinPrice({
+      exchange: 'upbit',
       symbol: data.code.replace('KRW-', ''),
       price: data.trade_price,
       difference: data.signed_change_rate * 100,

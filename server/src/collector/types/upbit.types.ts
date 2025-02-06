@@ -13,3 +13,11 @@ export interface UpbitTickerResponse {
   timestamp: number;
   acc_trade_price_24h: number;
 }
+
+export interface UpbitTickerData {
+  exchange: 'upbit';
+  price: number;
+  change: number;
+  timestamp: number;
+  volume24h: number;
+}

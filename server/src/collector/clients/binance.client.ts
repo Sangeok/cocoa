@@ -61,8 +61,18 @@ export class BinanceClient {
   private async handleResponse(response: BinanceResponse) {
     if (response.status === 200) {
       const result = (response as BinanceSuccessResponse).result;
-      const redisKey = `binance-order-${result.orderId}`;
-      await this.redisService.set(redisKey, JSON.stringify(result));
+      const redisKey = `ticker-binance-${result.symbol}`;
+      
+      await this.redisService.set(redisKey, JSON.stringify({
+        exchange: 'binance',
+        orderId: result.orderId,
+        symbol: result.symbol,
+        price: result.price,
+        quantity: result.origQty,
+        status: result.status,
+        timestamp: result.transactTime,
+      }));
+
       this.logger.log(`Order placed successfully: ${result.orderId}`);
     } else {
       const error = (response as BinanceErrorResponse).error;

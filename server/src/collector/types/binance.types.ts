@@ -60,4 +60,14 @@ export interface BinanceErrorResponse {
   rateLimits: RateLimit[];
 }
 
-export type BinanceResponse = BinanceSuccessResponse | BinanceErrorResponse; 
+export type BinanceResponse = BinanceSuccessResponse | BinanceErrorResponse;
+
+export interface BinanceTickerData {
+  exchange: 'binance';
+  orderId: number;
+  symbol: string;
+  price: string;
+  quantity: string;
+  status: string;
+  timestamp: number;
+} 

@@ -6,6 +6,10 @@ interface CoinPriceData {
   price: number;
   difference: number;
   timestamp: number;
+  upbitPrice?: number;
+  binancePrice?: number;
+  upbitVolume?: number;
+  binanceVolume?: number;
 }
 
 export function useCoinPrice() {
