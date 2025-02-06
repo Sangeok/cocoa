@@ -1,12 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { ConfigService } from '@nestjs/config';
-import { DrizzleClient } from '../database/database.module';
 import { UpbitClient } from '../collector/clients/upbit.client';
 import { OpenAIClient } from './clients/openai.client';
 import { WebSearchClient } from './clients/web-search.client';
 import { TwitterClient } from './clients/twitter.client';
 import { NewsRepository } from './news.repository';
+import { NewsData, NewsQueryOptions } from './types/news.types';
 
 @Injectable()
 export class NewsService {
@@ -186,5 +186,54 @@ ${JSON.stringify(newsData, null, 2)}
 
 위 정보를 바탕으로 전문적인 시장 분석 기사를 작성해주세요.
 `;
+  }
+
+  async getNews(options: NewsQueryOptions) {
+    try {
+      const news = await this.newsRepository.findNews({
+        ...options,
+        orderBy: { timestamp: 'desc' },
+      });
+
+      return {
+        success: true,
+        data: news,
+        pagination: {
+          limit: options.limit,
+          page: Math.floor(options.offset / options.limit) + 1,
+        },
+      };
+    } catch (error) {
+      this.logger.error('Failed to fetch news', error);
+      throw error;
+    }
+  }
+
+  async getRecentNews(options: NewsQueryOptions) {
+    try {
+      // 최근 24시간 이내의 뉴스만 조회
+      const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      
+      const news = await this.newsRepository.findNews({
+        ...options,
+        orderBy: { timestamp: 'desc' },
+        where: {
+          timestamp: { gte: oneDayAgo },
+          ...(options.symbol ? { symbol: options.symbol } : {}),
+        },
+      });
+
+      return {
+        success: true,
+        data: news,
+        pagination: {
+          limit: options.limit,
+          page: Math.floor(options.offset / options.limit) + 1,
+        },
+      };
+    } catch (error) {
+      this.logger.error('Failed to fetch recent news', error);
+      throw error;
+    }
   }
 } 

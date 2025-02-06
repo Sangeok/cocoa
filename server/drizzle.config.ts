@@ -1,3 +1,4 @@
+import type { Config } from 'drizzle-kit';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
@@ -6,10 +7,12 @@ export default {
   schema: './src/database/schema/*',
   out: './drizzle/migrations',
   dialect: 'postgresql',
-  driver: 'pglite',
   dbCredentials: {
-    url:
-      process.env.DATABASE_URL ||
-      'postgresql://postgres:postgres@localhost:5432/cocoa_dev',
+    host: process.env.POSTGRES_HOST || 'localhost',
+    port: Number(process.env.POSTGRES_PORT) || 5432,
+    user: process.env.POSTGRES_USER || 'postgres',
+    password: process.env.POSTGRES_PASSWORD || 'postgres',
+    database: process.env.POSTGRES_DB || 'cocoa_dev',
+    ssl: false,
   },
-};
+} satisfies Config;
