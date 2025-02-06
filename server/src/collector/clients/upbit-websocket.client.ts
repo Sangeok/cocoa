@@ -1,5 +1,5 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import WebSocket from 'ws';
+import * as WebSocket from 'ws';
 import { RedisService } from '../../redis/redis.service';
 import { AppGateway } from '../../gateway/app.gateway';
 import { MarketCodesService } from '../services/market-codes.service';
@@ -28,7 +28,6 @@ export class UpbitWebsocketClient implements OnModuleInit {
     try {
       this.ws = new WebSocket(this.WEBSOCKET_URL);
       this.setupWebSocketHandlers();
-      await this.subscribeToTickers();
     } catch (error) {
       this.logger.error('Failed to connect to Upbit WebSocket', error);
       this.handleReconnect();
@@ -36,9 +35,10 @@ export class UpbitWebsocketClient implements OnModuleInit {
   }
 
   private setupWebSocketHandlers() {
-    this.ws.on('open', () => {
+    this.ws.on('open', async () => {
       this.logger.log('Connected to Upbit WebSocket');
       this.reconnectAttempts = 0;
+      await this.subscribeToTickers();
     });
 
     this.ws.on('message', async (data: Buffer) => {
@@ -61,16 +61,27 @@ export class UpbitWebsocketClient implements OnModuleInit {
   }
 
   private async subscribeToTickers() {
-    const marketCodes = this.marketCodesService.getMarketCodes();
-    const tickerSubscription = JSON.stringify([
-      { ticket: 'UNIQUE_TICKET' },
-      {
-        type: 'ticker',
-        codes: marketCodes,
-      },
-    ]);
+    try {
+      const marketCodes = this.marketCodesService.getMarketCodes();
+      const tickerSubscription = JSON.stringify([
+        { ticket: 'UNIQUE_TICKET' },
+        {
+          type: 'ticker',
+          codes: marketCodes,
+        },
+      ]);
 
-    this.ws.send(tickerSubscription);
+      if (this.ws.readyState === WebSocket.OPEN) {
+        this.ws.send(tickerSubscription);
+        this.logger.log('Subscribed to tickers');
+      } else {
+        this.logger.error('WebSocket is not ready');
+        this.handleReconnect();
+      }
+    } catch (error) {
+      this.logger.error('Failed to subscribe to tickers', error);
+      this.handleReconnect();
+    }
   }
 
   private async handleTickerData(data: UpbitTickerResponse) {

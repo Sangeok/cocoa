@@ -83,6 +83,57 @@ export class NewsService {
     }
   }
 
+  async generateNewsForCoin(symbol: string) {
+    try {
+      this.logger.debug(`Generating news for ${symbol}...`);
+      
+      // 코인 정보 조회
+      const coinData = await this.upbitClient.getTopVolumeCoins(20);
+      const coin = coinData.find(c => c.symbol === symbol);
+      
+      if (!coin) {
+        throw new Error(`No data found for coin: ${symbol}`);
+      }
+
+      // 데이터 수집
+      const [twitterData, newsData] = await Promise.all([
+        this.twitterClient.searchTweets(symbol),
+        this.webSearchClient.searchNews(symbol)
+      ]);
+      
+      // LLM 분석 요청
+      const analysisPrompt = this.createAnalysisPrompt(
+        coin,
+        twitterData,
+        newsData
+      );
+      
+      const article = await this.openAIClient.generateArticle(
+        this.newsPrompt,
+        analysisPrompt
+      );
+      
+      // 뉴스 저장
+      const savedNews = await this.newsRepository.saveNews({
+        symbol: coin.symbol,
+        content: article,
+        timestamp: new Date(),
+        marketData: {
+          volume: coin.volume,
+          priceChange: coin.priceChange,
+          currentPrice: coin.currentPrice
+        }
+      });
+      
+      this.logger.debug(`Generated news for ${symbol}`);
+      return savedNews;
+      
+    } catch (error) {
+      this.logger.error(`Failed to generate news for ${symbol}`, error);
+      throw error;
+    }
+  }
+
   private createAnalysisPrompt(coin: any, twitterData: any, newsData: any): string {
     return `
 코인 정보:

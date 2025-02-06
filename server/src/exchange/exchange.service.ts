@@ -59,8 +59,8 @@ export class ExchangeService {
       }
 
       // Redis에서 모든 키 가져오기
-      const upbitKeys = await this.redisService.keys('ticker-upbit-*');
-      const binanceKeys = await this.redisService.keys('ticker-binance-*');
+      const upbitKeys = await this.redisService.getKeys('ticker-upbit-*');
+      const binanceKeys = await this.redisService.getKeys('ticker-binance-*');
 
       // 각 거래소의 데이터 매핑
       const marketData: Map<string, CombinedMarketData> = new Map();

@@ -1,7 +1,8 @@
-import { Controller, Post, Get, Query } from '@nestjs/common';
+import { Controller, Post, Get, Query, Body } from '@nestjs/common';
 import { CollectorService } from '../collector/collector.service';
 import { FeeClient } from '../collector/clients/fee.client';
 import { UpbitClient } from '../collector/clients/upbit.client';
+import { NewsService } from '../news/news.service';
 
 @Controller('test')
 export class TestController {
@@ -9,6 +10,7 @@ export class TestController {
     private readonly collectorService: CollectorService,
     private readonly feeClient: FeeClient,
     private readonly upbitClient: UpbitClient,
+    private readonly newsService: NewsService,
   ) {}
 
   @Post('collect/upbit-markets')
@@ -75,6 +77,22 @@ export class TestController {
           volume: Number(coin.volume.toFixed(0)), // 거래량을 정수로 표시
           priceChange: Number(coin.priceChange.toFixed(2)), // 변동률을 소수점 2자리까지 표시
         })),
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+  }
+
+  @Post('generate-news')
+  async generateNewsForCoin(@Body('symbol') symbol: string) {
+    try {
+      const news = await this.newsService.generateNewsForCoin(symbol);
+      return {
+        success: true,
+        data: news,
       };
     } catch (error) {
       return {

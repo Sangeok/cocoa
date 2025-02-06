@@ -18,6 +18,14 @@ const envSchema = z.object({
   // Redis
   REDIS_HOST: z.string(),
   REDIS_PORT: z.string().default('6379'),
+
+  // Binance
+  BINANCE_API_KEY: z.string(),
+  BINANCE_SECRET_KEY: z.string(),
+
+  // OpenRouter
+  OPENROUTER_API_KEY: z.string(),
+  OPENROUTER_HTTP_REFERER: z.string(),
 });
 
 @Global()

@@ -1,12 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import WebSocket from 'ws';
+import * as WebSocket from 'ws';
 import { v4 as uuidv4 } from 'uuid';
 import { createHmac } from 'crypto';
 import {
   BinanceRequest,
   BinanceResponse,
   BinanceRequestParams,
+  BinanceSuccessResponse,
+  BinanceErrorResponse,
 } from '../types/binance.types';
 import { RedisService } from '../../redis/redis.service';
 

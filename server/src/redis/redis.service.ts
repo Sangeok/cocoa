@@ -52,4 +52,13 @@ export class RedisService implements OnModuleInit {
       return null;
     }
   }
+
+  async getKeys(pattern: string) {
+    try {
+      return await this.client.keys(pattern);
+    } catch (error) {
+      console.error('Redis getKeys error:', error);
+      return [];
+    }
+  }
 } 
