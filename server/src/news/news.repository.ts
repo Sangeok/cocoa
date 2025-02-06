@@ -10,6 +10,7 @@ export class NewsRepository {
 
   async saveNews(newsData: NewsData) {
     return await this.db.insert(news).values({
+      title: newsData.title,
       symbol: newsData.symbol,
       content: newsData.content,
       timestamp: newsData.timestamp,
@@ -71,5 +72,9 @@ export class NewsRepository {
     }
 
     return await query;
+  }
+
+  async findNewsById(id: string) {
+    return await this.db.select().from(news).where(eq(news.id, id));
   }
 }

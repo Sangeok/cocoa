@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query, Param } from '@nestjs/common';
 import { NewsService } from './news.service';
 
 interface NewsQueryParams {
@@ -36,4 +36,9 @@ export class NewsController {
       symbol,
     });
   }
-} 
+
+  @Get('/read/:id')
+  async readNews(@Param('id') id: string) {
+    return this.newsService.readNews(id);
+  }
+}

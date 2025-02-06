@@ -11,23 +11,34 @@ export class OpenAIClient {
       apiKey: this.configService.get<string>('OPENROUTER_API_KEY'),
       baseURL: 'https://openrouter.ai/api/v1',
       defaultHeaders: {
-        'HTTP-Referer': this.configService.get<string>('OPENROUTER_HTTP_REFERER', 'https://github.com/joshephan/cocoa'),
-        'X-Title': this.configService.get<string>('OPENROUTER_APP_NAME', 'COCOA(Coin Coin Korea)'),
+        'HTTP-Referer': this.configService.get<string>(
+          'OPENROUTER_HTTP_REFERER',
+          'https://github.com/joshephan/cocoa',
+        ),
+        'X-Title': this.configService.get<string>(
+          'OPENROUTER_APP_NAME',
+          'COCOA(Coin Coin Korea)',
+        ),
       },
     });
   }
 
-  async generateArticle(systemPrompt: string, userPrompt: string): Promise<string> {
+  async generateArticle(
+    systemPrompt: string,
+    userPrompt: string,
+  ): Promise<{ title: string; content: string }> {
     const response = await this.openai.chat.completions.create({
-      model: 'openai/gpt-4',  // OpenRouter 형식의 모델명
+      model: 'openai/gpt-4', // OpenRouter 형식의 모델명
       messages: [
         { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt }
+        { role: 'user', content: userPrompt },
       ],
       temperature: 0.7,
       max_tokens: 1000,
     });
 
-    return response.choices[0].message.content || '';
+    const content = response.choices[0].message.content || '';
+    const { title, content: articleContent } = JSON.parse(content);
+    return { title, content: articleContent };
   }
-} 
+}

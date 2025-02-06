@@ -1,6 +1,6 @@
 import { io } from 'socket.io-client';
 
-const SOCKET_URL = 'http://localhost:3000';
+const SOCKET_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
 interface CoinPriceData {
   symbol: string;
@@ -20,13 +20,5 @@ socket.on('connect', () => {
 socket.on('disconnect', () => {
   console.log('Disconnected from server');
 });
-
-// 코인 가격 데이터 리스너
-export const subscribeToCoinPrice = (callback: (data: CoinPriceData) => void) => {
-  socket.on('coin-price', callback);
-  return () => {
-    socket.off('coin-price', callback);
-  };
-};
 
 export default socket; 

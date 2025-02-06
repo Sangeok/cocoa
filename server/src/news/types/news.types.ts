@@ -1,4 +1,5 @@
 export interface NewsData {
+  title: string;
   symbol: string;
   content: string;
   timestamp: Date;
