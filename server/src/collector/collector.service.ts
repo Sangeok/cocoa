@@ -23,17 +23,6 @@ export class CollectorService {
     private readonly feeClient: FeeClient,
   ) {}
 
-  @Cron(CronExpression.EVERY_MINUTE)
-  async collectMinuteData() {
-    this.logger.debug('Collecting minute data from exchanges...');
-    await Promise.all([
-      this.collectBinanceData(),
-      this.collectUpbitData(),
-      this.collectOkxData(),
-      this.collectBithumbData(),
-    ]);
-  }
-
   @Cron(CronExpression.EVERY_HOUR)
   async collectHourData() {
     this.logger.debug('Collecting hourly data from exchanges...');
@@ -145,42 +134,6 @@ export class CollectorService {
       this.logger.debug('Updated exchange fees');
     } catch (error) {
       this.logger.error('Failed to collect exchange fees', error);
-    }
-  }
-
-  private async collectBinanceData() {
-    try {
-      // Binance API 호출 로직
-      this.logger.debug('Collecting Binance data...');
-    } catch (error) {
-      this.logger.error('Failed to collect Binance data', error);
-    }
-  }
-
-  private async collectUpbitData() {
-    try {
-      // Upbit API 호출 로직
-      this.logger.debug('Collecting Upbit data...');
-    } catch (error) {
-      this.logger.error('Failed to collect Upbit data', error);
-    }
-  }
-
-  private async collectOkxData() {
-    try {
-      // OKX API 호출 로직
-      this.logger.debug('Collecting OKX data...');
-    } catch (error) {
-      this.logger.error('Failed to collect OKX data', error);
-    }
-  }
-
-  private async collectBithumbData() {
-    try {
-      // Bithumb API 호출 로직
-      this.logger.debug('Collecting Bithumb data...');
-    } catch (error) {
-      this.logger.error('Failed to collect Bithumb data', error);
     }
   }
 }

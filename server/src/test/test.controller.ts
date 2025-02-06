@@ -3,6 +3,7 @@ import { CollectorService } from '../collector/collector.service';
 import { FeeClient } from '../collector/clients/fee.client';
 import { UpbitClient } from '../collector/clients/upbit.client';
 import { NewsService } from '../news/news.service';
+import { RedisService } from '../redis/redis.service';
 
 @Controller('test')
 export class TestController {
@@ -11,6 +12,7 @@ export class TestController {
     private readonly feeClient: FeeClient,
     private readonly upbitClient: UpbitClient,
     private readonly newsService: NewsService,
+    private readonly redisService: RedisService,
   ) {}
 
   @Post('collect/upbit-markets')
@@ -46,12 +48,6 @@ export class TestController {
       upbit: upbitFees,
       binance: binanceFees
     };
-  }
-
-  @Post('collect/minute-data')
-  async testCollectMinuteData() {
-    await this.collectorService.collectMinuteData();
-    return { message: 'Minute data collection completed' };
   }
 
   @Post('collect/hour-data')
@@ -158,6 +154,37 @@ export class TestController {
       return {
         success: true,
         data: article,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+  }
+
+  @Get('tickers')
+  async getTickers(@Query('exchange') exchange?: string) {
+    try {
+      let pattern = 'ticker-*';
+      if (exchange) {
+        pattern = `ticker-${exchange}-*`;
+      }
+      
+      const keys = await this.redisService.getKeys(pattern);
+      const tickers = await Promise.all(
+        keys.map(async (key) => {
+          const data = await this.redisService.get(key);
+          return {
+            symbol: key.replace('ticker-', '').replace(`${exchange}-`, ''),
+            data: JSON.parse(data || '{}'),
+          };
+        })
+      );
+      
+      return {
+        success: true,
+        data: tickers,
       };
     } catch (error) {
       return {

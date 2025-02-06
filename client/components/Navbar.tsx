@@ -10,7 +10,7 @@ import Switch from './Switch'
 import { useTheme } from '@/providers/ThemeProvider'
 
 const navigation = [
-  { name: '김치 프리미엄', href: '/' },
+  { name: '김치 프리미엄', href: '/premium' },
   { name: '코인 뉴스', href: '/news' },
   { name: '송금 계산기', href: '/withdraw' },
 ]

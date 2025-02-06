@@ -99,11 +99,11 @@ export class ExchangeService {
 
         if (marketData.has(symbol)) {
           const marketInfo = marketData.get(symbol)!;
-          const binancePriceInKRW = parseFloat(tickerData.price) * this.currentExchangeRate;
+          const binancePriceInKRW = tickerData.price * this.currentExchangeRate;
 
           marketInfo.binance = {
-            price: parseFloat(tickerData.price),
-            volume24h: parseFloat(tickerData.quantity),
+            price: tickerData.price,
+            volume24h: tickerData.quantity,
           };
 
           // 가격 차이 계산 (%)
@@ -119,7 +119,7 @@ export class ExchangeService {
       this.emitMarketData(Array.from(marketData.values()));
 
     } catch (error) {
-      this.logger.error('Error processing market data:', error);
+      // this.logger.error('Error processing market data:', error);
     }
   }
 

@@ -29,6 +29,6 @@ import { BinanceClient } from './clients/binance.client';
     AppGateway,
     BinanceClient,
   ],
-  exports: [UpbitClient, UpbitWebsocketClient, BinanceClient],
+  exports: [UpbitClient, UpbitWebsocketClient, BinanceClient, FeeClient],
 })
 export class CollectorModule {} 

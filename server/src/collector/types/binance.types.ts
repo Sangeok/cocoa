@@ -1,19 +1,10 @@
-export interface BinanceRequestParams {
-  symbol: string;
-  side: 'BUY' | 'SELL';
-  type: 'LIMIT' | 'MARKET';
-  price: string;
-  quantity: string;
-  timeInForce: 'GTC' | 'IOC' | 'FOK';
-  timestamp: number;
-  apiKey: string;
-  signature: string;
-}
-
 export interface BinanceRequest {
   id: string;
-  method: string;
-  params: BinanceRequestParams;
+  method: 'trades.recent';
+  params: {
+    symbol: string;
+    limit: number;
+  };
 }
 
 export interface RateLimit {
@@ -22,6 +13,16 @@ export interface RateLimit {
   intervalNum: number;
   limit: number;
   count: number;
+}
+
+export interface BinanceTradeResult {
+  id: number;
+  price: string;
+  qty: string;
+  quoteQty: string;
+  time: number;
+  isBuyerMaker: boolean;
+  isBestMatch: boolean;
 }
 
 export interface BinanceOrderResult {
@@ -43,10 +44,16 @@ export interface BinanceOrderResult {
   selfTradePreventionMode: string;
 }
 
+export interface BinanceOrderBookResult {
+  lastUpdateId: number;
+  bids: [string, string][];
+  asks: [string, string][];
+}
+
 export interface BinanceSuccessResponse {
   id: string;
   status: number;
-  result: BinanceOrderResult;
+  result: BinanceTradeResult[];
   rateLimits: RateLimit[];
 }
 
@@ -64,10 +71,8 @@ export type BinanceResponse = BinanceSuccessResponse | BinanceErrorResponse;
 
 export interface BinanceTickerData {
   exchange: 'binance';
-  orderId: number;
   symbol: string;
-  price: string;
-  quantity: string;
-  status: string;
+  price: number;
+  quantity: number;
   timestamp: number;
-} 
+}

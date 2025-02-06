@@ -2,15 +2,14 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as WebSocket from 'ws';
 import { v4 as uuidv4 } from 'uuid';
-import { createHmac } from 'crypto';
 import {
   BinanceRequest,
   BinanceResponse,
-  BinanceRequestParams,
   BinanceSuccessResponse,
   BinanceErrorResponse,
 } from '../types/binance.types';
 import { RedisService } from '../../redis/redis.service';
+import { FeeClient } from './fee.client';
 
 @Injectable()
 export class BinanceClient {
@@ -19,13 +18,24 @@ export class BinanceClient {
   private readonly WEBSOCKET_URL = 'wss://ws-api.binance.com:443/ws-api/v3';
   private reconnectAttempts = 0;
   private readonly MAX_RECONNECT_ATTEMPTS = 5;
+  private readonly REQUEST_INTERVAL = 1000; // 1 second between requests
+  private readonly MAX_REQUESTS_PER_WINDOW = 300;
+  private readonly WINDOW_SIZE = 5 * 60 * 1000; // 5 minutes in milliseconds
+  private requestTimestamps: number[] = [];
+  private requestQueue: string[] = [];
+  private processingQueue = false;
 
   constructor(
     private readonly configService: ConfigService,
     private readonly redisService: RedisService,
+    private readonly feeClient: FeeClient,
   ) {}
 
-  async connect() {
+  async onModuleInit() {
+    await this.connectWebSocket();
+  }
+
+  async connectWebSocket() {
     try {
       this.ws = new WebSocket(this.WEBSOCKET_URL);
       this.setupWebSocketHandlers();
@@ -36,9 +46,10 @@ export class BinanceClient {
   }
 
   private setupWebSocketHandlers() {
-    this.ws.on('open', () => {
+    this.ws.on('open', async () => {
       this.logger.log('Connected to Binance WebSocket');
       this.reconnectAttempts = 0;
+      await this.subscribeToTickers();
     });
 
     this.ws.on('message', async (data: Buffer) => {
@@ -62,78 +73,121 @@ export class BinanceClient {
 
   private async handleResponse(response: BinanceResponse) {
     if (response.status === 200) {
-      const result = (response as BinanceSuccessResponse).result;
-      const redisKey = `ticker-binance-${result.symbol}`;
-      
-      await this.redisService.set(redisKey, JSON.stringify({
-        exchange: 'binance',
-        orderId: result.orderId,
-        symbol: result.symbol,
-        price: result.price,
-        quantity: result.origQty,
-        status: result.status,
-        timestamp: result.transactTime,
-      }));
+      const trades = (response as BinanceSuccessResponse).result;
+      if (trades.length > 0) {
+        const latestTrade = trades[0]; // Get most recent trade
+        const symbol = latestTrade.price; // We need to extract symbol from somewhere
+        const redisKey = `ticker-binance-${symbol}`;
 
-      this.logger.log(`Order placed successfully: ${result.orderId}`);
+        await this.redisService.set(
+          redisKey,
+          JSON.stringify({
+            exchange: 'binance',
+            symbol: symbol,
+            price: parseFloat(latestTrade.price),
+            quantity: parseFloat(latestTrade.qty),
+            timestamp: latestTrade.time,
+          }),
+        );
+
+        // this.logger.log(`Trade data updated successfully: ${symbol}`);
+      }
     } else {
-      const error = (response as BinanceErrorResponse).error;
-      this.logger.error(`Order failed: ${error.msg}`);
+      // const error = (response as BinanceErrorResponse).error;
+      // this.logger.error(`Trade data request failed: ${error.msg}`);
     }
-  }
-
-  async placeOrder(params: Omit<BinanceRequestParams, 'apiKey' | 'signature' | 'timestamp'>) {
-    const timestamp = Date.now();
-    const apiKey = this.configService.get<string>('BINANCE_API_KEY');
-    
-    if (!apiKey) {
-      throw new Error('BINANCE_API_KEY is not configured');
-    }
-
-    const signature = this.generateSignature({
-      ...params,
-      timestamp,
-      apiKey,
-    });
-
-    const request: BinanceRequest = {
-      id: uuidv4(),
-      method: 'order.place',
-      params: {
-        ...params,
-        timestamp,
-        apiKey,
-        signature,
-      },
-    };
-
-    this.ws.send(JSON.stringify(request));
-  }
-
-  private generateSignature(params: Omit<BinanceRequestParams, 'signature'>): string {
-    // TODO: Implement actual signature generation logic
-    const secretKey = this.configService.get<string>('BINANCE_SECRET_KEY');
-    if (!secretKey) {
-      throw new Error('BINANCE_SECRET_KEY is not configured');
-    }
-
-    // This is a placeholder implementation
-    const hmac = createHmac('sha256', secretKey);
-    hmac.update(JSON.stringify(params));
-    return hmac.digest('hex');
   }
 
   private handleReconnect() {
     if (this.reconnectAttempts < this.MAX_RECONNECT_ATTEMPTS) {
       this.reconnectAttempts++;
       const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000);
-      
+
       setTimeout(() => {
-        this.logger.log(`Attempting to reconnect... (${this.reconnectAttempts})`);
-        this.connect();
+        this.logger.log(
+          `Attempting to reconnect... (${this.reconnectAttempts})`,
+        );
+        this.connectWebSocket();
       }, delay);
     } else {
       this.logger.error('Max reconnection attempts reached');
     }
   }
-} 
+
+  private canMakeRequest(): boolean {
+    const now = Date.now();
+    // Remove timestamps older than the window size
+    this.requestTimestamps = this.requestTimestamps.filter(
+      timestamp => now - timestamp < this.WINDOW_SIZE
+    );
+    return this.requestTimestamps.length < this.MAX_REQUESTS_PER_WINDOW;
+  }
+
+  private async processQueue() {
+    if (this.processingQueue || this.requestQueue.length === 0) return;
+
+    this.processingQueue = true;
+    
+    while (this.requestQueue.length > 0) {
+      if (!this.canMakeRequest()) {
+        // Wait until the next window
+        await new Promise(resolve => setTimeout(resolve, this.REQUEST_INTERVAL));
+        continue;
+      }
+
+      const symbol = this.requestQueue.shift();
+      if (!symbol) continue;
+
+      const request: BinanceRequest = {
+        id: uuidv4(),
+        method: 'trades.recent',
+        params: {
+          symbol: symbol,
+          limit: 1,
+        },
+      };
+
+      if (this.ws.readyState === WebSocket.OPEN) {
+        this.ws.send(JSON.stringify(request));
+        this.requestTimestamps.push(Date.now());
+        // Wait for the specified interval before next request
+        await new Promise(resolve => setTimeout(resolve, this.REQUEST_INTERVAL));
+      } else {
+        this.logger.error('WebSocket is not ready');
+        this.handleReconnect();
+        break;
+      }
+    }
+
+    this.processingQueue = false;
+  }
+
+  private async subscribeToTickers() {
+    try {
+      const fees = await this.feeClient.getBinanceFees();
+      const symbols = [...new Set(fees.map((fee) => fee.symbol))];
+      const usdtPairs = symbols.map((symbol) => `${symbol}USDT`);
+
+      // Clear existing queue
+      this.requestQueue = [];
+      
+      // Add all symbols to the queue
+      this.requestQueue.push(...usdtPairs);
+
+      // Start processing the queue
+      this.processQueue();
+
+      // Set up periodic resubscription (every 5 minutes)
+      setInterval(() => {
+        if (this.requestQueue.length === 0) {
+          this.requestQueue.push(...usdtPairs);
+          this.processQueue();
+        }
+      }, this.WINDOW_SIZE);
+
+    } catch (error) {
+      this.logger.error('Failed to subscribe to trades', error);
+      this.handleReconnect();
+    }
+  }
+}
