@@ -4,3 +4,12 @@ export interface UpbitMarketResponse {
   english_name: string;
   market_warning: 'NONE' | 'CAUTION';
 } 
+
+export interface UpbitTickerResponse {
+  type: string;
+  code: string;
+  trade_price: number;
+  signed_change_rate: number;
+  timestamp: number;
+  acc_trade_price_24h: number;
+}
