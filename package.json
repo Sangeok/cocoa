@@ -1,0 +1,25 @@
+{
+  "name": "cocoa",
+  "private": true,
+  "scripts": {
+    "prepare": "husky install",
+    "build:client": "cd client && npm run build",
+    "build:server": "cd server && npm run build",
+    "build": "npm run build:client && npm run build:server",
+    "lint:client": "cd client && npm run lint",
+    "lint:server": "cd server && npm run lint",
+    "lint": "npm run lint:client && npm run lint:server"
+  },
+  "devDependencies": {
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0"
+  },
+  "lint-staged": {
+    "client/**/*.{js,jsx,ts,tsx}": [
+      "cd client && npm run lint"
+    ],
+    "server/**/*.{js,ts}": [
+      "cd server && npm run lint"
+    ]
+  }
+} 

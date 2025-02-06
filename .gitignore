@@ -40,3 +40,10 @@ yarn-error.log*
 # System Files
 .DS_Store
 Thumbs.db
+
+# Additional rules
+node_modules/
+.env
+.env.*
+!.env.example
+.DS_Store
