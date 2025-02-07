@@ -1,17 +1,6 @@
 import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
 import { Server } from 'socket.io';
-
-interface CoinPriceData {
-  exchange: string;
-  symbol: string;
-  price: number;
-  difference: number;
-  timestamp: number;
-  upbitPrice?: number;
-  binancePrice?: number;
-  upbitVolume?: number;
-  binanceVolume?: number;
-}
+import { TickerData } from '../collector/types/common.types';
 
 interface ExchangeRateData {
   rate: number;
@@ -28,11 +17,11 @@ export class AppGateway {
   @WebSocketServer()
   server: Server;
 
-  emitCoinPrice(data: CoinPriceData) {
+  emitCoinPrice(data: TickerData) {
     this.server.emit('coinPrice', data);
   }
 
   emitExchangeRate(data: ExchangeRateData) {
     this.server.emit('exchange-rate', data);
   }
-} 
+}

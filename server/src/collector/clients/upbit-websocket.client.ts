@@ -107,10 +107,11 @@ export class UpbitWebsocketClient implements OnModuleInit {
 
       this.appGateway.emitCoinPrice({
         exchange: 'upbit',
-        symbol: quoteToken,
+        baseToken,
+        quoteToken,
         price: data.trade_price,
-        difference: data.signed_change_rate * 100,
         timestamp: data.timestamp,
+        volume: data.acc_trade_price_24h,
       });
     } catch (error) {
       this.logger.error(`Error handling ticker data: ${error.message}`, {

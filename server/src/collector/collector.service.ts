@@ -1,5 +1,4 @@
 import { Inject, Injectable, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { DrizzleClient } from '../database/database.module';
 import { UpbitClient } from './clients/upbit.client';
@@ -7,19 +6,17 @@ import { upbitMarkets } from '../database/schema/market';
 import { ExchangeRateClient } from './clients/exchange-rate.client';
 import { RedisService } from '../redis/redis.service';
 import { exchangeRates } from '../database/schema/exchange-rate';
-import { FeeClient } from './clients/fee.client';
-
+import { AppGateway } from '../gateway/app.gateway';
 @Injectable()
 export class CollectorService {
   private readonly logger = new Logger(CollectorService.name);
 
   constructor(
-    private readonly configService: ConfigService,
     private readonly upbitClient: UpbitClient,
     @Inject('DATABASE') private readonly db: typeof DrizzleClient,
     private readonly exchangeRateClient: ExchangeRateClient,
     private readonly redisService: RedisService,
-    private readonly feeClient: FeeClient,
+    private readonly appGateway: AppGateway,
   ) {}
 
   @Cron(CronExpression.EVERY_HOUR)
@@ -71,12 +68,17 @@ export class CollectorService {
     }
   }
 
-  @Cron('*/10 * * * * *') // Every 10 seconds
+  @Cron('*/15 * * * * *') // Every 15 seconds
   async collectExchangeRate() {
     try {
       const rate = await this.exchangeRateClient.getUsdKrwRate();
       await this.redisService.set('krw-usd-rate', rate.toString(), 15); // 15초 TTL
       this.logger.debug(`Updated USD-KRW rate: ${rate}`);
+
+      this.appGateway.emitExchangeRate({
+        rate: rate,
+        timestamp: Date.now(),
+      });
     } catch (error) {
       this.logger.error('Failed to collect exchange rate', error);
     }

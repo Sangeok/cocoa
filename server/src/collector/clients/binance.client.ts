@@ -26,7 +26,6 @@ export class BinanceClient {
   private processingQueue = false;
 
   constructor(
-    private readonly configService: ConfigService,
     private readonly redisService: RedisService,
     private readonly feeClient: FeeClient,
   ) {}

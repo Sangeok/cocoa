@@ -1,13 +1,11 @@
+
 export interface CoinPrice {
-  exchange: string;
-  symbol: string;
+  exchange: 'upbit' | 'binance';
+  baseToken: string;
+  quoteToken: string;
   price: number;
-  difference: number;
+  volume: number;
   timestamp: number;
-  upbitPrice?: number;
-  binancePrice?: number;
-  upbitVolume?: number;
-  binanceVolume?: number;
 }
 
 export interface ExchangeRate {
@@ -15,8 +13,38 @@ export interface ExchangeRate {
   timestamp: number;
 }
 
+export interface PremiumMarket {
+  symbol: string;
+  upbitPrice: number;
+  upbitVolume: number;
+  binancePrice: number;
+  binancePriceKRW: number;
+  binanceVolume: number;
+  premium: number;
+}
+
 export interface MarketState {
-  coinPrices: Record<string, CoinPrice>; // symbol을 키로 사용
+  upbit: Exchange;
+  binance: Exchange;
   exchangeRate: ExchangeRate | null;
   lastUpdate: number;
+}
+
+export interface MarketStore extends MarketState {
+  updateCoinPrice: (data: CoinPrice) => void;
+  updateExchangeRate: (data: ExchangeRate) => void;
+}
+
+export interface TickerData {
+  price: number;
+  volume: number;
+  timestamp: number;
+}
+
+export interface BaseTokenMarket {
+  [quoteToken: string]: TickerData;
+}
+
+export interface Exchange {
+  [baseToken: string]: BaseTokenMarket;
 } 
