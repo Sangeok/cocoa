@@ -8,7 +8,8 @@
     "build": "npm run build:client && npm run build:server",
     "lint:client": "cd client && npm run lint",
     "lint:server": "cd server && npm run lint",
-    "lint": "npm run lint:client && npm run lint:server"
+    "lint": "npm run lint:client && npm run lint:server",
+    "download-images": "ts-node etc/imagedownloader.ts"
   },
   "devDependencies": {
     "husky": "^8.0.3",
@@ -22,4 +23,4 @@
       "cd server && npm run lint"
     ]
   }
-} 
+}

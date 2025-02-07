@@ -96,6 +96,16 @@ export default function WithdrawPage() {
           {isLoading ? "계산 중..." : "계산하기"}
         </button>
 
+        {/* Disclaimer 추가 */}
+        <div className="text-sm text-gray-400 p-4 bg-gray-800/50 rounded-lg">
+          <p className="mb-2">⚠️ 주의사항</p>
+          <ul className="list-disc list-inside space-y-1">
+            <li>해당 서비스는 거래소의 실제 시세 및 수수료 정책과 차이가 있을 수 있습니다.</li>
+            <li>송금 과정에서 발생하는 실제 비용 및 최종 수령 금액은 보장되지 않습니다.</li>
+            <li>참고용 정보로만 활용해 주시기 바랍니다.</li>
+          </ul>
+        </div>
+
         {pathResults.length > 0 && (
           <div className="space-y-4">
             <h2 className="text-lg font-semibold text-white">추천 송금 경로</h2>
