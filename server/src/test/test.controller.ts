@@ -147,7 +147,8 @@ export class TestController {
       }
 
       // 트위터와 뉴스 데이터가 제공되지 않은 경우 수집
-      const twitterData = data.twitterData || await this.newsService.collectTwitterData(data.symbol);
+      // const twitterData = data.twitterData || await this.newsService.collectTwitterData(data.symbol);
+      const twitterData = [];
       const newsData = data.newsData || await this.newsService.collectNewsData(data.symbol);
 
       const article = await this.newsService.generateArticle(coin, twitterData, newsData);

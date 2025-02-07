@@ -11,6 +11,8 @@ import { NewsQueryOptions } from './types/news.types';
 @Injectable()
 export class NewsService {
   private readonly logger = new Logger(NewsService.name);
+
+  // 3. 두번째 문단: 트위터 사용자들의 주요 의견과 시장 반응 분석
   private readonly newsPrompt = `
 당신은 암호화폐 시장 분석가입니다. 제공된 정보를 바탕으로 전문적인 뉴스 기사를 작성해주세요.
 
@@ -18,14 +20,13 @@ export class NewsService {
 
 1. 제목: 코인의 현재 상황을 잘 반영한 흥미로운 제목 (50자 이내)
 2. 첫 문단: 거래량과 가격 변동에 대한 객관적 데이터 설명
-3. 두번째 문단: 트위터 사용자들의 주요 의견과 시장 반응 분석
-4. 세번째 문단: 관련 뉴스 기사들의 핵심 내용 요약
-5. 마지막 문단: 전반적인 시장 영향과 향후 전망
+3. 두번째 문단: 관련 뉴스 기사들의 핵심 내용 요약
+4. 세번째 문단: 전반적인 시장 영향과 향후 전망
 
-응답 형식:
+응답 형식은 JSON으로 변형할 수 있도록 반드시 다음과 같이 출력해주세요:
 {
-  "title": "뉴스 제목",
-  "content": "뉴스 본문"
+  "title": \`뉴스 제목\`,
+  "content": \`뉴스 본문\`
 }
 
 기사는 객관적이고 전문적인 톤을 유지하되, 이해하기 쉽게 작성해주세요.
@@ -63,10 +64,14 @@ export class NewsService {
 
         try {
           // 2. 각 코인에 대한 데이터 수집
-          const [twitterData, newsData] = await Promise.all([
-            this.twitterClient.searchTweets(coin.symbol),
-            this.webSearchClient.searchNews(coin.symbol),
-          ]);
+          // 트위터는 월별 한도가 매우 낮아 유료 api 적용 이후 사용이 가능
+          // const [twitterData, newsData] = await Promise.all([
+          //   this.twitterClient.searchTweets(coin.symbol),
+          //   this.webSearchClient.searchNews(coin.symbol),
+          // ]);
+
+          const twitterData = [];
+          const newsData = await this.webSearchClient.searchNews(coin.symbol);
 
           // 3. 수집된 데이터를 기반으로 LLM에 분석 요청
           const analysisPrompt = this.createAnalysisPrompt(
@@ -122,7 +127,8 @@ export class NewsService {
       }
 
       // 1. 소셜 데이터 수집
-      const twitterData = await this.collectTwitterData(symbol);
+      // const twitterData = await this.collectTwitterData(symbol);
+      const twitterData = [];
 
       // 2. 뉴스 데이터 수집
       const newsData = await this.collectNewsData(symbol);
@@ -201,15 +207,15 @@ export class NewsService {
     twitterData: any,
     newsData: any,
   ): string {
+    // 트위터 유료 api 적용 후에 내용 추가가 필요
+    // 트위터 반응:
+    // ${JSON.stringify(twitterData, null, 2)}
     return `
 코인 정보:
 심볼: ${coin.symbol}
 현재 가격: ${coin.currentPrice}
 24시간 거래량: ${coin.volume}
 가격 변동률: ${coin.priceChange}%
-
-트위터 반응:
-${JSON.stringify(twitterData, null, 2)}
 
 관련 뉴스:
 ${JSON.stringify(newsData, null, 2)}

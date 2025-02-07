@@ -28,7 +28,7 @@ export class OpenAIClient {
     userPrompt: string,
   ): Promise<{ title: string; content: string }> {
     const response = await this.openai.chat.completions.create({
-      model: 'openai/gpt-4', // OpenRouter 형식의 모델명
+      model: 'openai/gpt-4',
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt },
@@ -38,7 +38,27 @@ export class OpenAIClient {
     });
 
     const content = response.choices[0].message.content || '';
-    const { title, content: articleContent } = JSON.parse(content);
-    return { title, content: articleContent };
+    
+    try {
+      // 1. 줄바꿈 문자를 공백으로 대체
+      const sanitizedContent = content.replace(/\n/g, ' ');
+      
+      // 2. 연속된 공백을 하나로 통일
+      const normalizedContent = sanitizedContent.replace(/\s+/g, ' ');
+      
+      // 3. 특수 문자 이스케이프 처리
+      const escapedContent = normalizedContent.replace(/[\u0000-\u001F\u007F-\u009F]/g, '');
+      
+      // 4. JSON 파싱 시도
+      const parsedContent = JSON.parse(escapedContent);
+      
+      return {
+        title: parsedContent.title,
+        content: parsedContent.content.trim(),
+      };
+    } catch (error) {
+      console.error('Failed to parse OpenAI response:', content);
+      throw new Error('Failed to parse article content: ' + error.message);
+    }
   }
 }
