@@ -1,13 +1,12 @@
-export type Exchange = 'upbit' | 'binance';
+export type Exchange = 'upbit' | 'binance' | 'bithumb';
 
 export interface PathQueryParams {
-  coin: string;
   amount: number;
   from: Exchange;
   to: Exchange;
 }
 
-export interface PathResult {
+export interface PathOption {
   coin: string;
   fromExchange: string;
   toExchange: string;
@@ -15,5 +14,11 @@ export interface PathResult {
   withdrawFee: number;
   estimatedReceiveAmount: number;
   feeInKRW: number;
-  exchangeRate?: number;
+  exchangeRate: number;
+  steps: string[];
+  profitRate: number;
+  sourceAmountInKRW?: number;
+  targetAmountInKRW: number;
+  fromPrice: number;
+  toPrice: number;
 }

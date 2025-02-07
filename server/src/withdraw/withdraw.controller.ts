@@ -8,7 +8,7 @@ export class WithdrawController {
 
   @Get('path')
   async getOptimalPath(@Query() query: PathQueryParams) {
-    const { coin, amount, from, to } = query;
-    return this.withdrawService.findOptimalPath(coin, Number(amount), from, to);
+    const { amount, from, to } = query;
+    return this.withdrawService.findOptimalPath(Number(amount), from, to);
   }
 }

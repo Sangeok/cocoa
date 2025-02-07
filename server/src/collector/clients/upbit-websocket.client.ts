@@ -1,9 +1,10 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import * as WebSocket from 'ws';
+import { WebSocket } from 'ws';
 import { RedisService } from '../../redis/redis.service';
 import { AppGateway } from '../../gateway/app.gateway';
 import { MarketCodesService } from '../services/market-codes.service';
 import { UpbitTickerResponse } from '../types/upbit.types';
+import { createTickerKey, TickerData, parseUpbitMarket } from '../types/common.types';
 
 @Injectable()
 export class UpbitWebsocketClient implements OnModuleInit {
@@ -45,6 +46,7 @@ export class UpbitWebsocketClient implements OnModuleInit {
       try {
         const tickerData = JSON.parse(data.toString()) as UpbitTickerResponse;
         await this.handleTickerData(tickerData);
+        // this.logger.debug(`Upbit ticker data: ${tickerData.code}`);
       } catch (error) {
         this.logger.error('Error processing ticker data', error);
       }
@@ -85,25 +87,37 @@ export class UpbitWebsocketClient implements OnModuleInit {
   }
 
   private async handleTickerData(data: UpbitTickerResponse) {
-    const redisKey = `ticker-upbit-${data.code}`;
-    
-    // Redis에 데이터 저장
-    await this.redisService.set(redisKey, JSON.stringify({
-      exchange: 'upbit',
-      price: data.trade_price,
-      change: data.signed_change_rate,
-      timestamp: data.timestamp,
-      volume24h: data.acc_trade_price_24h,
-    }));
+    try {
+      // KRW 마켓만 처리
+      if (!data.code.startsWith('KRW-')) return;
 
-    // 웹소켓 클라이언트에게 데이터 전송
-    this.appGateway.emitCoinPrice({
-      exchange: 'upbit',
-      symbol: data.code.replace('KRW-', ''),
-      price: data.trade_price,
-      difference: data.signed_change_rate * 100,
-      timestamp: data.timestamp,
-    });
+      const { baseToken, quoteToken } = parseUpbitMarket(data.code);
+      const redisKey = createTickerKey('upbit', baseToken, quoteToken);
+      
+      const tickerData: TickerData = {
+        exchange: 'upbit',
+        baseToken,
+        quoteToken,
+        price: data.trade_price,
+        volume: data.acc_trade_price_24h,
+        timestamp: data.timestamp,
+      };
+
+      await this.redisService.set(redisKey, JSON.stringify(tickerData));
+
+      this.appGateway.emitCoinPrice({
+        exchange: 'upbit',
+        symbol: quoteToken,
+        price: data.trade_price,
+        difference: data.signed_change_rate * 100,
+        timestamp: data.timestamp,
+      });
+    } catch (error) {
+      this.logger.error(`Error handling ticker data: ${error.message}`, {
+        data,
+        error,
+      });
+    }
   }
 
   private handleReconnect() {

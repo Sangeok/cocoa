@@ -20,4 +20,4 @@ export const API_ROUTES = {
       method: "GET",
     },
   },
-};
+} as const;

@@ -1,12 +1,11 @@
 import { z } from 'zod'
 
 // Exchange type
-export const ExchangeEnum = z.enum(['upbit', 'binance'])
+export const ExchangeEnum = z.enum(['upbit', 'binance', 'bithumb'])
 export type Exchange = z.infer<typeof ExchangeEnum>
 
 // Query parameters schema
 export const WithdrawPathQuerySchema = z.object({
-  coin: z.string(),
   amount: z.number().positive(),
   from: ExchangeEnum,
   to: ExchangeEnum,
@@ -21,7 +20,13 @@ export const WithdrawPathResultSchema = z.object({
   withdrawFee: z.number(),
   estimatedReceiveAmount: z.number(),
   feeInKRW: z.number(),
-  exchangeRate: z.number().optional(),
+  exchangeRate: z.number(),
+  steps: z.array(z.string()),
+  profitRate: z.number(),
+  sourceAmountInKRW: z.number().optional(),
+  targetAmountInKRW: z.number(),
+  fromPrice: z.number(),
+  toPrice: z.number(),
 })
 
 // Error schema
@@ -34,7 +39,10 @@ export const WithdrawErrorSchema = z.object({
 export const WithdrawResponseSchema = z.object({
   success: z.boolean(),
   data: WithdrawPathResultSchema,
-  error: WithdrawErrorSchema.optional(),
+  error: z.object({
+    message: z.string(),
+    status: z.number(),
+  }).optional(),
 })
 
 // Infer types from schemas
@@ -44,7 +52,14 @@ export type WithdrawError = z.infer<typeof WithdrawErrorSchema>
 export type WithdrawResponse = z.infer<typeof WithdrawResponseSchema>
 
 // Constants
-export const EXCHANGES = ['upbit', 'binance'] as const
+export const KOREA_EXCHANGES = [
+  { value: 'upbit', label: '업비트' },
+  { value: 'bithumb', label: '빗썸' },
+]
+
+export const GLOBAL_EXCHANGES = [
+  { value: 'binance', label: '바이낸스' },
+]
 
 // Helper functions
 export function formatKRW(amount: number): string {
@@ -55,6 +70,11 @@ export function formatKRW(amount: number): string {
 }
 
 export function formatCrypto(amount: number, decimals = 8): string {
+ 
+  if (amount === 0) return '0';
+  if (isNaN(amount)) return '0';
+  if (amount === null) return '0';
+  
   return amount.toFixed(decimals)
 }
 

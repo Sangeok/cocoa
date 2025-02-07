@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import axios from 'axios';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -21,22 +20,32 @@ export class FeeClient {
     this.binanceFees = JSON.parse(fs.readFileSync(binanceJsonPath, 'utf-8'));
   }
 
-  async getUpbitFees(): Promise<
-    Array<{
-      symbol: string;
-      network: string;
-      withdrawalFee: string;
-      minimumWithdrawal: string;
-      depositFee: string;
-    }>
-  > {
-    return this.upbitFees.currencies.map((fee) => ({
-      symbol: fee.currency,
-      network: fee.network,
-      withdrawalFee: fee.withdrawalFee,
-      minimumWithdrawal: fee.minimumWithdrawal,
-      depositFee: fee.depositFee,
-    }));
+  async getUpbitFees(): Promise<{ symbol: string; withdrawalFee: string }[]> {
+    try {
+      return this.upbitFees.currencies.map(currency => {
+        // USDT와 같이 여러 네트워크가 있는 경우 가장 낮은 수수료의 네트워크 선택
+        if (Array.isArray(currency.withdrawalFee)) {
+          const fees = currency.withdrawalFee.map(fee => 
+            parseFloat(fee.split(' ')[0].replace(',', ''))
+          );
+          const minFee = Math.min(...fees);
+          return {
+            symbol: currency.currency,
+            withdrawalFee: minFee.toString()
+          };
+        }
+        
+        // 일반적인 경우
+        const feeValue = currency.withdrawalFee.split(' ')[0].replace(',', '');
+        return {
+          symbol: currency.currency,
+          withdrawalFee: feeValue
+        };
+      });
+    } catch (error) {
+      this.logger.error('Failed to get Upbit fees', error);
+      throw error;
+    }
   }
 
   async getBinanceFees(symbols?: string[]): Promise<

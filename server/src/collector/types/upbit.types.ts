@@ -21,3 +21,8 @@ export interface UpbitTickerData {
   timestamp: number;
   volume24h: number;
 }
+
+export interface UpbitFee {
+  currency: string;
+  network: string;
+}

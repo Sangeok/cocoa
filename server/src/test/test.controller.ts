@@ -4,9 +4,12 @@ import { FeeClient } from '../collector/clients/fee.client';
 import { UpbitClient } from '../collector/clients/upbit.client';
 import { NewsService } from '../news/news.service';
 import { RedisService } from '../redis/redis.service';
+import { Logger } from '@nestjs/common';
 
 @Controller('test')
 export class TestController {
+  private readonly logger = new Logger(TestController.name);
+
   constructor(
     private readonly collectorService: CollectorService,
     private readonly feeClient: FeeClient,
@@ -31,12 +34,6 @@ export class TestController {
   async testStoreExchangeRateHistory() {
     await this.collectorService.storeExchangeRateHistory();
     return { message: 'Exchange rate history stored' };
-  }
-
-  @Post('collect/fees')
-  async testCollectExchangeFees() {
-    await this.collectorService.collectExchangeFees();
-    return { message: 'Exchange fees collection completed' };
   }
 
   @Get('collect/fees')
@@ -172,7 +169,12 @@ export class TestController {
         pattern = `ticker-${exchange}-*`;
       }
       
+      // 디버깅을 위한 로그 추가
+      this.logger.debug(`Searching for pattern: ${pattern}`);
+      
       const keys = await this.redisService.getKeys(pattern);
+      this.logger.debug(`Found keys: ${keys.join(', ')}`);
+      
       const tickers = await Promise.all(
         keys.map(async (key) => {
           const data = await this.redisService.get(key);
@@ -188,9 +190,97 @@ export class TestController {
         data: tickers,
       };
     } catch (error) {
+      this.logger.error('Failed to get tickers:', error);
       return {
         success: false,
         error: error.message,
+      };
+    }
+  }
+
+  @Get('redis-debug')
+  async debugRedis() {
+    try {
+      // 1. 전체 키 확인
+      const allKeys = await this.redisService.getKeys('*');
+      this.logger.debug(`All keys in Redis: ${allKeys.join(', ')}`);
+
+      // 2. 바이낸스 키만 확인
+      const binanceKeys = await this.redisService.getKeys('ticker-binance-*');
+      this.logger.debug(`Binance keys: ${binanceKeys.join(', ')}`);
+
+      // 3. 각 키의 실제 값 확인
+      const keyValues = await Promise.all(
+        binanceKeys.map(async (key) => {
+          const value = await this.redisService.get(key);
+          return { key, value };
+        })
+      );
+
+      return {
+        totalKeys: allKeys.length,
+        binanceKeys: binanceKeys.length,
+        keyValues
+      };
+    } catch (error) {
+      this.logger.error('Redis debug failed:', error);
+      return { error: error.message };
+    }
+  }
+
+  @Post('redis/flush-all')
+  async flushAllRedis() {
+    try {
+      await this.redisService.flushAll();
+      return {
+        success: true,
+        message: 'All Redis data has been cleared'
+      };
+    } catch (error) {
+      this.logger.error('Failed to flush Redis:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  @Post('redis/flush-binance')
+  async flushBinanceData() {
+    try {
+      const keys = await this.redisService.getKeys('ticker-binance-*');
+      if (keys.length > 0) {
+        await this.redisService.del(...keys);
+      }
+      return {
+        success: true,
+        message: `Cleared ${keys.length} Binance ticker keys`
+      };
+    } catch (error) {
+      this.logger.error('Failed to flush Binance data:', error);
+      return {
+        success: false,
+        error: error.message
+      };
+    }
+  }
+
+  @Post('redis/flush-upbit')
+  async flushUpbitData() {
+    try {
+      const keys = await this.redisService.getKeys('ticker-upbit-*');
+      if (keys.length > 0) {
+        await this.redisService.del(...keys);
+      }
+      return {
+        success: true,
+        message: `Cleared ${keys.length} Upbit ticker keys`
+      };
+    } catch (error) {
+      this.logger.error('Failed to flush Upbit data:', error);
+      return {
+        success: false,
+        error: error.message
       };
     }
   }

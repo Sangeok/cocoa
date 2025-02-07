@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as WebSocket from 'ws';
-import { v4 as uuidv4 } from 'uuid';
 import {
   BinanceRequest,
   BinanceResponse,
@@ -10,6 +9,7 @@ import {
 } from '../types/binance.types';
 import { RedisService } from '../../redis/redis.service';
 import { FeeClient } from './fee.client';
+import { parseBinanceMarket, createTickerKey, TickerData } from '../types/common.types';
 
 @Injectable()
 export class BinanceClient {
@@ -72,29 +72,35 @@ export class BinanceClient {
   }
 
   private async handleResponse(response: BinanceResponse) {
-    if (response.status === 200) {
+    if (response.status === 200 && response.id) {
       const trades = (response as BinanceSuccessResponse).result;
       if (trades.length > 0) {
-        const latestTrade = trades[0]; // Get most recent trade
-        const symbol = latestTrade.price; // We need to extract symbol from somewhere
-        const redisKey = `ticker-binance-${symbol}`;
+        const latestTrade = trades[0];
+        const symbol = response.id.split('trade-')[1];
+        if (!symbol) {
+          this.logger.error(`Invalid response id format: ${response.id}`);
+          return;
+        }
 
-        await this.redisService.set(
-          redisKey,
-          JSON.stringify({
-            exchange: 'binance',
-            symbol: symbol,
-            price: parseFloat(latestTrade.price),
-            quantity: parseFloat(latestTrade.qty),
-            timestamp: latestTrade.time,
-          }),
-        );
+        const { baseToken, quoteToken } = parseBinanceMarket(symbol);
+        const redisKey = createTickerKey('binance', baseToken, quoteToken);
+        
+        const tickerData: TickerData = {
+          exchange: 'binance',
+          baseToken,
+          quoteToken,
+          price: parseFloat(latestTrade.price),
+          volume: parseFloat(latestTrade.qty),
+          timestamp: latestTrade.time,
+        };
 
-        // this.logger.log(`Trade data updated successfully: ${symbol}`);
+        await this.redisService.set(redisKey, JSON.stringify(tickerData));
       }
     } else {
-      // const error = (response as BinanceErrorResponse).error;
-      // this.logger.error(`Trade data request failed: ${error.msg}`);
+      const error = (response as BinanceErrorResponse).error;
+      this.logger.error(
+        `Trade data request failed: ${error?.msg || 'Unknown error'}`,
+      );
     }
   }
 
@@ -118,7 +124,7 @@ export class BinanceClient {
     const now = Date.now();
     // Remove timestamps older than the window size
     this.requestTimestamps = this.requestTimestamps.filter(
-      timestamp => now - timestamp < this.WINDOW_SIZE
+      (timestamp) => now - timestamp < this.WINDOW_SIZE,
     );
     return this.requestTimestamps.length < this.MAX_REQUESTS_PER_WINDOW;
   }
@@ -127,11 +133,12 @@ export class BinanceClient {
     if (this.processingQueue || this.requestQueue.length === 0) return;
 
     this.processingQueue = true;
-    
+
     while (this.requestQueue.length > 0) {
       if (!this.canMakeRequest()) {
-        // Wait until the next window
-        await new Promise(resolve => setTimeout(resolve, this.REQUEST_INTERVAL));
+        await new Promise((resolve) =>
+          setTimeout(resolve, this.REQUEST_INTERVAL),
+        );
         continue;
       }
 
@@ -139,7 +146,7 @@ export class BinanceClient {
       if (!symbol) continue;
 
       const request: BinanceRequest = {
-        id: uuidv4(),
+        id: `trade-${symbol}`,
         method: 'trades.recent',
         params: {
           symbol: symbol,
@@ -150,8 +157,9 @@ export class BinanceClient {
       if (this.ws.readyState === WebSocket.OPEN) {
         this.ws.send(JSON.stringify(request));
         this.requestTimestamps.push(Date.now());
-        // Wait for the specified interval before next request
-        await new Promise(resolve => setTimeout(resolve, this.REQUEST_INTERVAL));
+        await new Promise((resolve) =>
+          setTimeout(resolve, this.REQUEST_INTERVAL),
+        );
       } else {
         this.logger.error('WebSocket is not ready');
         this.handleReconnect();
@@ -170,7 +178,7 @@ export class BinanceClient {
 
       // Clear existing queue
       this.requestQueue = [];
-      
+
       // Add all symbols to the queue
       this.requestQueue.push(...usdtPairs);
 
@@ -184,7 +192,6 @@ export class BinanceClient {
           this.processQueue();
         }
       }, this.WINDOW_SIZE);
-
     } catch (error) {
       this.logger.error('Failed to subscribe to trades', error);
       this.handleReconnect();

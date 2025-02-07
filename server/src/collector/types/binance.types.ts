@@ -2,7 +2,7 @@ export interface BinanceRequest {
   id: string;
   method: 'trades.recent';
   params: {
-    symbol: string;
+    symbol: string;  // BTCUSDT 형태
     limit: number;
   };
 }
@@ -69,10 +69,4 @@ export interface BinanceErrorResponse {
 
 export type BinanceResponse = BinanceSuccessResponse | BinanceErrorResponse;
 
-export interface BinanceTickerData {
-  exchange: 'binance';
-  symbol: string;
-  price: number;
-  quantity: number;
-  timestamp: number;
-}
+// 기존 BinanceTickerData는 common.types.ts의 TickerData로 대체

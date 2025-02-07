@@ -7,7 +7,6 @@ import { upbitMarkets } from '../database/schema/market';
 import { ExchangeRateClient } from './clients/exchange-rate.client';
 import { RedisService } from '../redis/redis.service';
 import { exchangeRates } from '../database/schema/exchange-rate';
-import { exchangeFees } from '../database/schema/fee';
 import { FeeClient } from './clients/fee.client';
 
 @Injectable()
@@ -94,46 +93,6 @@ export class CollectorService {
       this.logger.debug(`Stored USD-KRW rate history: ${rate}`);
     } catch (error) {
       this.logger.error('Failed to store exchange rate history', error);
-    }
-  }
-
-  @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-  async collectExchangeFees() {
-    try {
-      // Upbit 수수료 수집
-      const upbitFees = await this.feeClient.getUpbitFees();
-
-      // Binance 수수료 수집 (Upbit에서 지원하는 코인만)
-      const upbitSymbols = upbitFees.map((fee) => fee.symbol);
-      const binanceFees = await this.feeClient.getBinanceFees(upbitSymbols);
-
-      // 수수료 정보 저장
-      await this.db.transaction(async (tx) => {
-        for (const fee of [...upbitFees, ...binanceFees]) {
-          const exchange = fee.symbol.includes('UPBIT') ? 'upbit' : 'binance';
-          await tx
-            .insert(exchangeFees)
-            .values({
-              id: `${exchange}_${fee.symbol}_${fee.network}`,
-              exchange,
-              ...fee,
-              updatedAt: new Date(),
-            })
-            .onConflictDoUpdate({
-              target: exchangeFees.id,
-              set: {
-                withdrawalFee: fee.withdrawalFee,
-                minimumWithdrawal: fee.minimumWithdrawal,
-                depositFee: fee.depositFee,
-                updatedAt: new Date(),
-              },
-            });
-        }
-      });
-
-      this.logger.debug('Updated exchange fees');
-    } catch (error) {
-      this.logger.error('Failed to collect exchange fees', error);
     }
   }
 }

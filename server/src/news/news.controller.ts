@@ -1,11 +1,6 @@
 import { Controller, Get, Query, Param } from '@nestjs/common';
 import { NewsService } from './news.service';
-
-interface NewsQueryParams {
-  symbol?: string;
-  limit?: number;
-  page?: number;
-}
+import { NewsQueryParams } from './types/news.types';
 
 @Controller('news')
 export class NewsController {

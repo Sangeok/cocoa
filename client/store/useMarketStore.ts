@@ -2,10 +2,12 @@ import { create } from 'zustand';
 import { devtools } from 'zustand/middleware';
 import { socket } from '@/lib/socket';
 import type { MarketState, CoinPrice, ExchangeRate } from './types';
+import { TickerData } from '@/types/common';
 
 interface MarketStore extends MarketState {
   updateCoinPrice: (data: CoinPrice) => void;
   updateExchangeRate: (data: ExchangeRate) => void;
+  setTicker: (exchange: string, baseToken: string, quoteToken: string, data: TickerData) => void;
 }
 
 const useMarketStore = create<MarketStore>()(
@@ -14,6 +16,7 @@ const useMarketStore = create<MarketStore>()(
       coinPrices: {},
       exchangeRate: null,
       lastUpdate: Date.now(),
+      tickers: {},
 
       updateCoinPrice: (data: CoinPrice) =>
         set((state) => ({
@@ -28,6 +31,14 @@ const useMarketStore = create<MarketStore>()(
         set(() => ({
           exchangeRate: data,
           lastUpdate: Date.now(),
+        })),
+
+      setTicker: (exchange, baseToken, quoteToken, data) =>
+        set((state) => ({
+          tickers: {
+            ...state.tickers,
+            [`${exchange}-${baseToken}-${quoteToken}`]: data,
+          },
         })),
     }),
     {

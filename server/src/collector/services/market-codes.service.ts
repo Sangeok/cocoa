@@ -1,35 +1,46 @@
-import { Injectable } from '@nestjs/common';
-import { readFile } from 'fs/promises';
-import { join } from 'path';
-
-interface UpbitFee {
-  currency: string;
-  network: string;
-}
+import { Injectable, Logger } from '@nestjs/common';
+import { UpbitClient } from '../clients/upbit.client';
+import { createTickerKey, parseUpbitMarket } from '../types/common.types';
 
 @Injectable()
 export class MarketCodesService {
+  private readonly logger = new Logger(MarketCodesService.name);
   private marketCodes: string[] = [];
+  private marketPairs: { baseToken: string; quoteToken: string }[] = [];
 
-  async loadMarketCodes(): Promise<string[]> {
+  constructor(private readonly upbitClient: UpbitClient) {}
+
+  async loadMarketCodes() {
     try {
-      const feesFile = await readFile(
-        join(process.cwd(), 'config', 'upbit-fees.json'),
-        'utf-8',
-      );
-      const fees = JSON.parse(feesFile) as { currencies: UpbitFee[] };
+      const markets = await this.upbitClient.getMarkets();
       
-      this.marketCodes = fees.currencies
-        .filter(fee => fee.currency !== 'KRW')
-        .map(fee => `KRW-${fee.currency}`);
+      // KRW 마켓만 필터링
+      this.marketCodes = markets
+        .filter(market => market.market.startsWith('KRW-'))
+        .map(market => market.market);
 
-      return this.marketCodes;
+      // 마켓 페어 정보 저장
+      this.marketPairs = this.marketCodes.map(code => parseUpbitMarket(code));
+
+      this.logger.debug(`Loaded ${this.marketCodes.length} market codes`);
     } catch (error) {
-      throw new Error(`Failed to load market codes: ${error.message}`);
+      this.logger.error('Failed to load market codes:', error);
+      throw error;
     }
   }
 
   getMarketCodes(): string[] {
     return this.marketCodes;
+  }
+
+  getMarketPairs() {
+    return this.marketPairs;
+  }
+
+  // Redis 키 형식으로 변환된 마켓 코드 가져오기
+  getRedisKeys(): string[] {
+    return this.marketPairs.map(({ baseToken, quoteToken }) => 
+      createTickerKey('upbit', baseToken, quoteToken)
+    );
   }
 } 

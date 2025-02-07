@@ -61,4 +61,23 @@ export class RedisService implements OnModuleInit {
       return [];
     }
   }
+
+  async debugKeys(pattern: string) {
+    const keys = await this.client.keys(pattern);
+    const values = await Promise.all(
+      keys.map(async key => {
+        const value = await this.client.get(key);
+        return { key, value };
+      })
+    );
+    return values;
+  }
+
+  async flushAll() {
+    await this.client.flushAll();
+  }
+
+  async del(...keys: string[]) {
+    await this.client.del(keys);
+  }
 } 

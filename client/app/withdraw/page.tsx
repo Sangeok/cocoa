@@ -1,60 +1,44 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Select from "@/components/Select";
+import Input from "@/components/Input";
 import {
   Exchange,
   WithdrawPathResult,
   formatKRW,
   formatCrypto,
+  KOREA_EXCHANGES,
+  GLOBAL_EXCHANGES,
 } from "@/dto/withdraw.dto";
 import { API_ROUTES } from "@/const/api";
-import { serverClient } from "@/lib/axios";
-import { KOREA_EXCHANGES, GLOBAL_EXCHANGES } from "@/const/exchange";
+import { apiClient } from "@/lib/axios";
+import clsx from "clsx";
 
 export default function WithdrawPage() {
   const [fromExchange, setFromExchange] = useState<string>("");
   const [toExchange, setToExchange] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
-  const [coin, setCoin] = useState<string>("");
-  const [pathResult, setPathResult] = useState<WithdrawPathResult | null>(null);
+  const [pathResults, setPathResults] = useState<WithdrawPathResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   // Determine available exchanges based on selection
-  const isFromGlobal = GLOBAL_EXCHANGES.some((ex) => ex.value === fromExchange);
-  const isToGlobal = GLOBAL_EXCHANGES.some((ex) => ex.value === toExchange);
-
-  const fromOptions = [...KOREA_EXCHANGES, ...GLOBAL_EXCHANGES];
-  const toOptions = isFromGlobal
-    ? KOREA_EXCHANGES
-    : fromExchange
-    ? GLOBAL_EXCHANGES
-    : [...KOREA_EXCHANGES, ...GLOBAL_EXCHANGES];
-
-  // Reset toExchange if it becomes invalid
-  useEffect(() => {
-    if (
-      (isFromGlobal && isToGlobal) ||
-      (!isFromGlobal && !isToGlobal && fromExchange === toExchange)
-    ) {
-      setToExchange("");
-    }
-  }, [fromExchange]);
+  const isFromKorea = KOREA_EXCHANGES.some((ex) => ex.value === fromExchange);
+  const toOptions = isFromKorea ? GLOBAL_EXCHANGES : KOREA_EXCHANGES;
 
   const handleCalculate = async () => {
-    if (!fromExchange || !toExchange || !amount || !coin) return;
+    if (!fromExchange || !toExchange || !amount) return;
 
     setIsLoading(true);
     try {
-      const response = await serverClient.get(API_ROUTES.WITHDRAW.PATH.url, {
+      const response = await apiClient.get(API_ROUTES.WITHDRAW.PATH.url, {
         params: {
-          coin,
           amount: Number(amount),
           from: fromExchange as Exchange,
           to: toExchange as Exchange,
         },
       });
-      setPathResult(response.data.data);
+      setPathResults(response.data);
     } catch (error) {
       console.error("Failed to calculate withdraw path:", error);
     } finally {
@@ -62,10 +46,16 @@ export default function WithdrawPage() {
     }
   };
 
+  function formatPrice(price: number, isKRW: boolean) {
+    if (isKRW) {
+      return formatKRW(price);
+    }
+    return `$${price.toFixed(2)}`;
+  }
+
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
       <div className="space-y-6">
-        {/* Header */}
         <div>
           <h1 className="text-2xl font-bold text-white">송금 계산기</h1>
           <p className="mt-2 text-gray-400">
@@ -73,49 +63,32 @@ export default function WithdrawPage() {
           </p>
         </div>
 
-        {/* Exchange Selection */}
         <div className="grid gap-6 sm:grid-cols-2">
           <Select
             label="출발 거래소"
-            options={fromOptions}
+            options={[...KOREA_EXCHANGES, ...GLOBAL_EXCHANGES]}
             value={fromExchange}
             onChange={setFromExchange}
-            placeholder="거래소 선택"
           />
           <Select
             label="도착 거래소"
             options={toOptions}
             value={toExchange}
             onChange={setToExchange}
-            placeholder="거래소 선택"
-            disabled={!fromExchange}
           />
         </div>
 
-        {/* Amount and Coin Input */}
-        <div className="grid gap-6 sm:grid-cols-2">
-          <input
-            type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            placeholder="수량 입력"
-            className="bg-gray-800 text-white rounded-lg px-4 py-2.5"
-          />
-          <input
-            type="text"
-            value={coin}
-            onChange={(e) => setCoin(e.target.value.toUpperCase())}
-            placeholder="코인 심볼 (예: BTC)"
-            className="bg-gray-800 text-white rounded-lg px-4 py-2.5 uppercase"
-          />
-        </div>
+        <Input
+          type="number"
+          label={isFromKorea ? "원화 금액" : "USDT 금액"}
+          value={amount}
+          onChange={setAmount}
+          placeholder={isFromKorea ? "원화 금액 입력" : "USDT 금액 입력"}
+        />
 
-        {/* Calculate Button */}
         <button
           onClick={handleCalculate}
-          disabled={
-            !fromExchange || !toExchange || !amount || !coin || isLoading
-          }
+          disabled={!fromExchange || !toExchange || !amount || isLoading}
           className="w-full bg-white/10 hover:bg-white/20 disabled:bg-white/5 
                    disabled:cursor-not-allowed text-white font-medium py-2.5 
                    rounded-lg transition-colors"
@@ -123,36 +96,69 @@ export default function WithdrawPage() {
           {isLoading ? "계산 중..." : "계산하기"}
         </button>
 
-        {/* Results */}
-        {pathResult && (
-          <div className="bg-gray-800 rounded-lg p-4 space-y-3">
-            <h2 className="text-lg font-semibold text-white">예상 수수료</h2>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <p className="text-sm text-gray-400">출금 수수료</p>
-                <p className="text-white">
-                  {formatCrypto(pathResult.withdrawFee)} {pathResult.coin}
-                </p>
-                <p className="text-sm text-gray-400">
-                  ≈ {formatKRW(pathResult.feeInKRW)}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-400">예상 수령액</p>
-                <p className="text-white">
-                  {formatCrypto(pathResult.estimatedReceiveAmount)}{" "}
-                  {pathResult.coin}
-                </p>
-              </div>
-              {pathResult.exchangeRate && (
-                <div className="sm:col-span-2">
-                  <p className="text-sm text-gray-400">적용 환율</p>
-                  <p className="text-white">
-                    {formatKRW(pathResult.exchangeRate)} / USD
-                  </p>
+        {pathResults.length > 0 && (
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold text-white">추천 송금 경로</h2>
+            
+            {pathResults.map((path, index) => (
+              <div key={index} className="bg-gray-800 rounded-lg p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-white font-medium">
+                    {index + 1}. {path.coin} 경로
+                  </span>
+                  <span className={clsx(
+                    "font-medium",
+                    path.profitRate > 0 ? "text-green-400" : "text-red-400"
+                  )}>
+                    {path.profitRate ? path.profitRate.toFixed(2) : "0.00"}% 
+                    {path.profitRate > 0 ? " 이득" : " 손해"}
+                  </span>
                 </div>
-              )}
-            </div>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <p className="text-sm text-gray-400">출금 수수료</p>
+                    <p className="text-white">
+                      {formatCrypto(path.withdrawFee)} {path.coin}
+                    </p>
+                    <p className="text-sm text-gray-400">
+                      ≈ {formatKRW(path.feeInKRW)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-400">예상 수령액</p>
+                    <p className="text-white">
+                      {formatCrypto(path.estimatedReceiveAmount)} {path.coin}
+                    </p>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-sm text-gray-400">송금 단계</p>
+                  <ul className="mt-1 space-y-1">
+                    {path.steps.map((step, stepIndex) => (
+                      <li key={stepIndex} className="text-white text-sm">
+                        {stepIndex + 1}. {step}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div>코인: {path.coin}</div>
+                <div>수량: {formatCrypto(path.amount)}</div>
+                <div>출발지 가격: {formatPrice(path.fromPrice, path.fromExchange === 'upbit')}</div>
+                <div>도착지 가격: {formatPrice(path.toPrice, path.toExchange === 'upbit')}</div>
+                <div>출발 금액: {formatKRW(path.sourceAmountInKRW || 0)}</div>
+                <div>도착 금액: {formatKRW(path.targetAmountInKRW || 0)}</div>
+                <div>수수료: {formatKRW(path.feeInKRW)}</div>
+                <div>수익률: {path.profitRate ? path.profitRate.toFixed(2) : "0.00"}%</div>
+                <div>단계:
+                  {path.steps.map((step, i) => (
+                    <div key={i} className="ml-4">{step}</div>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         )}
       </div>

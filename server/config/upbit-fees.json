@@ -1,11 +1,151 @@
 {
   "currencies": [
     {
+      "currency": "USDT",
+      "network": ["Ethereum", "Tron"],
+      "minimumWithdrawal": "0.000001",
+      "depositFee": "Free",
+      "withdrawalFee": ["4.0 USDT", "0.0 USDT"]
+    },
+    {
+      "currency": "BTC",
+      "network": "Bitcoin",
+      "minimumWithdrawal": "0.001",
+      "depositFee": "Free",
+      "withdrawalFee": "0.0008 BTC"
+    },
+    {
+      "currency": "ETH",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.02",
+      "depositFee": "Free",
+      "withdrawalFee": "0.007 ETH"
+    },
+    {
+      "currency": "POL",
+      "network": ["Ethereum", "Polygon"],
+      "minimumWithdrawal": ["2.7", "0.009"],
+      "depositFee": "Free",
+      "withdrawalFee": ["2.7 POL", "0.009 POL"]
+    },
+    {
+      "currency": "TAIKO",
+      "network": ["Ethereum", "Taiko"],
+      "minimumWithdrawal": ["1.0", "0.05"],
+      "depositFee": "Free",
+      "withdrawalFee": ["1.0 TAIKO", "0.05 TAIKO"]
+    },
+    {
       "currency": "KRW",
       "network": "",
-      "minimumWithdrawal": "1.0",
+      "minimumWithdrawal": "1000.0",
       "depositFee": "Free",
-      "withdrawalFee": "1,000.0 KRW"
+      "withdrawalFee": "1000.0 KRW"
+    },
+    {
+      "currency": "1INCH",
+      "network": "Ethereum",
+      "minimumWithdrawal": "3.65",
+      "depositFee": "Free",
+      "withdrawalFee": "3.07 1INCH"
+    },
+    {
+      "currency": "AAVE",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.04",
+      "depositFee": "Free",
+      "withdrawalFee": "0.01 AAVE"
+    },
+    {
+      "currency": "AERGO",
+      "network": "Ethereum",
+      "minimumWithdrawal": "17.84",
+      "depositFee": "Free",
+      "withdrawalFee": "17.84 AERGO"
+    },
+    {
+      "currency": "AGLD",
+      "network": "Ethereum",
+      "minimumWithdrawal": "4.8",
+      "depositFee": "Free",
+      "withdrawalFee": "4.8 AGLD"
+    },
+    {
+      "currency": "ALT",
+      "network": "Ethereum",
+      "minimumWithdrawal": "10.0",
+      "depositFee": "Free",
+      "withdrawalFee": "10.0 ALT"
+    },
+    {
+      "currency": "ANKR",
+      "network": "Ethereum",
+      "minimumWithdrawal": "46.54",
+      "depositFee": "Free",
+      "withdrawalFee": "46.54 ANKR"
+    },
+    {
+      "currency": "APE",
+      "network": "Ethereum",
+      "minimumWithdrawal": "1.89",
+      "depositFee": "Free",
+      "withdrawalFee": "1.89 APE"
+    },
+    {
+      "currency": "API3",
+      "network": "Ethereum",
+      "minimumWithdrawal": "1.08",
+      "depositFee": "Free",
+      "withdrawalFee": "1.08 API3"
+    },
+    {
+      "currency": "AQT",
+      "network": "Ethereum",
+      "minimumWithdrawal": "1.43",
+      "depositFee": "Free",
+      "withdrawalFee": "1.43 AQT"
+    },
+    {
+      "currency": "ARPA",
+      "network": "Ethereum",
+      "minimumWithdrawal": "35.5",
+      "depositFee": "Free",
+      "withdrawalFee": "35.5 ARPA"
+    },
+    {
+      "currency": "ATH",
+      "network": "Ethereum",
+      "minimumWithdrawal": "10.0",
+      "depositFee": "Free",
+      "withdrawalFee": "10.0 ATH"
+    },
+    {
+      "currency": "AUCTION",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.3",
+      "depositFee": "Free",
+      "withdrawalFee": "0.3 AUCTION"
+    },
+    {
+      "currency": "AUDIO",
+      "network": "Ethereum",
+      "minimumWithdrawal": "17.2",
+      "depositFee": "Free",
+      "withdrawalFee": "10.2 AUDIO"
+    },
+    {
+      "currency": "AXL",
+      "network": "Ethereum",
+      "minimumWithdrawal": "6.0",
+      "depositFee": "Free",
+      "withdrawalFee": "6.0 AXL"
+    },
+    {
+      "currency": "AXS",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.26",
+      "depositFee": "Free",
+      "withdrawalFee": "0.26 AXS"
     },
     {
       "currency": "ADA",
@@ -153,13 +293,6 @@
       "minimumWithdrawal": "0.0005",
       "depositFee": "Free",
       "withdrawalFee": "0.0005 BSV"
-    },
-    {
-      "currency": "BTC",
-      "network": "Bitcoin",
-      "minimumWithdrawal": "0.001",
-      "depositFee": "Free",
-      "withdrawalFee": "0.0008 BTC"
     },
     {
       "currency": "CELO",
@@ -370,13 +503,6 @@
       "minimumWithdrawal": "0.02",
       "depositFee": "Free",
       "withdrawalFee": "0.005 ETC"
-    },
-    {
-      "currency": "ETH",
-      "network": "Ethereum",
-      "minimumWithdrawal": "0.01",
-      "depositFee": "Free",
-      "withdrawalFee": "0.0027 ETH"
     },
     {
       "currency": "QTUM",

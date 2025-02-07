@@ -2,8 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
 import { RedisService } from '../redis/redis.service';
 import { AppGateway } from '../gateway/app.gateway';
-import { UpbitTickerData } from '../collector/types/upbit.types';
-import { BinanceTickerData } from '../collector/types/binance.types';
+import { TickerData } from '../collector/types/common.types';
 
 interface ExchangeRateData {
   rate: number;
@@ -50,7 +49,7 @@ export class ExchangeService {
       ) {
         this.currentExchangeRate = exchangeRateData.rate;
         this.lastExchangeRateUpdate = Date.now();
-        
+
         // 환율 정보 별도 전송
         this.appGateway.emitExchangeRate({
           rate: this.currentExchangeRate,
@@ -70,14 +69,14 @@ export class ExchangeService {
         const data = await this.redisService.get(key);
         if (!data) continue;
 
-        const tickerData = JSON.parse(data) as UpbitTickerData;
-        const symbol = key.replace('ticker-upbit-KRW-', '');
+        const tickerData = JSON.parse(data) as TickerData;
+        const symbol = `${tickerData.baseToken}-${tickerData.quoteToken}`; // 'KRW-BTC' 형태로 통일
 
         marketData.set(symbol, {
           symbol,
           upbit: {
             price: tickerData.price,
-            volume24h: tickerData.volume24h,
+            volume24h: tickerData.volume,
           },
           binance: {
             price: 0,
@@ -94,8 +93,8 @@ export class ExchangeService {
         const data = await this.redisService.get(key);
         if (!data) continue;
 
-        const tickerData = JSON.parse(data) as BinanceTickerData;
-        const symbol = tickerData.symbol.replace('USDT', '');
+        const tickerData = JSON.parse(data) as TickerData;
+        const symbol = `${tickerData.baseToken}-${tickerData.quoteToken}`; // 'USDT-BTC' 형태
 
         if (marketData.has(symbol)) {
           const marketInfo = marketData.get(symbol)!;
@@ -103,21 +102,24 @@ export class ExchangeService {
 
           marketInfo.binance = {
             price: tickerData.price,
-            volume24h: tickerData.quantity,
+            volume24h: tickerData.volume,
           };
 
           // 가격 차이 계산 (%)
-          marketInfo.priceDifference = 
-            ((marketInfo.upbit.price - binancePriceInKRW) / binancePriceInKRW) * 100;
+          marketInfo.priceDifference =
+            ((marketInfo.upbit.price - binancePriceInKRW) / binancePriceInKRW) *
+            100;
 
-          marketInfo.timestamp = Math.max(marketInfo.timestamp, tickerData.timestamp);
+          marketInfo.timestamp = Math.max(
+            marketInfo.timestamp,
+            tickerData.timestamp,
+          );
           marketData.set(symbol, marketInfo);
         }
       }
 
       // 웹소켓으로 데이터 전송
       this.emitMarketData(Array.from(marketData.values()));
-
     } catch (error) {
       // this.logger.error('Error processing market data:', error);
     }
@@ -136,7 +138,7 @@ export class ExchangeService {
 
   private emitMarketData(data: CombinedMarketData[]) {
     // 각 코인에 대한 데이터 전송
-    data.forEach(marketInfo => {
+    data.forEach((marketInfo) => {
       this.appGateway.emitCoinPrice({
         exchange: 'combined',
         symbol: marketInfo.symbol,
@@ -150,4 +152,4 @@ export class ExchangeService {
       });
     });
   }
-} 
+}

@@ -25,3 +25,9 @@ export interface NewsQueryOptions {
     };
   };
 } 
+
+export interface NewsQueryParams {
+  symbol?: string;
+  limit?: number;
+  page?: number;
+}
