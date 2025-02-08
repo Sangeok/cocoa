@@ -1,5 +1,5 @@
 module.exports = {
-  // ... 다른 설정들
+  extends: ['next/core-web-vitals'],
   rules: {
     "@typescript-eslint/no-explicit-any": "off",        // any 타입 허용
     "@typescript-eslint/no-unused-vars": "off",         // 사용하지 않는 변수 허용

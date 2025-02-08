@@ -12,7 +12,6 @@ import {
 import { API_ROUTES } from "@/const/api";
 import { apiClient } from "@/lib/axios";
 import WithdrawPathCard from "@/components/WithdrawPathCard";
-import { formatKRW } from "@/lib/format";
 
 export default function WithdrawPage() {
   const [fromExchange, setFromExchange] = useState<string>("");
@@ -113,7 +112,7 @@ export default function WithdrawPage() {
             </h2>
 
             {pathResults.map((path, index) => (
-              <WithdrawPathCard key={index} path={path} index={index} />
+              <WithdrawPathCard key={index} path={path} />
             ))}
           </div>
         )}

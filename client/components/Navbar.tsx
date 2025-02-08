@@ -55,11 +55,7 @@ export default function Navbar() {
 
             {/* Dark mode switch */}
             <div className="flex items-center pl-4 space-x-4">
-              <Switch
-                checked={theme === "dark"}
-                onChange={toggleTheme}
-                className="flex items-center"
-              >
+              <Switch checked={theme === "dark"} onChange={toggleTheme}>
                 <span className="sr-only">Toggle dark mode</span>
                 {theme === "dark" ? (
                   <MoonIcon className="h-4 w-4 text-gray-300" />
@@ -87,11 +83,7 @@ export default function Navbar() {
                 </div>
 
                 {/* Dark mode switch for mobile */}
-                <Switch
-                  checked={theme === "dark"}
-                  onChange={toggleTheme}
-                  className="mr-2"
-                >
+                <Switch checked={theme === "dark"} onChange={toggleTheme}>
                   <span className="sr-only">Toggle dark mode</span>
                   {theme === "dark" ? (
                     <MoonIcon className="h-4 w-4 text-gray-600 dark:text-gray-300" />

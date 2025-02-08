@@ -6,16 +6,20 @@ import clsx from "clsx";
 import Select from "@/components/Select";
 import { calculatePriceGap } from "@/lib/format";
 import PremiumTableSkeleton from "@/components/PremiumTableSkeleton";
-import { ChevronUpDownIcon, ChevronUpIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
+import {
+  ChevronUpDownIcon,
+  ChevronUpIcon,
+  ChevronDownIcon,
+} from "@heroicons/react/24/outline";
 import useMarketStore from "@/store/useMarketStore";
-import { EXCHANGE_OPTIONS, BASE_TOKEN_OPTIONS } from '@/const/exchange';
-import { 
-  type ExchangePair, 
-  type SortState, 
+import { EXCHANGE_OPTIONS, BASE_TOKEN_OPTIONS } from "@/const/exchange";
+import {
+  type ExchangePair,
+  type SortState,
   type SortField,
   type Exchange,
   type QuoteToken,
-} from '@/types/exchange';
+} from "@/types/exchange";
 
 export default function PremiumTable() {
   const { coins, exchangeRate } = useMarketStore();
@@ -26,19 +30,19 @@ export default function PremiumTable() {
     toBase: "USDT",
   });
   const [sort, setSort] = useState<SortState>({
-    field: 'premium',
-    direction: 'desc'
+    field: "premium",
+    direction: "desc",
   });
 
   const filteredMarkets = useMemo(() => {
-    if (!coins || !exchangeRate) return [];
+    if (!coins || !exchangeRate?.rate) return [];
 
     return Object.entries(coins)
       .filter(([marketSymbol, data]) => {
         const marketData = data[exchangePair.from];
         if (!marketData) return false;
-        const [coin, quoteToken] = marketSymbol.split("-");
-        return quoteToken === exchangePair.fromBase;
+        const tokens = marketSymbol.split("-");
+        return tokens[1] === exchangePair.fromBase;
       })
       .map(([marketSymbol, data]) => {
         const marketData = data[exchangePair.from];
@@ -70,43 +74,45 @@ export default function PremiumTable() {
           ),
         };
       })
-      .filter((market): market is NonNullable<typeof market> => market !== null);
+      .filter(
+        (market): market is NonNullable<typeof market> => market !== null
+      );
   }, [coins, exchangePair, exchangeRate?.rate]);
 
   const handleSort = (field: SortField) => {
-    setSort(prev => ({
+    setSort((prev) => ({
       field,
-      direction: 
+      direction:
         prev.field === field
-          ? prev.direction === 'asc'
-            ? 'desc'
-            : prev.direction === 'desc'
-              ? null
-              : 'asc'
-          : 'asc'
+          ? prev.direction === "asc"
+            ? "desc"
+            : prev.direction === "desc"
+            ? null
+            : "asc"
+          : "asc",
     }));
   };
 
   const sortedMarkets = useMemo(() => {
     if (!filteredMarkets) return [];
-    
+
     return [...filteredMarkets].sort((a, b) => {
       if (sort.direction === null) return 0;
-      
-      const modifier = sort.direction === 'asc' ? 1 : -1;
-      
+
+      const modifier = sort.direction === "asc" ? 1 : -1;
+
       switch (sort.field) {
-        case 'name':
+        case "name":
           return modifier * a.symbol.localeCompare(b.symbol);
-        case 'fromPrice':
+        case "fromPrice":
           return modifier * (a.price - b.price);
-        case 'toPrice':
+        case "toPrice":
           return modifier * (a.price - b.price);
-        case 'premium':
+        case "premium":
           return modifier * (a.priceGapPercent - b.priceGapPercent);
-        case 'volume':
+        case "volume":
           return modifier * (a.volume - b.volume);
-        case 'timestamp':
+        case "timestamp":
           return modifier * (a.timestamp - b.timestamp);
         default:
           return 0;
@@ -116,15 +122,16 @@ export default function PremiumTable() {
 
   const SortIcon = ({ field }: { field: SortField }) => {
     if (sort.field !== field) return <ChevronUpDownIcon className="w-4 h-4" />;
-    if (sort.direction === 'asc') return <ChevronUpIcon className="w-4 h-4" />;
-    if (sort.direction === 'desc') return <ChevronDownIcon className="w-4 h-4" />;
+    if (sort.direction === "asc") return <ChevronUpIcon className="w-4 h-4" />;
+    if (sort.direction === "desc")
+      return <ChevronDownIcon className="w-4 h-4" />;
     return <ChevronUpDownIcon className="w-4 h-4" />;
   };
 
   const formatPrice = (price: number, quoteToken: string) => {
     const options: Intl.NumberFormatOptions = {
-      maximumFractionDigits: quoteToken === 'BTC' ? 8 : 0,
-      minimumFractionDigits: quoteToken === 'BTC' ? 8 : 0,
+      maximumFractionDigits: quoteToken === "BTC" ? 8 : 0,
+      minimumFractionDigits: quoteToken === "BTC" ? 8 : 0,
     };
     return new Intl.NumberFormat("ko-KR", options).format(price);
   };
@@ -203,8 +210,8 @@ export default function PremiumTable() {
               <tr className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm">
                 <th className="px-4 sm:px-6 py-3 text-left">이름</th>
                 <th className="px-4 sm:px-6 py-3 text-right">
-                  <button 
-                    onClick={() => handleSort('fromPrice')}
+                  <button
+                    onClick={() => handleSort("fromPrice")}
                     className="flex items-center justify-end gap-1 whitespace-nowrap w-full"
                   >
                     {exchangePair.from} 가격
@@ -212,8 +219,8 @@ export default function PremiumTable() {
                   </button>
                 </th>
                 <th className="px-4 sm:px-6 py-3 text-right">
-                  <button 
-                    onClick={() => handleSort('toPrice')}
+                  <button
+                    onClick={() => handleSort("toPrice")}
                     className="flex items-center justify-end gap-1 whitespace-nowrap w-full"
                   >
                     {exchangePair.to} 가격
@@ -221,8 +228,8 @@ export default function PremiumTable() {
                   </button>
                 </th>
                 <th className="px-4 sm:px-6 py-3 text-right">
-                  <button 
-                    onClick={() => handleSort('premium')}
+                  <button
+                    onClick={() => handleSort("premium")}
                     className="flex items-center justify-end gap-1 whitespace-nowrap w-full"
                   >
                     프리미엄
@@ -230,8 +237,8 @@ export default function PremiumTable() {
                   </button>
                 </th>
                 <th className="px-4 sm:px-6 py-3 text-right">
-                  <button 
-                    onClick={() => handleSort('volume')}
+                  <button
+                    onClick={() => handleSort("volume")}
                     className="flex items-center justify-end gap-1 whitespace-nowrap w-full"
                   >
                     거래량
@@ -239,8 +246,8 @@ export default function PremiumTable() {
                   </button>
                 </th>
                 <th className="px-4 sm:px-6 py-3 text-right">
-                  <button 
-                    onClick={() => handleSort('timestamp')}
+                  <button
+                    onClick={() => handleSort("timestamp")}
                     className="flex items-center justify-end gap-1 whitespace-nowrap w-full"
                   >
                     최근 업데이트
@@ -280,14 +287,16 @@ export default function PremiumTable() {
                     {formatPrice(market.price, exchangePair.toBase)}
                   </td>
                   <td className="px-4 sm:px-6 py-4 text-right whitespace-nowrap">
-                    <span className={clsx(
-                      'font-medium',
-                      market.priceGapPercent === 0 
-                        ? 'text-gray-400 dark:text-gray-500'
-                        : market.priceGapPercent > 0
-                          ? 'text-green-500 dark:text-green-400'
-                          : 'text-red-500 dark:text-red-400'
-                    )}>
+                    <span
+                      className={clsx(
+                        "font-medium",
+                        market.priceGapPercent === 0
+                          ? "text-gray-400 dark:text-gray-500"
+                          : market.priceGapPercent > 0
+                          ? "text-green-500 dark:text-green-400"
+                          : "text-red-500 dark:text-red-400"
+                      )}
+                    >
                       {formatPercent(market.priceGapPercent)}
                     </span>
                   </td>
@@ -305,4 +314,4 @@ export default function PremiumTable() {
       </div>
     </div>
   );
-} 
+}

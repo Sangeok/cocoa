@@ -38,7 +38,7 @@ export default function MarketTicker() {
 
   // KRW 마켓의 코인 가격만 필터링
   const krwMarketPrices = Object.entries(marketData)
-    .filter(([_, data]) => data.upbit) // upbit 데이터가 있는 코인만 필터
+    .filter((data) => data[1].upbit) // upbit 데이터가 있는 코인만 필터
     .map(([symbol, data]) => ({
       symbol,
       price: data.upbit!.price,
