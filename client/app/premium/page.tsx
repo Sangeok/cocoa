@@ -177,7 +177,7 @@ export default function PremiumPage() {
                   {formatPrice(market.fromPrice)}
                 </td>
                 <td className="px-6 py-4 text-right text-gray-900 dark:text-white">
-                  {exchangePair.toBase === "KRW" ? "₩" : ""}
+                  {exchangePair.fromBase === "KRW" ? "₩" : ""}
                   {formatPrice(market.toPrice)}
                 </td>
                 <td
