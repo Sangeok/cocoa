@@ -7,7 +7,7 @@ export default function TermsOfServicePage() {
         <section>
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">제 1 조 (목적)</h2>
           <p className="text-gray-600 dark:text-gray-300">
-            본 약관은 코코아(이하 "회사")가 제공하는 암호화폐 정보 서비스(이하 "서비스")의 이용조건 및 절차, 
+            본 약관은 코코아(이하 &quot;회사&quot;)가 제공하는 암호화폐 정보 서비스(이하 &quot;서비스&quot;)의 이용조건 및 절차, 
             회사와 회원 간의 권리, 의무 및 책임사항 등을 규정함을 목적으로 합니다.
           </p>
         </section>
@@ -18,9 +18,9 @@ export default function TermsOfServicePage() {
             본 약관에서 사용하는 용어의 정의는 다음과 같습니다:
           </p>
           <ul className="list-disc pl-6 text-gray-600 dark:text-gray-300 space-y-2">
-            <li>"서비스"란 회사가 제공하는 모든 암호화폐 관련 정보 및 기능을 의미합니다.</li>
-            <li>"회원"이란 본 약관에 동의하고 서비스를 이용하는 자를 의미합니다.</li>
-            <li>"콘텐츠"란 서비스에서 제공하는 모든 형태의 정보를 의미합니다.</li>
+            <li>&quot;서비스&quot;란 회사가 제공하는 모든 암호화폐 관련 정보 및 기능을 의미합니다.</li>
+            <li>&quot;회원&quot;이란 본 약관에 동의하고 서비스를 이용하는 자를 의미합니다.</li>
+            <li>&quot;콘텐츠&quot;란 서비스에서 제공하는 모든 형태의 정보를 의미합니다.</li>
           </ul>
         </section>
 

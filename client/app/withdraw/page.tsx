@@ -45,13 +45,6 @@ export default function WithdrawPage() {
     }
   };
 
-  function formatPrice(price: number, isKRW: boolean) {
-    if (isKRW) {
-      return formatKRW(price);
-    }
-    return `$${price.toFixed(2)}`;
-  }
-
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
       <div className="space-y-6">

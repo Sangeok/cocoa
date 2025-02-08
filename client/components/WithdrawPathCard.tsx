@@ -7,13 +7,9 @@ import Image from "next/image";
 
 interface WithdrawPathCardProps {
   path: WithdrawPathResult;
-  index: number;
 }
 
-export default function WithdrawPathCard({
-  path,
-  index,
-}: WithdrawPathCardProps) {
+export default function WithdrawPathCard({ path }: WithdrawPathCardProps) {
   function formatPrice(price: number, isKRW: boolean) {
     return isKRW ? formatKRW(price) : formatUSD(price);
   }
