@@ -41,15 +41,3 @@
 
 ## 이미지 저장
   - etc에서 npm start를 통해 현재 저장된 수수료가 명시된 코인들에 대해 이미지를 조사해 client에 저장합니다.
-
-
-## PM2로 서버 실행
-```bash
-pm2 start dist/main.js --name "crypto-server"
-```
-
-# PM2 자동 시작 설정
-```bash
-pm2 startup
-pm2 save
-```
