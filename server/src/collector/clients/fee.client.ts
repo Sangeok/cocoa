@@ -7,6 +7,7 @@ export class FeeClient {
   private readonly logger = new Logger(FeeClient.name);
   private readonly upbitFees: any;
   private readonly binanceFees: any;
+  private readonly bithumbFees: any;
 
   constructor() {
     const upbitJsonPath = path.join(process.cwd(), 'config', 'upbit-fees.json');
@@ -15,9 +16,11 @@ export class FeeClient {
       'config',
       'binance-fees.json',
     );
+    const bithumbJsonPath = path.join(process.cwd(), 'config', 'bithumb-fees.json');
 
     this.upbitFees = JSON.parse(fs.readFileSync(upbitJsonPath, 'utf-8'));
     this.binanceFees = JSON.parse(fs.readFileSync(binanceJsonPath, 'utf-8'));
+    this.bithumbFees = JSON.parse(fs.readFileSync(bithumbJsonPath, 'utf-8'));
   }
 
   async getUpbitFees(): Promise<{ symbol: string; withdrawalFee: string }[]> {
@@ -80,5 +83,46 @@ export class FeeClient {
     }
 
     return fees;
+  }
+
+  async getBithumbFees(): Promise<Array<{
+    symbol: string;
+    network: string;
+    withdrawalFee: string;
+    minimumWithdrawal: string;
+    depositFee: string;
+  }>> {
+    try {
+      const fees: any[] = [];
+
+      this.bithumbFees.currencies.forEach((currency: any) => {
+        if (currency.networks) {
+          // 여러 네트워크가 있는 경우
+          currency.networks.forEach((network: any) => {
+            fees.push({
+              symbol: currency.currency,
+              network: network.network,
+              withdrawalFee: network.withdrawalFee,
+              minimumWithdrawal: network.minimumWithdrawal,
+              depositFee: network.depositFee,
+            });
+          });
+        } else {
+          // 단일 네트워크
+          fees.push({
+            symbol: currency.currency,
+            network: currency.network,
+            withdrawalFee: currency.withdrawalFee,
+            minimumWithdrawal: currency.minimumWithdrawal,
+            depositFee: currency.depositFee,
+          });
+        }
+      });
+
+      return fees;
+    } catch (error) {
+      this.logger.error('Failed to get Bithumb fees', error);
+      throw error;
+    }
   }
 }

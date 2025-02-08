@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import MarketTicker from '@/components/MarketTicker'
 
 const font = localFont({
   src: [
@@ -43,6 +44,7 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <Navbar />
+          <MarketTicker />
           <main className="flex-1">{children}</main>
           <Footer />
         </ThemeProvider>

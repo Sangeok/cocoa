@@ -15,6 +15,13 @@
       "when": 1738843583034,
       "tag": "0001_outstanding_longshot",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1739003909204,
+      "tag": "0002_right_rocket_racer",
+      "breakpoints": true
     }
   ]
 }

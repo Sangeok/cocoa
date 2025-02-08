@@ -10,8 +10,19 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        gray: {
+          50: '#f9fafb',
+          100: '#f0f1f3',
+          200: '#e2e4e7',
+          300: '#d1d4d8',
+          400: '#9da3a9',
+          500: '#848a91',
+          600: '#6b7178',
+          700: '#565b61',
+          800: '#2f3237',
+          900: '#1a1c20',
+          950: '#111214',
+        },
       },
     },
   },

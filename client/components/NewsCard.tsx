@@ -3,7 +3,7 @@
 import { News } from '@/dto/news.dto'
 import { clsx } from 'clsx'
 import Link from 'next/link'
-import { formatCurrency } from '@/utils/number'
+import { formatCurrency } from '@/lib/format'
 
 interface NewsCardProps {
   news: News
@@ -13,13 +13,13 @@ export default function NewsCard({ news }: NewsCardProps) {
   return (
     <Link 
       href={`/news/${news.id}`}
-      className="block bg-white dark:bg-gray-800 rounded-lg overflow-hidden hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+      className="block bg-white dark:bg-gray-900 rounded-lg overflow-hidden hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
     >
       <article className="p-4 space-y-3">
         {/* Header */}
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-2">
-            <span className="text-sm font-medium text-gray-900 dark:text-white/80 px-2 py-1 bg-gray-100 dark:bg-gray-900/50 rounded">
+            <span className="text-sm font-medium text-gray-900 dark:text-white/80 px-2 py-1 bg-gray-100 dark:bg-gray-800/50 rounded">
               {news.symbol}
             </span>
             <time className="text-sm text-gray-500 dark:text-gray-400">

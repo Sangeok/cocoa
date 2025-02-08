@@ -1,29 +1,30 @@
-import { useEffect, useState } from 'react';
-import { subscribeToCoinPrice } from '@/lib/socket';
+import { useEffect, useState } from "react";
+import useMarketStore, { type CoinData } from "@/store/useMarketStore";
 
 interface CoinPriceData {
+  exchange: "upbit" | "binance";
   symbol: string;
   price: number;
-  difference: number;
+  volume: number;
   timestamp: number;
-  upbitPrice?: number;
-  binancePrice?: number;
-  upbitVolume?: number;
-  binanceVolume?: number;
 }
 
-export function useCoinPrice() {
+export function useCoinPrice(symbol: string) {
   const [coinData, setCoinData] = useState<CoinPriceData | null>(null);
+  const coins = useMarketStore((state) => state.coins);
 
   useEffect(() => {
-    const unsubscribe = subscribeToCoinPrice((data) => {
-      setCoinData(data);
-    });
+    const marketData = coins[symbol as keyof typeof coins];
+    if (!marketData?.upbit) return;
 
-    return () => {
-      unsubscribe();
-    };
-  }, []);
+    setCoinData({
+      exchange: "upbit",
+      symbol,
+      price: marketData.upbit.price,
+      volume: marketData.upbit.volume,
+      timestamp: marketData.upbit.timestamp,
+    });
+  }, [coins, symbol]);
 
   return coinData;
-} 
+}

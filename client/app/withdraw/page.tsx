@@ -6,15 +6,13 @@ import Input from "@/components/Input";
 import {
   Exchange,
   WithdrawPathResult,
-  formatKRW,
-  formatCrypto,
   KOREA_EXCHANGES,
   GLOBAL_EXCHANGES,
 } from "@/dto/withdraw.dto";
 import { API_ROUTES } from "@/const/api";
 import { apiClient } from "@/lib/axios";
-import clsx from "clsx";
-import WithdrawPathCard from '@/components/WithdrawPathCard'
+import WithdrawPathCard from "@/components/WithdrawPathCard";
+import { formatKRW } from "@/lib/format";
 
 export default function WithdrawPage() {
   const [fromExchange, setFromExchange] = useState<string>("");
@@ -58,7 +56,9 @@ export default function WithdrawPage() {
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">송금 계산기</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            송금 계산기
+          </h1>
           <p className="mt-2 text-gray-500 dark:text-gray-400">
             거래소 간 송금 수수료와 예상 수령액을 계산해보세요.
           </p>
@@ -101,22 +101,26 @@ export default function WithdrawPage() {
         <div className="text-sm text-gray-500 dark:text-gray-400 p-4 bg-gray-100/50 dark:bg-gray-800/50 rounded-lg">
           <p className="mb-2">⚠️ 주의사항</p>
           <ul className="list-disc list-inside space-y-1">
-            <li>해당 서비스는 거래소의 실제 시세 및 수수료 정책과 차이가 있을 수 있습니다.</li>
-            <li>송금 과정에서 발생하는 실제 비용 및 최종 수령 금액은 보장되지 않습니다.</li>
+            <li>
+              해당 서비스는 거래소의 실제 시세 및 수수료 정책과 차이가 있을 수
+              있습니다.
+            </li>
+            <li>
+              송금 과정에서 발생하는 실제 비용 및 최종 수령 금액은 보장되지
+              않습니다.
+            </li>
             <li>참고용 정보로만 활용해 주시기 바랍니다.</li>
           </ul>
         </div>
 
         {pathResults.length > 0 && (
           <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">추천 송금 경로</h2>
-            
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              추천 송금 경로
+            </h2>
+
             {pathResults.map((path, index) => (
-              <WithdrawPathCard 
-                key={index} 
-                path={path} 
-                index={index} 
-              />
+              <WithdrawPathCard key={index} path={path} index={index} />
             ))}
           </div>
         )}

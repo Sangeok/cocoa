@@ -1,41 +1,42 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { socket } from "@/lib/socket";
-import type { MarketStore, CoinPrice, ExchangeRate } from "./types";
+
+interface MarketData {
+  price: number;
+  timestamp: number;
+  volume: number;
+}
+
+interface CoinData {
+  upbit?: MarketData;
+  binance?: MarketData;
+  bithumb?: MarketData;
+}
+
+interface MarketStore {
+  coins: Record<string, CoinData>;
+  exchangeRate: { rate: number } | null;
+  lastUpdate: number;
+  updateMarketData: (data: Record<string, CoinData>) => void;
+  updateExchangeRate: (data: { rate: number }) => void;
+}
 
 const useMarketStore = create<MarketStore>()(
   devtools(
     (set) => ({
-      upbit: {},
-      binance: {},
+      coins: {} as Record<string, CoinData>,
       exchangeRate: null,
       lastUpdate: Date.now(),
 
-      updateCoinPrice: (data: CoinPrice) =>
-        set((state) => {
-          const { exchange, baseToken, quoteToken, price, volume, timestamp } =
-            data;
-          const newState = { ...state };
+      updateMarketData: (data) =>
+        set((state) => ({
+          ...state,
+          coins: data,
+          lastUpdate: Date.now(),
+        })),
 
-          // 거래소 객체가 없으면 생성
-          if (!newState[exchange][baseToken]) {
-            newState[exchange][baseToken] = {};
-          }
-
-          // 데이터 업데이트
-          newState[exchange][baseToken][quoteToken] = {
-            price,
-            volume,
-            timestamp,
-          };
-
-          return {
-            ...newState,
-            lastUpdate: timestamp,
-          };
-        }),
-
-      updateExchangeRate: (data: ExchangeRate) =>
+      updateExchangeRate: (data) =>
         set((state) => ({
           ...state,
           exchangeRate: data,
@@ -49,31 +50,22 @@ const useMarketStore = create<MarketStore>()(
 );
 
 // 웹소켓 리스너 설정
-socket.on("coinPrice", (data: CoinPrice) => {
-  // console.log('💾 Updating store with coin price:', data);
-  useMarketStore.getState().updateCoinPrice(data);
+socket.on("coin-premium", (data: Record<string, CoinData>) => {
+  useMarketStore.getState().updateMarketData(data);
 });
 
-socket.on("exchange-rate", (data: ExchangeRate) => {
-  console.log('💾 Updating store with exchange rate:', data);
+socket.on("exchange-rate", (data: { rate: number }) => {
   useMarketStore.getState().updateExchangeRate(data);
 });
 
-// 유용한 selector 함수들
-export const useCoinPrice = (
-  exchange: 'upbit' | 'binance',
-  baseToken: string,
-  quoteToken: string
-) => {
-  return useMarketStore((state) => state[exchange][baseToken][quoteToken]);
+export const useMarketData = () => {
+  return useMarketStore((state) => state.coins);
 };
 
 export const useExchangeRate = () => {
   return useMarketStore((state) => state.exchangeRate);
 };
 
-export const useAllCoinPrices = () => {
-  return useMarketStore((state) => state.upbit);
-};
-
 export default useMarketStore;
+
+export type { CoinData };

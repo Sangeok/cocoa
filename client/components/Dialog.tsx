@@ -63,7 +63,7 @@ export default function CustomDialog({
               <div className="mt-4">
                 <button
                   type="button"
-                  className="inline-flex justify-center rounded-md bg-gray-100 dark:bg-gray-700 px-4 py-2 text-sm font-medium text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500"
+                  className="inline-flex justify-center rounded-md bg-gray-100 dark:bg-gray-800 px-4 py-2 text-sm font-medium text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700"
                   onClick={close}
                 >
                   {closeButtonText}

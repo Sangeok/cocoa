@@ -1,27 +1,23 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { WebSocket } from 'ws';
 import { RedisService } from '../../redis/redis.service';
-import { AppGateway } from '../../gateway/app.gateway';
-import { MarketCodesService } from '../services/market-codes.service';
-import { UpbitTickerResponse } from '../types/upbit.types';
-import { createTickerKey, TickerData, parseUpbitMarket } from '../types/common.types';
+import {
+  BithumbTickerResponse,
+  BithumbMarketResponse,
+} from '../types/bithumb.types';
+import { createTickerKey, TickerData } from '../types/common.types';
 
 @Injectable()
-export class UpbitWebsocketClient implements OnModuleInit {
-  private readonly logger = new Logger(UpbitWebsocketClient.name);
+export class BithumbWebsocketClient implements OnModuleInit {
+  private readonly logger = new Logger(BithumbWebsocketClient.name);
   private ws: WebSocket;
-  private readonly WEBSOCKET_URL = 'wss://api.upbit.com/websocket/v1';
+  private readonly WEBSOCKET_URL = 'wss://pubwss.bithumb.com/pub/ws';
   private reconnectAttempts = 0;
   private readonly MAX_RECONNECT_ATTEMPTS = 5;
 
-  constructor(
-    private readonly redisService: RedisService,
-    private readonly appGateway: AppGateway,
-    private readonly marketCodesService: MarketCodesService,
-  ) {}
+  constructor(private readonly redisService: RedisService) {}
 
   async onModuleInit() {
-    await this.marketCodesService.loadMarketCodes();
     await this.connectWebSocket();
   }
 
@@ -30,23 +26,22 @@ export class UpbitWebsocketClient implements OnModuleInit {
       this.ws = new WebSocket(this.WEBSOCKET_URL);
       this.setupWebSocketHandlers();
     } catch (error) {
-      this.logger.error('Failed to connect to Upbit WebSocket', error);
+      this.logger.error('Failed to connect to Bithumb WebSocket', error);
       this.handleReconnect();
     }
   }
 
   private setupWebSocketHandlers() {
     this.ws.on('open', async () => {
-      this.logger.log('Connected to Upbit WebSocket');
+      this.logger.log('Connected to Bithumb WebSocket');
       this.reconnectAttempts = 0;
       await this.subscribeToTickers();
     });
 
     this.ws.on('message', async (data: Buffer) => {
       try {
-        const tickerData = JSON.parse(data.toString()) as UpbitTickerResponse;
+        const tickerData = JSON.parse(data.toString()) as BithumbTickerResponse;
         await this.handleTickerData(tickerData);
-        // this.logger.debug(`Upbit ticker data: ${tickerData.code}`);
       } catch (error) {
         this.logger.error('Error processing ticker data', error);
       }
@@ -64,18 +59,27 @@ export class UpbitWebsocketClient implements OnModuleInit {
 
   private async subscribeToTickers() {
     try {
-      const marketCodes = this.marketCodesService.getMarketCodes();
-      const tickerSubscription = JSON.stringify([
-        { ticket: 'UNIQUE_TICKET' },
-        {
-          type: 'ticker',
-          codes: marketCodes,
+      const markets = await this.redisService.get('bithumb-markets');
+      if (!markets) {
+        this.logger.error('No markets found in Redis');
+        return;
+      }
+
+      const symbols = JSON.parse(markets).map(
+        (market: BithumbMarketResponse) => {
+          const symbol = market.market.split('-');
+          return `${symbol[1]}_${symbol[0]}`;
         },
-      ]);
+      );
+      const subscribeMessage = {
+        type: 'ticker',
+        symbols: symbols,
+        tickTypes: ['30M', '1H', '12H', '24H', 'MID'],
+      };
 
       if (this.ws.readyState === WebSocket.OPEN) {
-        this.ws.send(tickerSubscription);
-        this.logger.log('Subscribed to tickers');
+        this.ws.send(JSON.stringify(subscribeMessage));
+        this.logger.log('Subscribed to Bithumb tickers');
       } else {
         this.logger.error('WebSocket is not ready');
         this.handleReconnect();
@@ -86,31 +90,22 @@ export class UpbitWebsocketClient implements OnModuleInit {
     }
   }
 
-  private async handleTickerData(data: UpbitTickerResponse) {
+  private async handleTickerData(data: BithumbTickerResponse) {
     try {
+      if (data.type !== 'ticker') return;
 
-      const { baseToken, quoteToken } = parseUpbitMarket(data.code);
-      const redisKey = createTickerKey('upbit', baseToken, quoteToken);
-      
+      const [baseToken, quoteToken] = data.content.symbol.split('_');
+      const redisKey = createTickerKey('bithumb', baseToken, quoteToken);
+
       const tickerData: TickerData = {
-        exchange: 'upbit',
+        exchange: 'bithumb',
         baseToken,
         quoteToken,
-        price: data.trade_price,
-        volume: data.acc_trade_price_24h,
-        timestamp: data.timestamp,
+        price: parseFloat(data.content.closePrice),
+        volume: parseFloat(data.content.value),
+        timestamp: Date.parse(`${data.content.date}${data.content.time}`),
       };
-
       await this.redisService.set(redisKey, JSON.stringify(tickerData));
-
-      this.appGateway.emitCoinPrice({
-        exchange: 'upbit',
-        baseToken,
-        quoteToken,
-        price: data.trade_price,
-        timestamp: data.timestamp,
-        volume: data.acc_trade_price_24h,
-      });
     } catch (error) {
       this.logger.error(`Error handling ticker data: ${error.message}`, {
         data,
@@ -123,13 +118,15 @@ export class UpbitWebsocketClient implements OnModuleInit {
     if (this.reconnectAttempts < this.MAX_RECONNECT_ATTEMPTS) {
       this.reconnectAttempts++;
       const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000);
-      
+
       setTimeout(() => {
-        this.logger.log(`Attempting to reconnect... (${this.reconnectAttempts})`);
+        this.logger.log(
+          `Attempting to reconnect... (${this.reconnectAttempts})`,
+        );
         this.connectWebSocket();
       }, delay);
     } else {
       this.logger.error('Max reconnection attempts reached');
     }
   }
-} 
+}

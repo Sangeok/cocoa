@@ -18,10 +18,10 @@ export class TestController {
     private readonly redisService: RedisService,
   ) {}
 
-  @Post('collect/upbit-markets')
-  async testCollectUpbitMarkets() {
-    await this.collectorService.collectUpbitMarkets();
-    return { message: 'Upbit markets collection completed' };
+  @Post('collect/markets')
+  async testCollectMarkets() {
+    await this.collectorService.collectMarkets();
+    return { message: 'Markets collection completed' };
   }
 
   @Post('collect/exchange-rate')

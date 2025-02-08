@@ -23,27 +23,23 @@ export default function Switch({
   children,
 }: SwitchProps) {
   return (
-    <div className={clsx("flex items-center gap-2", className)}>
-      {children}
+    <HeadlessSwitch.Group as="div" className="flex items-center">
       <HeadlessSwitch
         checked={checked}
         onChange={onChange}
-        disabled={disabled}
         className={clsx(
-          "group relative flex h-7 w-14 cursor-pointer rounded-full p-1 transition-colors duration-200 ease-in-out",
-          "focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 dark:focus-visible:ring-white/25",
-          disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer",
-          checked ? "bg-gray-200 dark:bg-white/10" : "bg-gray-100 dark:bg-white/10"
+          checked ? 'bg-gray-600 dark:bg-gray-400' : 'bg-gray-200 dark:bg-gray-800',
+          'relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-gray-500 dark:focus:ring-gray-400 focus:ring-offset-2'
         )}
       >
-        <span className="sr-only">{label}</span>
         <span
-          aria-hidden="true"
           className={clsx(
-            "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-lg ring-0 transition duration-200 ease-in-out",
-            checked ? "translate-x-7" : "translate-x-0"
+            checked ? 'translate-x-4' : 'translate-x-0',
+            'pointer-events-none relative inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out'
           )}
-        />
+        >
+          {children}
+        </span>
       </HeadlessSwitch>
       {(label || description) && (
         <div className="ml-3">
@@ -55,6 +51,6 @@ export default function Switch({
           )}
         </div>
       )}
-    </div>
+    </HeadlessSwitch.Group>
   );
 }

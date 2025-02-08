@@ -87,11 +87,11 @@ export default function NewsDetail({ id }: NewsDetailProps) {
       </div>
 
       {/* Market Data */}
-      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 sm:p-4">
+      <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-3 sm:p-4">
         <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3">Market Data</h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           {/* Price */}
-          <div className="bg-white dark:bg-gray-900/50 rounded-lg p-3">
+          <div className="bg-white dark:bg-gray-800/50 rounded-lg p-3">
             <p className="text-sm text-gray-500 dark:text-gray-400">Price</p>
             <p className="text-base sm:text-lg text-gray-900 dark:text-white">
               ${news.marketData.currentPrice.toLocaleString()}
@@ -99,7 +99,7 @@ export default function NewsDetail({ id }: NewsDetailProps) {
           </div>
           
           {/* Volume */}
-          <div className="bg-white dark:bg-gray-900/50 rounded-lg p-3">
+          <div className="bg-white dark:bg-gray-800/50 rounded-lg p-3">
             <p className="text-sm text-gray-500 dark:text-gray-400">Volume</p>
             <p className="text-base sm:text-lg text-gray-900 dark:text-white">
               ${news.marketData.volume.toLocaleString()}
@@ -107,7 +107,7 @@ export default function NewsDetail({ id }: NewsDetailProps) {
           </div>
           
           {/* Price Change */}
-          <div className="bg-white dark:bg-gray-900/50 rounded-lg p-3">
+          <div className="bg-white dark:bg-gray-800/50 rounded-lg p-3">
             <p className="text-sm text-gray-500 dark:text-gray-400">24h Price Change</p>
             <p className={clsx(
               'text-base sm:text-lg font-medium',

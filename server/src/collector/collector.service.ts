@@ -7,6 +7,10 @@ import { ExchangeRateClient } from './clients/exchange-rate.client';
 import { RedisService } from '../redis/redis.service';
 import { exchangeRates } from '../database/schema/exchange-rate';
 import { AppGateway } from '../gateway/app.gateway';
+import axios from 'axios';
+import { BithumbMarketResponse } from './types/bithumb.types';
+import { bithumbMarkets } from '../database/schema/market';
+
 @Injectable()
 export class CollectorService {
   private readonly logger = new Logger(CollectorService.name);
@@ -32,7 +36,14 @@ export class CollectorService {
   }
 
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
-  async collectUpbitMarkets() {
+  async collectMarkets() {
+    await Promise.all([
+      this.collectUpbitMarkets(),
+      this.collectBithumbMarkets(),
+    ]);
+  }
+
+  private async collectUpbitMarkets() {
     try {
       this.logger.debug('Collecting Upbit markets...');
       const markets = await this.upbitClient.getMarkets();
@@ -95,6 +106,52 @@ export class CollectorService {
       this.logger.debug(`Stored USD-KRW rate history: ${rate}`);
     } catch (error) {
       this.logger.error('Failed to store exchange rate history', error);
+    }
+  }
+
+  private async collectBithumbMarkets() {
+    try {
+      this.logger.debug('Collecting Bithumb markets...');
+      const response = await axios.get<BithumbMarketResponse[]>(
+        'https://api.bithumb.com/v1/market/all?isDetails=true',
+      );
+
+      // Coin array
+      const markets = response.data;
+
+      // Store in Redis for WebSocket subscription
+      await this.redisService.set(
+        'bithumb-markets',
+        JSON.stringify(markets),
+        24 * 60 * 60, // 24 hours TTL
+      );
+      console.log('markets', markets);
+      // Store in database
+      await this.db.transaction(async (tx) => {
+        markets.forEach(async (market) => {
+          const payload = {
+            market: `${market.market}`,
+            koreanName: market.korean_name,
+            englishName: market.english_name,
+            marketWarning: market.market_warning,
+            updatedAt: new Date(),
+          };
+
+          await tx
+            .insert(bithumbMarkets)
+            .values(payload)
+            .onConflictDoUpdate({
+              target: bithumbMarkets.market,
+              set: {
+                updatedAt: new Date(),
+              },
+            });
+        });
+      });
+
+      this.logger.debug(`Updated ${markets.length} Bithumb markets`);
+    } catch (error) {
+      this.logger.error('Failed to collect Bithumb markets', error);
     }
   }
 }

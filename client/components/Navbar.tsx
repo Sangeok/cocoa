@@ -21,7 +21,7 @@ export default function Navbar() {
   const { theme, toggleTheme } = useTheme()
 
   return (
-    <nav className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+    <nav className="bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-900 relative z-30">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
@@ -38,8 +38,8 @@ export default function Navbar() {
                 className={clsx(
                   'px-3 py-2 rounded-md text-sm font-medium transition-colors',
                   pathname === item.href
-                    ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white'
-                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
+                    ? 'bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white'
+                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 hover:text-gray-900 dark:hover:text-white'
                 )}
               >
                 {item.name}
@@ -87,7 +87,7 @@ export default function Navbar() {
                 </Menu.Button>
               </div>
 
-              <Menu.Items className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+              <Menu.Items className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-gray-950 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                 {navigation.map((item) => (
                   <Menu.Item key={item.name}>
                     {({ active }) => (
@@ -96,8 +96,8 @@ export default function Navbar() {
                         className={clsx(
                           'block px-4 py-2 text-sm',
                           active || pathname === item.href
-                            ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
-                            : 'text-gray-600 dark:text-gray-300'
+                            ? 'bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white'
+                            : 'text-gray-600 dark:text-gray-400'
                         )}
                       >
                         {item.name}
