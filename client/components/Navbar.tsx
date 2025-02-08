@@ -20,12 +20,12 @@ export default function Navbar() {
   const { theme, toggleTheme } = useTheme()
 
   return (
-    <nav className="bg-gray-900">
+    <nav className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link href="/" className="text-white text-xl font-bold">
+            <Link href="/" className="text-gray-900 dark:text-white text-xl font-bold">
               COCOA
             </Link>
           </div>
@@ -39,8 +39,8 @@ export default function Navbar() {
                 className={clsx(
                   'px-3 py-2 rounded-md text-sm font-medium transition-colors',
                   pathname === item.href
-                    ? 'bg-gray-800 text-white'
-                    : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                    ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white'
+                    : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white'
                 )}
               >
                 {item.name}
@@ -76,27 +76,29 @@ export default function Navbar() {
                 >
                   <span className="sr-only">Toggle dark mode</span>
                   {theme === 'dark' ? (
-                    <MoonIcon className="h-4 w-4 text-gray-300" />
+                    <MoonIcon className="h-4 w-4 text-gray-600 dark:text-gray-300" />
                   ) : (
-                    <SunIcon className="h-4 w-4 text-gray-300" />
+                    <SunIcon className="h-4 w-4 text-gray-600 dark:text-gray-300" />
                   )}
                 </Switch>
 
-                <Menu.Button className="inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-700 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+                <Menu.Button className="inline-flex items-center justify-center rounded-md p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 dark:focus:ring-white">
                   <span className="sr-only">Open main menu</span>
                   <Bars3Icon className="h-6 w-6" aria-hidden="true" />
                 </Menu.Button>
               </div>
 
-              <Menu.Items className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-gray-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+              <Menu.Items className="absolute right-0 mt-2 w-48 origin-top-right rounded-md bg-white dark:bg-gray-800 py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                 {navigation.map((item) => (
                   <Menu.Item key={item.name}>
                     {({ active }) => (
                       <Link
                         href={item.href}
                         className={clsx(
-                          'block px-4 py-2 text-sm text-gray-300',
-                          (active || pathname === item.href) && 'bg-gray-700'
+                          'block px-4 py-2 text-sm',
+                          active || pathname === item.href
+                            ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
+                            : 'text-gray-600 dark:text-gray-300'
                         )}
                       >
                         {item.name}

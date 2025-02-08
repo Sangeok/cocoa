@@ -14,6 +14,7 @@ import {
 import { API_ROUTES } from "@/const/api";
 import { apiClient } from "@/lib/axios";
 import clsx from "clsx";
+import WithdrawPathCard from '@/components/WithdrawPathCard'
 
 export default function WithdrawPage() {
   const [fromExchange, setFromExchange] = useState<string>("");
@@ -57,8 +58,8 @@ export default function WithdrawPage() {
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-white">송금 계산기</h1>
-          <p className="mt-2 text-gray-400">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">송금 계산기</h1>
+          <p className="mt-2 text-gray-500 dark:text-gray-400">
             거래소 간 송금 수수료와 예상 수령액을 계산해보세요.
           </p>
         </div>
@@ -89,15 +90,15 @@ export default function WithdrawPage() {
         <button
           onClick={handleCalculate}
           disabled={!fromExchange || !toExchange || !amount || isLoading}
-          className="w-full bg-white/10 hover:bg-white/20 disabled:bg-white/5 
-                   disabled:cursor-not-allowed text-white font-medium py-2.5 
-                   rounded-lg transition-colors"
+          className="w-full bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20 
+                   disabled:bg-gray-50 dark:disabled:bg-white/5 disabled:cursor-not-allowed 
+                   text-gray-900 dark:text-white font-medium py-2.5 rounded-lg transition-colors"
         >
           {isLoading ? "계산 중..." : "계산하기"}
         </button>
 
-        {/* Disclaimer 추가 */}
-        <div className="text-sm text-gray-400 p-4 bg-gray-800/50 rounded-lg">
+        {/* Disclaimer */}
+        <div className="text-sm text-gray-500 dark:text-gray-400 p-4 bg-gray-100/50 dark:bg-gray-800/50 rounded-lg">
           <p className="mb-2">⚠️ 주의사항</p>
           <ul className="list-disc list-inside space-y-1">
             <li>해당 서비스는 거래소의 실제 시세 및 수수료 정책과 차이가 있을 수 있습니다.</li>
@@ -108,66 +109,14 @@ export default function WithdrawPage() {
 
         {pathResults.length > 0 && (
           <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-white">추천 송금 경로</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">추천 송금 경로</h2>
             
             {pathResults.map((path, index) => (
-              <div key={index} className="bg-gray-800 rounded-lg p-4 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-white font-medium">
-                    {index + 1}. {path.coin} 경로
-                  </span>
-                  <span className={clsx(
-                    "font-medium",
-                    path.profitRate > 0 ? "text-green-400" : "text-red-400"
-                  )}>
-                    {path.profitRate ? path.profitRate.toFixed(2) : "0.00"}% 
-                    {path.profitRate > 0 ? " 이득" : " 손해"}
-                  </span>
-                </div>
-
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div>
-                    <p className="text-sm text-gray-400">출금 수수료</p>
-                    <p className="text-white">
-                      {formatCrypto(path.withdrawFee)} {path.coin}
-                    </p>
-                    <p className="text-sm text-gray-400">
-                      ≈ {formatKRW(path.feeInKRW)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-400">예상 수령액</p>
-                    <p className="text-white">
-                      {formatCrypto(path.estimatedReceiveAmount)} {path.coin}
-                    </p>
-                  </div>
-                </div>
-
-                <div>
-                  <p className="text-sm text-gray-400">송금 단계</p>
-                  <ul className="mt-1 space-y-1">
-                    {path.steps.map((step, stepIndex) => (
-                      <li key={stepIndex} className="text-white text-sm">
-                        {stepIndex + 1}. {step}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div>코인: {path.coin}</div>
-                <div>수량: {formatCrypto(path.amount)}</div>
-                <div>출발지 가격: {formatPrice(path.fromPrice, path.fromExchange === 'upbit')}</div>
-                <div>도착지 가격: {formatPrice(path.toPrice, path.toExchange === 'upbit')}</div>
-                <div>출발 금액: {formatKRW(path.sourceAmountInKRW || 0)}</div>
-                <div>도착 금액: {formatKRW(path.targetAmountInKRW || 0)}</div>
-                <div>수수료: {formatKRW(path.feeInKRW)}</div>
-                <div>수익률: {path.profitRate ? path.profitRate.toFixed(2) : "0.00"}%</div>
-                <div>단계:
-                  {path.steps.map((step, i) => (
-                    <div key={i} className="ml-4">{step}</div>
-                  ))}
-                </div>
-              </div>
+              <WithdrawPathCard 
+                key={index} 
+                path={path} 
+                index={index} 
+              />
             ))}
           </div>
         )}

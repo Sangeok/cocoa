@@ -38,7 +38,7 @@ export default function Select({
       {({ open }) => (
         <div className="space-y-1">
           {label && (
-            <Listbox.Label className="block text-sm font-medium text-white">
+            <Listbox.Label className="block text-sm font-medium text-gray-900 dark:text-white">
               {label}
               {required && <span className="text-red-500 ml-1">*</span>}
             </Listbox.Label>
@@ -47,10 +47,11 @@ export default function Select({
           <div className="relative">
             <Listbox.Button
               className={clsx(
-                'relative w-full cursor-default rounded-lg bg-gray-800 py-2.5 pl-3 pr-10 text-left',
-                'focus:outline-none focus-visible:ring-2 focus-visible:ring-white/25',
+                'relative w-full cursor-default rounded-lg bg-white dark:bg-gray-800 py-2.5 pl-3 pr-10 text-left',
+                'border border-gray-300 dark:border-gray-700',
+                'focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 dark:focus-visible:ring-white/25',
                 disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
-                !value && 'text-gray-400' // Placeholder color
+                !value && 'text-gray-500 dark:text-gray-400'
               )}
             >
               <span className="block truncate">
@@ -72,9 +73,10 @@ export default function Select({
             >
               <Listbox.Options
                 className={clsx(
-                  'absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-gray-800',
-                  'py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none',
-                  'scrollbar-thin scrollbar-track-gray-900 scrollbar-thumb-gray-700'
+                  'absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md',
+                  'bg-white dark:bg-gray-800 py-1 shadow-lg',
+                  'ring-1 ring-black ring-opacity-5 focus:outline-none',
+                  'scrollbar-thin scrollbar-track-gray-100 dark:scrollbar-track-gray-900 scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-700'
                 )}
               >
                 {options.map((option) => (
@@ -84,8 +86,8 @@ export default function Select({
                     className={({ active, selected }) =>
                       clsx(
                         'relative cursor-pointer select-none py-2 pl-3 pr-9',
-                        active ? 'bg-gray-700' : '',
-                        selected ? 'text-white' : 'text-gray-300'
+                        active ? 'bg-gray-100 dark:bg-gray-700' : '',
+                        selected ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300'
                       )
                     }
                   >
@@ -101,7 +103,7 @@ export default function Select({
           </div>
 
           {description && (
-            <p className="text-sm text-gray-400">{description}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>
           )}
         </div>
       )}

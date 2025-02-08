@@ -143,10 +143,10 @@ export default function PremiumPage() {
         </div>
       </div>
 
-      <div className="bg-gray-900 rounded-lg overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-800">
+      <div className="bg-white dark:bg-gray-900 rounded-lg overflow-hidden">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-800">
           <thead>
-            <tr className="text-gray-400 text-sm">
+            <tr className="text-gray-500 dark:text-gray-400 text-sm">
               <th className="px-6 py-3 text-left">이름</th>
               <th className="px-6 py-3 text-right">{exchangePair.from} 가격</th>
               <th className="px-6 py-3 text-right">{exchangePair.to} 가격</th>
@@ -155,9 +155,9 @@ export default function PremiumPage() {
               <th className="px-6 py-3 text-right">최근 업데이트</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-800">
+          <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
             {marketData.map((market) => (
-              <tr key={market.symbol} className="text-sm hover:bg-gray-800">
+              <tr key={market.symbol} className="text-sm hover:bg-gray-50 dark:hover:bg-gray-800">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
                     <Image
@@ -167,31 +167,31 @@ export default function PremiumPage() {
                       height={24}
                       className="mr-2"
                     />
-                    <span className="text-white font-medium">
+                    <span className="text-gray-900 dark:text-white font-medium">
                       {market.symbol}
                     </span>
                   </div>
                 </td>
-                <td className="px-6 py-4 text-right text-white">
+                <td className="px-6 py-4 text-right text-gray-900 dark:text-white">
                   {exchangePair.fromBase === "KRW" ? "₩" : ""}
                   {formatPrice(market.fromPrice)}
                 </td>
-                <td className="px-6 py-4 text-right text-white">
+                <td className="px-6 py-4 text-right text-gray-900 dark:text-white">
                   {exchangePair.toBase === "KRW" ? "₩" : ""}
                   {formatPrice(market.toPrice)}
                 </td>
                 <td
                   className={clsx(
                     "px-6 py-4 text-right font-medium",
-                    market.premium > 0 ? "text-green-400" : "text-red-400"
+                    market.premium > 0 ? "text-green-500 dark:text-green-400" : "text-red-500 dark:text-red-400"
                   )}
                 >
                   {formatPercent(market.premium)}
                 </td>
-                <td className="px-6 py-4 text-right text-gray-400">
+                <td className="px-6 py-4 text-right text-gray-500 dark:text-gray-400">
                   {formatPrice(market.fromVolume)}
                 </td>
-                <td className="px-6 py-4 text-right text-gray-400">
+                <td className="px-6 py-4 text-right text-gray-500 dark:text-gray-400">
                   {new Date(market.timestamp).toLocaleTimeString()}
                 </td>
               </tr>

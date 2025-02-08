@@ -29,8 +29,8 @@ export default function Button({
   className
 }: ButtonProps) {
   const variants = {
-    primary: 'bg-gray-700 text-white hover:bg-gray-600',
-    secondary: 'bg-white/10 text-white hover:bg-white/20',
+    primary: 'bg-gray-900 dark:bg-gray-700 text-white hover:bg-gray-800 dark:hover:bg-gray-600',
+    secondary: 'bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-white/20',
     danger: 'bg-red-600 text-white hover:bg-red-500'
   }
 

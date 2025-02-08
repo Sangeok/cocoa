@@ -31,9 +31,9 @@ export default function Switch({
         disabled={disabled}
         className={clsx(
           "group relative flex h-7 w-14 cursor-pointer rounded-full p-1 transition-colors duration-200 ease-in-out",
-          "focus:outline-none focus-visible:ring-2 focus-visible:ring-white/25",
+          "focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 dark:focus-visible:ring-white/25",
           disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer",
-          checked ? "bg-white/10" : "bg-white/10"
+          checked ? "bg-gray-200 dark:bg-white/10" : "bg-gray-100 dark:bg-white/10"
         )}
       >
         <span className="sr-only">{label}</span>
@@ -48,10 +48,10 @@ export default function Switch({
       {(label || description) && (
         <div className="ml-3">
           {label && (
-            <div className="text-sm font-medium text-white">{label}</div>
+            <div className="text-sm font-medium text-gray-900 dark:text-white">{label}</div>
           )}
           {description && (
-            <div className="text-sm text-white/50">{description}</div>
+            <div className="text-sm text-gray-500 dark:text-white/50">{description}</div>
           )}
         </div>
       )}

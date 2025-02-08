@@ -2,21 +2,19 @@ import { z } from 'zod'
 
 // Market data schema
 export const MarketDataSchema = z.object({
-  price: z.number(),
   volume: z.number(),
-  marketCap: z.number().optional(),
-  priceChange24h: z.number().optional(),
-  volumeChange24h: z.number().optional(),
+  priceChange: z.number(),
+  currentPrice: z.number()
 })
 
 // News schema
 export const NewsSchema = z.object({
-  id: z.string().uuid(),
+  id: z.string(),
   title: z.string(),
   symbol: z.string(),
   content: z.string(),
-  timestamp: z.string().datetime(), // ISO string format
-  marketData: MarketDataSchema,
+  timestamp: z.string(),
+  marketData: MarketDataSchema
 })
 
 // Create news request schema
