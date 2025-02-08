@@ -12,6 +12,7 @@ import {
 import { API_ROUTES } from "@/const/api";
 import { apiClient } from "@/lib/axios";
 import WithdrawPathCard from "@/components/WithdrawPathCard";
+import { sendGAEvent } from '@/lib/gtag';
 
 export default function WithdrawPage() {
   const [fromExchange, setFromExchange] = useState<string>("");
@@ -27,6 +28,14 @@ export default function WithdrawPage() {
   const handleCalculate = async () => {
     if (!fromExchange || !toExchange || !amount) return;
 
+    // GA 이벤트 전송
+    sendGAEvent('calculate_withdraw_path', {
+      from_exchange: fromExchange,
+      to_exchange: toExchange,
+      amount: Number(amount),
+      currency: isFromKorea ? 'KRW' : 'USDT'
+    });
+
     setIsLoading(true);
     try {
       const response = await apiClient.get(API_ROUTES.WITHDRAW.PATH.url, {
@@ -39,6 +48,12 @@ export default function WithdrawPage() {
       setPathResults(response.data);
     } catch (error) {
       console.error("Failed to calculate withdraw path:", error);
+      // 에러 이벤트도 전송
+      sendGAEvent('withdraw_path_error', {
+        error: (error as Error).message,
+        from_exchange: fromExchange,
+        to_exchange: toExchange,
+      });
     } finally {
       setIsLoading(false);
     }

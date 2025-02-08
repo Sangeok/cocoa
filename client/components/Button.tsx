@@ -3,6 +3,7 @@
 import { Button as HeadlessButton } from '@headlessui/react'
 import { clsx } from 'clsx'
 import { ReactNode } from 'react'
+import { sendGAEvent } from '@/lib/gtag'
 
 type ButtonVariant = 'primary' | 'secondary' | 'danger'
 type ButtonSize = 'sm' | 'md' | 'lg'
@@ -16,6 +17,8 @@ interface ButtonProps {
   type?: 'button' | 'submit' | 'reset'
   onClick?: () => void
   className?: string
+  gaEventName?: string
+  gaEventParams?: { [key: string]: any }
 }
 
 export default function Button({
@@ -26,7 +29,9 @@ export default function Button({
   fullWidth = false,
   type = 'button',
   onClick,
-  className
+  className,
+  gaEventName,
+  gaEventParams,
 }: ButtonProps) {
   const variants = {
     primary: 'bg-gray-900 dark:bg-gray-800 text-white hover:bg-gray-800 dark:hover:bg-gray-700',
@@ -40,10 +45,17 @@ export default function Button({
     lg: 'py-2 px-4 text-base'
   }
 
+  const handleClick = () => {
+    if (gaEventName) {
+      sendGAEvent(gaEventName, gaEventParams);
+    }
+    onClick?.();
+  };
+
   return (
     <HeadlessButton
       type={type}
-      onClick={onClick}
+      onClick={handleClick}
       disabled={disabled}
       className={clsx(
         'inline-flex items-center gap-2 rounded-md font-semibold',
