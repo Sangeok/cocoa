@@ -8,7 +8,7 @@ import {
 } from '../types/binance.types';
 import { RedisService } from '../../redis/redis.service';
 import { FeeClient } from './fee.client';
-import { parseBinanceMarket, createTickerKey, TickerData } from '../types/common.types';
+import { createTickerKey, TickerData } from '../types/common.types';
 
 @Injectable()
 export class BinanceClient {
@@ -17,12 +17,10 @@ export class BinanceClient {
   private readonly WEBSOCKET_URL = 'wss://ws-api.binance.com:443/ws-api/v3';
   private reconnectAttempts = 0;
   private readonly MAX_RECONNECT_ATTEMPTS = 5;
-  private readonly REQUEST_INTERVAL = 1000; // 1 second between requests
-  private readonly MAX_REQUESTS_PER_WINDOW = 300;
-  private readonly WINDOW_SIZE = 5 * 60 * 1000; // 5 minutes in milliseconds
-  private requestTimestamps: number[] = [];
-  private requestQueue: string[] = [];
-  private processingQueue = false;
+  private readonly REFRESH_INTERVAL = 10 * 1000; // 10 seconds
+  private symbols: string[] = [];
+  private readonly CHUNK_SIZE = 20; // 한 번에 요청할 심볼 수
+  private validSymbols: Set<string> = new Set();
 
   constructor(
     private readonly redisService: RedisService,
@@ -71,34 +69,46 @@ export class BinanceClient {
 
   private async handleResponse(response: BinanceResponse) {
     if (response.status === 200 && response.id) {
-      const trades = (response as BinanceSuccessResponse).result;
-      if (trades.length > 0) {
-        const latestTrade = trades[0];
-        const symbol = response.id.split('trade-')[1];
-        if (!symbol) {
-          this.logger.error(`Invalid response id format: ${response.id}`);
-          return;
+      const tickers = (response as BinanceSuccessResponse).result;
+
+      // 검증 응답인 경우
+      if (response.id.startsWith('validate-')) {
+        for (const ticker of tickers) {
+          this.validSymbols.add(ticker.symbol);
         }
+        return;
+      }
 
-        const { baseToken, quoteToken } = parseBinanceMarket(symbol);
-        const redisKey = createTickerKey('binance', baseToken, quoteToken);
-        
-        const tickerData: TickerData = {
-          exchange: 'binance',
-          baseToken,
-          quoteToken,
-          price: parseFloat(latestTrade.price),
-          volume: parseFloat(latestTrade.qty),
-          timestamp: latestTrade.time,
-        };
+      // 일반 티커 응답인 경우
+      for (const ticker of tickers) {
+        try {
+          const [baseToken, quoteToken] = [ticker.symbol.slice(0, -4), 'USDT'];
+          const redisKey = createTickerKey('binance', baseToken, quoteToken);
 
-        await this.redisService.set(redisKey, JSON.stringify(tickerData));
+          const tickerData: TickerData = {
+            exchange: 'binance',
+            baseToken: baseToken,
+            quoteToken: quoteToken,
+            price: parseFloat(ticker.lastPrice),
+            volume: parseFloat(ticker.volume),
+            timestamp: ticker.closeTime,
+          };
+
+          await this.redisService.set(redisKey, JSON.stringify(tickerData));
+        } catch (error) {
+          this.logger.error(
+            `Error processing ticker ${ticker.symbol}: ${error.message}`,
+          );
+        }
       }
     } else {
-      const error = (response as BinanceErrorResponse).error;
-      this.logger.error(
-        `Trade data request failed: ${error?.msg || 'Unknown error'}`,
-      );
+      // 검증 과정의 에러는 무시 (일부 심볼이 유효하지 않은 것이 정상)
+      if (!response.id?.startsWith('validate-')) {
+        const error = (response as BinanceErrorResponse).error;
+        this.logger.error(
+          `Ticker request failed: ${error?.msg || 'Unknown error'}`,
+        );
+      }
     }
   }
 
@@ -118,81 +128,69 @@ export class BinanceClient {
     }
   }
 
-  private canMakeRequest(): boolean {
-    const now = Date.now();
-    // Remove timestamps older than the window size
-    this.requestTimestamps = this.requestTimestamps.filter(
-      (timestamp) => now - timestamp < this.WINDOW_SIZE,
-    );
-    return this.requestTimestamps.length < this.MAX_REQUESTS_PER_WINDOW;
+  private async subscribeToTickers() {
+    try {
+      // 1. 먼저 모든 USDT 페어 목록 생성
+      const fees = await this.feeClient.getBinanceFees();
+      this.symbols = [...new Set(fees.map((fee) => `${fee.symbol}USDT`))];
+
+      // 2. 첫 요청으로 유효한 심볼만 필터링
+      await this.validateSymbols();
+
+      // 3. 이후부터는 유효한 심볼만 주기적으로 요청
+      await this.requestTickers();
+      setInterval(() => this.requestTickers(), this.REFRESH_INTERVAL);
+    } catch (error) {
+      this.logger.error('Failed to subscribe to tickers', error);
+      this.handleReconnect();
+    }
   }
 
-  private async processQueue() {
-    if (this.processingQueue || this.requestQueue.length === 0) return;
-
-    this.processingQueue = true;
-
-    while (this.requestQueue.length > 0) {
-      if (!this.canMakeRequest()) {
-        await new Promise((resolve) =>
-          setTimeout(resolve, this.REQUEST_INTERVAL),
-        );
-        continue;
-      }
-
-      const symbol = this.requestQueue.shift();
-      if (!symbol) continue;
-
+  private async validateSymbols() {
+    this.logger.debug(`Validating ${this.symbols.length} symbols...`);
+    
+    for (let i = 0; i < this.symbols.length; i += this.CHUNK_SIZE) {
+      const symbolsChunk = this.symbols.slice(i, i + this.CHUNK_SIZE);
+      
       const request: BinanceRequest = {
-        id: `trade-${symbol}`,
-        method: 'trades.recent',
+        id: `validate-${Date.now()}-${i}`,
+        method: 'ticker.24hr',
         params: {
-          symbol: symbol,
-          limit: 1,
+          symbols: symbolsChunk,
         },
       };
 
-      if (this.ws.readyState === WebSocket.OPEN) {
-        this.ws.send(JSON.stringify(request));
-        this.requestTimestamps.push(Date.now());
-        await new Promise((resolve) =>
-          setTimeout(resolve, this.REQUEST_INTERVAL),
-        );
-      } else {
-        this.logger.error('WebSocket is not ready');
-        this.handleReconnect();
-        break;
-      }
+      this.ws.send(JSON.stringify(request));
+      await new Promise(resolve => setTimeout(resolve, 100));
     }
-
-    this.processingQueue = false;
   }
 
-  private async subscribeToTickers() {
-    try {
-      const fees = await this.feeClient.getBinanceFees();
-      const symbols = [...new Set(fees.map((fee) => fee.symbol))];
-      const usdtPairs = symbols.map((symbol) => `${symbol}USDT`);
+  private async requestTickers() {
+    if (this.ws.readyState !== WebSocket.OPEN) {
+      this.logger.error('WebSocket is not ready');
+      return;
+    }
 
-      // Clear existing queue
-      this.requestQueue = [];
+    // 유효한 심볼만 요청
+    const validSymbolsList = Array.from(this.validSymbols);
+    this.logger.debug(`Requesting ${validSymbolsList.length} valid symbols`);
 
-      // Add all symbols to the queue
-      this.requestQueue.push(...usdtPairs);
+    for (let i = 0; i < validSymbolsList.length; i += this.CHUNK_SIZE) {
+      const symbolsChunk = validSymbolsList.slice(i, i + this.CHUNK_SIZE);
+      
+      const request: BinanceRequest = {
+        id: `tickers-${Date.now()}-${i}`,
+        method: 'ticker.24hr',
+        params: {
+          symbols: symbolsChunk,
+        },
+      };
 
-      // Start processing the queue
-      this.processQueue();
-
-      // Set up periodic resubscription (every 5 minutes)
-      setInterval(() => {
-        if (this.requestQueue.length === 0) {
-          this.requestQueue.push(...usdtPairs);
-          this.processQueue();
-        }
-      }, this.WINDOW_SIZE);
-    } catch (error) {
-      this.logger.error('Failed to subscribe to trades', error);
-      this.handleReconnect();
+      this.ws.send(JSON.stringify(request));
+      
+      if (i + this.CHUNK_SIZE < validSymbolsList.length) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
     }
   }
 }

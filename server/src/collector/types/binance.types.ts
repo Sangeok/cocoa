@@ -1,9 +1,8 @@
 export interface BinanceRequest {
   id: string;
-  method: 'trades.recent';
+  method: 'ticker.24hr';
   params: {
-    symbol: string;  // BTCUSDT 형태
-    limit: number;
+    symbols: string[];
   };
 }
 
@@ -53,7 +52,7 @@ export interface BinanceOrderBookResult {
 export interface BinanceSuccessResponse {
   id: string;
   status: number;
-  result: BinanceTradeResult[];
+  result: Binance24hrTicker[];
   rateLimits: RateLimit[];
 }
 
@@ -68,5 +67,29 @@ export interface BinanceErrorResponse {
 }
 
 export type BinanceResponse = BinanceSuccessResponse | BinanceErrorResponse;
+
+export interface Binance24hrTicker {
+  symbol: string;
+  priceChange: string;
+  priceChangePercent: string;
+  weightedAvgPrice: string;
+  prevClosePrice: string;
+  lastPrice: string;
+  lastQty: string;
+  bidPrice: string;
+  bidQty: string;
+  askPrice: string;
+  askQty: string;
+  openPrice: string;
+  highPrice: string;
+  lowPrice: string;
+  volume: string;
+  quoteVolume: string;
+  openTime: number;
+  closeTime: number;
+  firstId: number;
+  lastId: number;
+  count: number;
+}
 
 // 기존 BinanceTickerData는 common.types.ts의 TickerData로 대체

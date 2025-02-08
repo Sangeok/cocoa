@@ -28,7 +28,7 @@ const font = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "코코아",
+  title: "코인코인코리아",
   description: "코인러들을 위한 코인 플랫폼",
 };
 

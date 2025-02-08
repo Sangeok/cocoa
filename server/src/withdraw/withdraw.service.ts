@@ -87,10 +87,19 @@ export class WithdrawService {
       const coinsWithPrices = await Promise.all(
         availableCoins.map(async (coin: string) => {
           try {
-            await this.getCurrentPrice(coin, from);
-            await this.getCurrentPrice(coin, to);
-            return coin;
-          } catch {
+            const fromPrice = await this.getCurrentPrice(coin, from);
+            const toPrice = await this.getCurrentPrice(coin, to);
+            
+            this.logger.debug(
+              `Coin ${coin}: ${from} price = ${fromPrice}, ${to} price = ${toPrice}`,
+            );
+            
+            if (fromPrice > 0 && toPrice > 0) {
+              return coin;
+            }
+            return null;
+          } catch (error) {
+            this.logger.debug(`Skipping ${coin}: ${error.message}`);
             return null;
           }
         }),
@@ -117,39 +126,45 @@ export class WithdrawService {
   ): Promise<PathOption[]> {
     const paths: PathOption[] = [];
     const availableCoins = await this.getAvailableCoins(from, to);
+    const exchangeRate = await this.getExchangeRate();
 
     for (const coin of availableCoins) {
       try {
         // 1. 원화로 코인 구매 시의 수량 계산
         const fromPrice = await this.getCurrentPrice(coin, from);
+        if (fromPrice <= 0) continue;
+        
         const coinAmount = amount / fromPrice;
-
-        // 수량이 0인 경우 스킵
-        if (coinAmount <= 0 || coinAmount === null || fromPrice === 0) {
-          continue;
-        }
+        this.logger.debug(`${coin}: Amount = ${amount}, Price = ${fromPrice}, Coins = ${coinAmount}`);
 
         // 2. 출금 수수료 계산
         const withdrawFee = await this.getWithdrawalFee(coin, from);
         const estimatedReceiveAmount = coinAmount - withdrawFee;
 
-        // 예상 수령액이 0 이하인 경우 제외
-        if (estimatedReceiveAmount <= 0 || estimatedReceiveAmount === null) {
+        if (estimatedReceiveAmount <= 0) {
+          this.logger.debug(`${coin}: Skipping due to negative receive amount`);
           continue;
         }
 
-        // 3. 도착 거래소에서의 가치 계산
+        // 3. 도착 거래소에서의 가치 계산 (USDT)
         const toPrice = await this.getCurrentPrice(coin, to);
+        if (toPrice <= 0) continue;
+        
         const finalValueInUSD = estimatedReceiveAmount * toPrice;
+        this.logger.debug(`${coin}: Final value in USD = ${finalValueInUSD}`);
 
         // 4. 수수료의 원화 가치 계산
         const feeInKRW = withdrawFee * fromPrice;
 
-        const exchangeRate = await this.getExchangeRate();
+        // 5. 최종 원화 가치 계산
+        const finalValueInKRW = finalValueInUSD * exchangeRate;
+        
+        // 6. 수익률 계산 ((도착지 가치 - 출발지 가치) / 출발지 가치 * 100)
+        const profitRate = ((finalValueInKRW - amount) / amount) * 100;
 
-        // 5. 수익률 계산 (도착지 가치 / 출발지 가치 - 1)
-        const profitRate =
-          ((finalValueInUSD * exchangeRate) / amount - 1) * 100;
+        this.logger.debug(
+          `${coin}: Initial KRW = ${amount}, Final KRW = ${finalValueInKRW}, Profit Rate = ${profitRate}%`,
+        );
 
         paths.push({
           coin,
@@ -162,9 +177,9 @@ export class WithdrawService {
           exchangeRate,
           profitRate,
           sourceAmountInKRW: amount,
-          targetAmountInKRW: finalValueInUSD * exchangeRate,
-          fromPrice: fromPrice,
-          toPrice: toPrice,
+          targetAmountInKRW: finalValueInKRW,
+          fromPrice,
+          toPrice,
           steps: [
             `원화로 ${coin} 구매 (${this.formatKRW(fromPrice)}/개)`,
             `${to}로 ${coin} 송금`,
@@ -180,7 +195,10 @@ export class WithdrawService {
     }
 
     // 수익률 기준으로 정렬하고 필터링
-    return paths.sort((a, b) => b.profitRate - a.profitRate).slice(0, 10);
+    return paths
+      .filter(path => !isNaN(path.profitRate) && path.profitRate > -100) // 비정상적인 수익률 제외
+      .sort((a, b) => b.profitRate - a.profitRate)
+      .slice(0, 10);
   }
 
   private async calculateGlobalToKoreaPaths(
@@ -297,47 +315,39 @@ export class WithdrawService {
     exchange: Exchange,
   ): Promise<number> {
     try {
+      this.logger.debug(`Getting price for ${coin} on ${exchange}`);
+
       if (exchange === 'binance') {
         if (coin === 'USDT') return 1;
-        const key = createTickerKey(exchange, 'USDT', coin);
+        
+        // binance는 항상 USDT 마켓 사용
+        const key = createTickerKey('binance', coin, 'USDT');
         const tickerStr = await this.redisService.get(key);
-        if (!tickerStr)
-          throw new Error(`No price data found for ${coin} on ${exchange}`);
-        const ticker: TickerData = JSON.parse(tickerStr);
-        return ticker.price;
-      } else if (exchange === 'bithumb') {
-        // 빗썸의 경우 "{symbol}-{quoteToken}" 형식으로 저장됨
-        let tickerStr = await this.redisService.get(
-          `ticker-bithumb-${coin}-KRW`,
-        );
+        
         if (!tickerStr) {
-          tickerStr = await this.redisService.get(
-            `ticker-bithumb-${coin}-USDT`,
-          );
-        }
-
-        if (!tickerStr) {
-          tickerStr = await this.redisService.get(`ticker-bithumb-${coin}-BTC`);
-        }
-
-        if (!tickerStr)
           throw new Error(`No price data found for ${coin} on ${exchange}`);
-        const ticker: TickerData = JSON.parse(tickerStr);
+        }
+        
+        const ticker = JSON.parse(tickerStr);
+        if (!ticker || typeof ticker.price !== 'number') {
+          throw new Error(`Invalid price data for ${coin} on ${exchange}`);
+        }
+        
         return ticker.price;
       } else {
-        // 업비트와 빗썸은 KRW 마켓 우선 조회
-        let key = createTickerKey(exchange, 'KRW', coin);
-        let tickerStr = await this.redisService.get(key);
-
-        // KRW 마켓이 없으면 USDT 마켓 조회
+        // 한국 거래소는 항상 KRW 마켓 사용
+        const key = createTickerKey(exchange, coin, 'KRW');
+        const tickerStr = await this.redisService.get(key);
+        
         if (!tickerStr) {
-          key = createTickerKey(exchange, 'USDT', coin);
-          tickerStr = await this.redisService.get(key);
-        }
-
-        if (!tickerStr)
           throw new Error(`No price data found for ${coin} on ${exchange}`);
-        const ticker: TickerData = JSON.parse(tickerStr);
+        }
+        
+        const ticker = JSON.parse(tickerStr);
+        if (!ticker || typeof ticker.price !== 'number') {
+          throw new Error(`Invalid price data for ${coin} on ${exchange}`);
+        }
+        
         return ticker.price;
       }
     } catch (error) {
