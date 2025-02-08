@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from 'next/script';
 import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/providers/ThemeProvider";
@@ -28,8 +29,25 @@ const font = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "코인코인코리아",
-  description: "코인러들을 위한 코인 플랫폼",
+  title: "코코아 | 코인코인코리아",
+  description: "암호화폐 차익거래 기회를 실시간으로 모니터링하세요",
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/logo.webp',
+  },
+  openGraph: {
+    title: "코코아 | 코인코인코리아",
+    description: "암호화폐 차익거래 기회를 실시간으로 모니터링하세요",
+    images: [
+      {
+        url: '/logo.jpg',
+        width: 800,
+        height: 600,
+        alt: '코코아 | 코인코인코리아',
+      },
+    ],
+    type: 'website',
+  },
 };
 
 export default function RootLayout({
@@ -39,9 +57,26 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body
-        className={`${font.variable} font-sans antialiased min-h-screen flex flex-col`}
-      >
+      <head>
+        <Script id="google-tag-manager" strategy="afterInteractive">
+          {`
+            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','GTM-PBSLT3K9');
+          `}
+        </Script>
+      </head>
+      <body className={`${font.variable} font-sans antialiased min-h-screen flex flex-col`}>
+        <noscript>
+          <iframe 
+            src="https://www.googletagmanager.com/ns.html?id=GTM-PBSLT3K9"
+            height="0" 
+            width="0" 
+            style={{display: 'none', visibility: 'hidden'}}
+          />
+        </noscript>
         <ThemeProvider>
           <Navbar />
           <MarketTicker />
