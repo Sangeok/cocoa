@@ -7,20 +7,20 @@ export default function Footer() {
   return (
     <footer className="bg-white dark:bg-gray-950 border-t border-gray-200 dark:border-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-        <div className="flex justify-between items-start">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-8">
           {/* Logo and Description */}
-          <div className="space-y-4">
+          <div className="space-y-4 max-w-sm">
             <Logo size="sm" />
-            <p className="text-sm text-gray-500 dark:text-gray-400 max-w-sm">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               코코아(코인코인코리아)는 오픈소스로 공개 개발되었습니다. 코코아
               내의 모든 데이터는 실제 데이터와 차이가 있을 수 있습니다.
             </p>
           </div>
 
           {/* Right side links and copyright */}
-          <div className="flex flex-col items-end space-y-4">
+          <div className="flex flex-col space-y-4 md:items-end">
             {/* Links */}
-            <div className="flex items-center gap-6">
+            <div className="flex flex-wrap gap-4 md:gap-6">
               <Link
                 href="/tos"
                 className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
