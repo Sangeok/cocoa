@@ -1,6 +1,9 @@
 import { WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
 import { Server } from 'socket.io';
 import { TickerData, CoinPremiumData } from '../collector/types/common.types';
+import { config } from 'dotenv';
+
+config(); 
 
 interface ExchangeRateData {
   rate: number;
@@ -13,7 +16,7 @@ interface ActiveUsersData {
 
 @WebSocketGateway({
   cors: {
-    origin: 'http://localhost:3001',
+    origin: process.env.CORS_ORIGIN,
     credentials: true,
   },
 })
