@@ -5,7 +5,7 @@ import { Listbox, Transition } from '@headlessui/react'
 import { ChevronUpDownIcon } from '@heroicons/react/24/outline'
 import { clsx } from 'clsx'
 
-interface Option {
+interface SelectOption {
   value: string
   label: string
 }
@@ -13,7 +13,7 @@ interface Option {
 interface SelectProps {
   label?: string
   description?: string
-  options: Option[]
+  options: readonly SelectOption[]
   value: string
   onChange: (value: string) => void
   disabled?: boolean

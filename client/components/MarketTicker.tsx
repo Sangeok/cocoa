@@ -49,7 +49,7 @@ export default function MarketTicker() {
   // 로딩 상태 표시
   if (!exchangeRate || krwMarketPrices.length === 0) {
     return (
-      <div className="relative bg-gray-50 dark:bg-gray-950 border-b border-gray-200 dark:border-gray-900 z-[90]">
+      <div className="relative bg-gray-50 dark:bg-gray-950 border-b border-gray-200 dark:border-gray-900">
         <div className="flex items-center justify-center py-2">
           <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
             <svg
@@ -123,7 +123,7 @@ export default function MarketTicker() {
   );
 
   return (
-    <div className="relative bg-gray-50 dark:bg-gray-950 border-b border-gray-200 dark:border-gray-900 z-[90]">
+    <div className="relative bg-gray-50 dark:bg-gray-950 border-b border-gray-200 dark:border-gray-900">
       <div className="flex items-stretch">
         {/* 고정된 환율 표시 */}
         <Link
