@@ -43,13 +43,13 @@ export class NewsService {
     private readonly redisService: RedisService,
   ) {}
 
-  @Cron('0 */3 * * *') // 3시간마다 실행
+  @Cron('0 */24 * * *') // 3시간마다 실행
   async generateNews() {
     try {
       this.logger.debug('Starting news generation process...');
 
-      // 1. 업비트 상위 10개 거래량 코인 조회
-      const topCoins = await this.upbitClient.getTopVolumeCoins(10);
+      // 1. 업비트 상위 3개 거래량 코인 조회
+      const topCoins = await this.upbitClient.getTopVolumeCoins(3);
 
       // 코인별로 1분 간격으로 처리
       for (let i = 0; i < topCoins.length; i++) {
