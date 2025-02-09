@@ -22,6 +22,13 @@
       "when": 1739003909204,
       "tag": "0002_right_rocket_racer",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1739087261688,
+      "tag": "0003_easy_firestar",
+      "breakpoints": true
     }
   ]
 }

@@ -13,7 +13,12 @@ export const API_ROUTES = {
       method: "GET",
     },
   },
-  EXCHANGE: {},
+  EXCHANGE: {
+    MARKETS: {
+      url: "/exchange/markets",
+      method: "GET",
+    },
+  },
   WITHDRAW: {
     PATH: {
       url: "/withdraw/path",

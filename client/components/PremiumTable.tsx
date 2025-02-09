@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Image from "next/image";
 import clsx from "clsx";
 import Select from "@/components/Select";
@@ -20,9 +20,11 @@ import {
   type Exchange,
   type QuoteToken,
 } from "@/types/exchange";
+import useMarketsStore from "@/store/useMarketsStore";
 
 export default function PremiumTable() {
   const { coins, exchangeRate } = useMarketStore();
+  const { markets, fetchMarkets, getKoreanName } = useMarketsStore();
   const [exchangePair, setExchangePair] = useState<ExchangePair>({
     from: "upbit",
     to: "binance",
@@ -33,6 +35,7 @@ export default function PremiumTable() {
     field: "premium",
     direction: "desc",
   });
+  const [searchTerm, setSearchTerm] = useState("");
 
   const filteredMarkets = useMemo(() => {
     if (!coins || !exchangeRate?.rate) return [];
@@ -46,7 +49,16 @@ export default function PremiumTable() {
         if (quoteToken !== exchangePair.fromBase) return false;
 
         const toMarketSymbol = `${baseToken}-${exchangePair.toBase}`;
-        return !!coins[toMarketSymbol]?.[exchangePair.to]?.price;
+        if (!coins[toMarketSymbol]?.[exchangePair.to]?.price) return false;
+
+        if (searchTerm) {
+          const koreanName = getKoreanName(marketSymbol).toLowerCase();
+          const englishName = baseToken.toLowerCase();
+          const search = searchTerm.toLowerCase();
+          return koreanName.includes(search) || englishName.includes(search);
+        }
+
+        return true;
       })
       .map(([marketSymbol, data]) => {
         const [baseToken] = marketSymbol.split("-");
@@ -81,7 +93,7 @@ export default function PremiumTable() {
           ),
         };
       });
-  }, [coins, exchangePair, exchangeRate?.rate]);
+  }, [coins, exchangePair, exchangeRate?.rate, searchTerm]);
 
   const handleSort = (field: SortField) => {
     setSort((prev) => ({
@@ -157,6 +169,10 @@ export default function PremiumTable() {
     return `${value > 0 ? "+" : ""}${value.toFixed(2)}%`;
   };
 
+  useEffect(() => {
+    fetchMarkets();
+  }, []);
+
   if (!coins || !exchangeRate) {
     return <PremiumTableSkeleton />;
   }
@@ -164,74 +180,98 @@ export default function PremiumTable() {
   return (
     <div className="space-y-6">
       <div className="bg-white dark:bg-gray-950 rounded-lg p-4 sm:p-6 border border-gray-200 dark:border-gray-900">
-        <div className="flex flex-col sm:flex-row gap-4">
-          <div className="flex items-center gap-2">
-            <Select
-              label="시작 거래소"
-              value={exchangePair.from}
-              onChange={(value) => {
-                const newFrom = value as Exchange;
-                setExchangePair((prev) => ({
-                  ...prev,
-                  from: newFrom,
-                  fromBase: BASE_TOKEN_OPTIONS[newFrom][0].value,
-                }));
-              }}
-              options={EXCHANGE_OPTIONS}
-            />
-            <Select
-              label="기준 화폐"
-              value={exchangePair.fromBase}
-              onChange={(value) => {
-                setExchangePair((prev) => ({
-                  ...prev,
-                  fromBase: value as QuoteToken,
-                }));
-              }}
-              options={BASE_TOKEN_OPTIONS[exchangePair.from]}
-            />
+        <div className="flex flex-col sm:flex-row gap-4 justify-between items-end">
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Select
+                label="시작 거래소"
+                value={exchangePair.from}
+                onChange={(value) => {
+                  const newFrom = value as Exchange;
+                  setExchangePair((prev) => ({
+                    ...prev,
+                    from: newFrom,
+                    fromBase: BASE_TOKEN_OPTIONS[newFrom][0].value,
+                  }));
+                }}
+                options={EXCHANGE_OPTIONS}
+              />
+              <Select
+                label="마켓"
+                value={exchangePair.fromBase}
+                onChange={(value) => {
+                  setExchangePair((prev) => ({
+                    ...prev,
+                    fromBase: value as QuoteToken,
+                  }));
+                }}
+                options={BASE_TOKEN_OPTIONS[exchangePair.from]}
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <Select
+                label="비교 거래소"
+                value={exchangePair.to}
+                onChange={(value) => {
+                  const newTo = value as "upbit" | "binance";
+                  setExchangePair((prev) => ({
+                    ...prev,
+                    to: newTo,
+                    toBase: BASE_TOKEN_OPTIONS[newTo][0].value,
+                  }));
+                }}
+                options={EXCHANGE_OPTIONS}
+              />
+              <Select
+                label="마켓"
+                value={exchangePair.toBase}
+                onChange={(value) => {
+                  setExchangePair((prev) => ({
+                    ...prev,
+                    toBase: value as QuoteToken,
+                  }));
+                }}
+                options={BASE_TOKEN_OPTIONS[exchangePair.to]}
+              />
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Select
-              label="비교 거래소"
-              value={exchangePair.to}
-              onChange={(value) => {
-                const newTo = value as "upbit" | "binance";
-                setExchangePair((prev) => ({
-                  ...prev,
-                  to: newTo,
-                  toBase: BASE_TOKEN_OPTIONS[newTo][0].value,
-                }));
-              }}
-              options={EXCHANGE_OPTIONS}
-            />
-            <Select
-              label="기준 화폐"
-              value={exchangePair.toBase}
-              onChange={(value) => {
-                setExchangePair((prev) => ({
-                  ...prev,
-                  toBase: value as QuoteToken,
-                }));
-              }}
-              options={BASE_TOKEN_OPTIONS[exchangePair.to]}
+          <div className="w-full sm:w-64">
+            <input
+              type="text"
+              placeholder="코인명 검색 (한글/영문)"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg 
+                       bg-white dark:bg-gray-900 text-gray-900 dark:text-white 
+                       focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
       </div>
+
+      {filteredMarkets.length === 0 && searchTerm && (
+        <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+          검색 결과가 없습니다
+        </div>
+      )}
 
       <div className="bg-white dark:bg-gray-950 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-900">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-900">
             <thead>
               <tr className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm">
-                <th className="px-4 sm:px-6 py-3 text-left">이름</th>
+                <th className="px-4 sm:px-6 py-3 text-left">코인명</th>
                 <th className="px-4 sm:px-6 py-3 text-right">
                   <button
                     onClick={() => handleSort("fromPrice")}
                     className="flex items-center justify-end gap-1 whitespace-nowrap w-full"
                   >
-                    {exchangePair.from} 가격
+                    {
+                      EXCHANGE_OPTIONS.find(
+                        (option) => option.value === exchangePair.from
+                      )?.label
+                    }{" "}
+                    가격
                     <SortIcon field="fromPrice" />
                   </button>
                 </th>
@@ -240,7 +280,12 @@ export default function PremiumTable() {
                     onClick={() => handleSort("toPrice")}
                     className="flex items-center justify-end gap-1 whitespace-nowrap w-full"
                   >
-                    {exchangePair.to} 가격
+                    {
+                      EXCHANGE_OPTIONS.find(
+                        (option) => option.value === exchangePair.to
+                      )?.label
+                    }{" "}
+                    가격
                     <SortIcon field="toPrice" />
                   </button>
                 </th>
@@ -291,7 +336,10 @@ export default function PremiumTable() {
                         className="mr-2 sm:w-6 sm:h-6"
                       />
                       <span className="text-gray-900 dark:text-white font-medium">
-                        {market.symbol.split("-")[0]}
+                        {getKoreanName(market.symbol)}
+                        <span className="text-gray-500 dark:text-gray-400 ml-2">
+                          {market.symbol.split("-")[0]}
+                        </span>
                       </span>
                     </div>
                   </td>

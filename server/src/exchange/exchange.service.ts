@@ -1,8 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Inject } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
 import { RedisService } from '../redis/redis.service';
 import { AppGateway } from '../gateway/app.gateway';
 import { CoinPremiumData } from '../collector/types/common.types';
+import { DrizzleClient } from '../database/database.module';
+import { upbitMarkets, bithumbMarkets } from '../database/schema/market';
 
 @Injectable()
 export class ExchangeService {
@@ -12,6 +14,7 @@ export class ExchangeService {
   constructor(
     private readonly redisService: RedisService,
     private readonly appGateway: AppGateway,
+    @Inject('DATABASE') private readonly db: typeof DrizzleClient,
   ) {}
 
   @Interval(1000)
@@ -91,6 +94,23 @@ export class ExchangeService {
       this.appGateway.emitCoinPremium(premiumData);
     } catch (error) {
       this.logger.error('Error processing market data:', error);
+    }
+  }
+
+  async getMarkets() {
+    try {
+      const [upbitData, bithumbData] = await Promise.all([
+        this.db.select().from(upbitMarkets),
+        this.db.select().from(bithumbMarkets),
+      ]);
+
+      return {
+        upbit: upbitData,
+        bithumb: bithumbData,
+      };
+    } catch (error) {
+      this.logger.error('Failed to get markets:', error);
+      throw error;
     }
   }
 }

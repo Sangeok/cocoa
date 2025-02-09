@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Inject } from '@nestjs/common';
 import * as WebSocket from 'ws';
 import {
   BinanceRequest,
@@ -9,7 +9,8 @@ import {
 import { RedisService } from '../../redis/redis.service';
 import { FeeClient } from './fee.client';
 import { createTickerKey, TickerData } from '../types/common.types';
-
+import { binanceMarkets } from '../../database/schema/market';
+import { DrizzleClient } from '../../database/database.module';
 @Injectable()
 export class BinanceClient {
   private readonly logger = new Logger(BinanceClient.name);
@@ -34,6 +35,7 @@ export class BinanceClient {
   constructor(
     private readonly redisService: RedisService,
     private readonly feeClient: FeeClient,
+    @Inject('DATABASE') private readonly db: typeof DrizzleClient,
   ) {}
 
   async onModuleInit() {
@@ -140,14 +142,22 @@ export class BinanceClient {
 
   private async subscribeToTickers() {
     try {
-      // 1. 먼저 모든 USDT 페어 목록 생성
-      const fees = await this.feeClient.getBinanceFees();
-      this.symbols = [...new Set(fees.map((fee) => `${fee.symbol}USDT`))];
+      // DB에서 검증된 심볼 로드
+      const validatedSymbols = await this.db
+        .select()
+        .from(binanceMarkets)
+        .execute();
 
-      // 2. 첫 요청으로 유효한 심볼만 필터링
-      await this.validateSymbols();
+      this.validSymbols = new Set(validatedSymbols.map(s => s.symbol));
 
-      // 3. 이후부터는 유효한 심볼만 주기적으로 요청
+      // 검증된 심볼이 없는 경우에만 검증 진행
+      if (this.validSymbols.size === 0) {
+        const fees = await this.feeClient.getBinanceFees();
+        this.symbols = [...new Set(fees.map((fee) => `${fee.symbol}USDT`))];
+        await this.validateSymbols();
+      }
+
+      // 검증된 심볼에 대해서만 ticker 요청
       await this.requestTickers();
       setInterval(() => this.requestTickers(), this.REFRESH_INTERVAL);
     } catch (error) {
@@ -158,34 +168,83 @@ export class BinanceClient {
 
   private async validateSymbols() {
     this.logger.debug(`Validating ${this.symbols.length} symbols...`);
-    this.validSymbols.clear(); // 재검증 시 초기화
+    this.validSymbols.clear();
 
-    // 첫 번째 시도: 큰 청크로 검증
-    for (let i = 0; i < this.symbols.length; i += this.CHUNK_SIZE) {
+    // DB에서 이미 검증된 심볼 로드
+    const validatedSymbols = await this.db
+      .select()
+      .from(binanceMarkets)
+      .execute();
+
+    // 이미 검증된 심볼들을 validSymbols에 추가
+    validatedSymbols.forEach(symbol => {
+      this.validSymbols.add(symbol.symbol);
+    });
+
+    // 아직 검증되지 않은 심볼만 검증
+    const unvalidatedSymbols = this.symbols.filter(
+      symbol => !this.validSymbols.has(symbol)
+    );
+
+    for (let i = 0; i < unvalidatedSymbols.length; i += this.CHUNK_SIZE) {
       await this.checkRateLimit();
-
-      const symbolsChunk = this.symbols.slice(i, i + this.CHUNK_SIZE);
+      const symbolsChunk = unvalidatedSymbols.slice(i, i + this.CHUNK_SIZE);
       const success = await this.validateSymbolChunk(symbolsChunk);
 
-      // 실패한 청크는 개별 검증
-      if (!success && symbolsChunk.length > 1) {
-        this.logger.debug(`Retrying chunk ${i} individually...`);
+      if (success) {
+        // 검증 성공한 심볼들을 DB에 저장
+        const now = new Date();
+        await Promise.all(
+          symbolsChunk.map(async (symbol) => {
+            const [baseToken, quoteToken] = [symbol.slice(0, -4), 'USDT'];
+            await this.db
+              .insert(binanceMarkets)
+              .values({
+                symbol,
+                baseToken,
+                quoteToken,
+                validatedAt: now,
+                updatedAt: now,
+              })
+              .onConflictDoUpdate({
+                target: binanceMarkets.symbol,
+                set: {
+                  validatedAt: now,
+                  updatedAt: now,
+                },
+              });
+          })
+        );
+      } else if (symbolsChunk.length > 1) {
+        // 개별 검증
         for (const symbol of symbolsChunk) {
           await this.checkRateLimit();
-          await this.validateSymbolChunk([symbol]);
+          const success = await this.validateSymbolChunk([symbol]);
+          if (success) {
+            const [baseToken, quoteToken] = [symbol.slice(0, -4), 'USDT'];
+            await this.db
+              .insert(binanceMarkets)
+              .values({
+                symbol,
+                baseToken,
+                quoteToken,
+                validatedAt: new Date(),
+                updatedAt: new Date(),
+              })
+              .onConflictDoUpdate({
+                target: binanceMarkets.symbol,
+                set: {
+                  validatedAt: new Date(),
+                  updatedAt: new Date(),
+                },
+              });
+          }
         }
       }
     }
 
-    // 유효한 심볼 목록을 Redis에 저장
-    const validSymbolsList = Array.from(this.validSymbols);
-    await this.redisService.set(
-      this.VALID_SYMBOLS_KEY,
-      JSON.stringify(validSymbolsList),
-    );
-
     this.logger.debug(
-      `Validation complete. Valid symbols: ${this.validSymbols.size}`,
+      `Validation complete. Valid symbols: ${this.validSymbols.size}`
     );
   }
 
