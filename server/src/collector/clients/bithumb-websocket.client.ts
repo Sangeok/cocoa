@@ -62,10 +62,18 @@ export class BithumbWebsocketClient implements OnModuleInit {
 
   private async subscribeToTickers() {
     try {
-      const markets = await this.redisService.get('bithumb-markets');
+      let markets = await this.redisService.get('bithumb-markets');
+
       if (!markets) {
         this.logger.error('No markets found in Redis');
         await this.collectorService.collectMarkets();
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        markets = await this.redisService.get('bithumb-markets');
+      }
+
+      if (!markets) {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        await this.subscribeToTickers();
         return;
       }
 
