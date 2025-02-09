@@ -39,46 +39,57 @@ export default function PremiumTable() {
 
     return Object.entries(coins)
       .filter(([marketSymbol, data]) => {
-        const marketData = data[exchangePair.from];
-        const compareData = data[exchangePair.to];
-        if (!marketData || !compareData) return false;
-        const tokens = marketSymbol.split("-");
-        return tokens[1] === exchangePair.fromBase;
+        const fromData = data[exchangePair.from];
+        const toData = data[exchangePair.to];
+        if (!fromData || !toData) return false;
+
+        const [baseToken, quoteToken] = marketSymbol.split("-");
+        if (exchangePair.from === "binance") {
+          return quoteToken === "USDT";
+        } else if (
+          exchangePair.from === "upbit" ||
+          exchangePair.from === "bithumb"
+        ) {
+          return quoteToken === exchangePair.fromBase;
+        }
+        return false;
       })
       .map(([marketSymbol, data]) => {
-        const marketData = data[exchangePair.from];
-        const compareData = data[exchangePair.to];
-        if (!marketData || !compareData) return null;
+        const fromData = data[exchangePair.from];
+        const toData = data[exchangePair.to];
+        
+        if (!fromData?.price || !toData?.price) return null;
 
+        const [baseToken] = marketSymbol.split("-");
         return {
-          symbol: marketSymbol,
+          symbol: `${baseToken}-${exchangePair.fromBase}`,
           exchange: exchangePair.from,
-          fromPrice: marketData.price,
-          toPrice: compareData.price,
-          volume: marketData.volume,
-          timestamp: marketData.timestamp,
+          fromPrice: fromData.price,
+          toPrice: toData.price,
+          volume: fromData.volume || 0,
+          timestamp: fromData.timestamp || Date.now(),
           priceGapPercent: calculatePriceGap(
             coins,
             {
               exchange: exchangePair.from,
               symbol: marketSymbol,
-              price: marketData.price,
-              volume: marketData.volume,
-              timestamp: marketData.timestamp,
+              price: fromData.price,
+              volume: fromData.volume || 0,
+              timestamp: fromData.timestamp || Date.now(),
             },
             exchangePair,
             {
               USDT: { KRW: exchangeRate?.rate || 0 },
               BTC: {
-                KRW: coins["BTC-KRW"]?.upbit?.price || 0,
-                USDT: coins["BTC-USDT"]?.binance?.price || 0,
+                KRW: coins["BTC-KRW"]?.[exchangePair.from]?.price || 0,
+                USDT: coins["BTC-USDT"]?.[exchangePair.to]?.price || 0,
               },
             }
           ),
         };
       })
-      .filter(
-        (market): market is NonNullable<typeof market> => market !== null
+      .filter((market): market is NonNullable<typeof market> => 
+        market !== null && market.fromPrice > 0 && market.toPrice > 0
       );
   }, [coins, exchangePair, exchangeRate?.rate]);
 

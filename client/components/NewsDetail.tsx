@@ -89,7 +89,10 @@ export default function NewsDetail({ id }: NewsDetailProps) {
       {/* Market Data */}
       <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-3 sm:p-4">
         <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3">
-          업비트 시세 정보(기준 시간: {news.timestamp})
+          업비트 시세 정보(기준 시간:{" "}
+          <span className="text-gray-500 dark:text-gray-400 block">
+            {new Date(news.timestamp).toLocaleString()}
+          </span>
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           {/* Price */}
