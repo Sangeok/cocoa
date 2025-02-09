@@ -17,7 +17,6 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
       - POSTGRES_DB=${POSTGRES_DB:-cocoa_dev}
       - NODE_OPTIONS="--max-old-space-size=2048 --max-semi-space-size=512"
-      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3001}
     volumes:
       - .:/app
       - /app/node_modules

@@ -20,6 +20,7 @@ interface ActiveUsersData {
     credentials: true,
   },
   transports: ['websocket'],
+  path: '/socket.io/',
   pingInterval: 5000,
   pingTimeout: 3000,
   maxHttpBufferSize: 1e6,
