@@ -25,11 +25,14 @@ export function formatKRWWithUnit(amount: number): string {
   if (amount >= 1_000_000_000_000) {
     return `${(amount / 1_000_000_000_000).toFixed(2)}조`;
   }
-  if (amount >= 1_000_000_000) {
-    return `${(amount / 1_000_000_000).toFixed(2)}억`;
+  if (amount >= 100_000_000) {
+    return `${(amount / 100_000_000).toFixed(2)}억`;
   }
   if (amount >= 1_000_000) {
-    return `${(amount / 1_000_000).toFixed(2)}만`;
+    return `${(amount / 1_000_000).toFixed(2)}백만`;
+  }
+  if (amount >= 10_000) {
+    return `${(amount / 10_000).toFixed(2)}만`;
   }
   if (amount >= 1_000) {
     return `${(amount / 1_000).toFixed(2)}천`;
