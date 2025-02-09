@@ -154,4 +154,36 @@ export class CollectorService {
       this.logger.error('Failed to collect Bithumb markets', error);
     }
   }
+
+  private async emitPremiumData() {
+    try {
+      const keys = await this.redisService.getKeys('ticker-*');
+      const batchSize = 50;
+      const batches: string[][] = [];
+
+      // 배치 단위로 처리
+      for (let i = 0; i < keys.length; i += batchSize) {
+        const batch = keys.slice(i, i + batchSize);
+        batches.push(batch);
+      }
+
+      const data = {};
+      for (const batch of batches) {
+        const values = await Promise.all(
+          batch.map((key) => this.redisService.get(key)),
+        );
+
+        for (let i = 0; i < batch.length; i++) {
+          if (values[i]) {
+            const [_, symbol] = batch[i].split('ticker-');
+            data[symbol] = JSON.parse(values[i] ?? '{}');
+          }
+        }
+      }
+
+      this.appGateway.server.emit('coin-premium', data);
+    } catch (error) {
+      this.logger.error('Failed to emit premium data:', error);
+    }
+  }
 }

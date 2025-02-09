@@ -16,6 +16,8 @@ services:
       - POSTGRES_USER=${POSTGRES_USER:-postgres}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
       - POSTGRES_DB=${POSTGRES_DB:-cocoa_dev}
+      - NODE_OPTIONS="--max-old-space-size=1024"
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:3001}
     volumes:
       - .:/app
       - /app/node_modules
@@ -32,6 +34,14 @@ services:
         npm run db:migrate &&
         npm run start:dev
       "
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
 
   collector:
     container_name: cocoa-collector
@@ -45,6 +55,7 @@ services:
       - POSTGRES_USER=${POSTGRES_USER:-postgres}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
       - POSTGRES_DB=${POSTGRES_DB:-cocoa_dev}
+      - NODE_OPTIONS="--max-old-space-size=1024"
     volumes:
       - .:/app
       - /app/node_modules
@@ -56,6 +67,14 @@ services:
     networks:
       - cocoa-network
     command: npm run collect:dev  # 개발 환경용 명령어
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
 
   postgres:
     container_name: cocoa-postgres

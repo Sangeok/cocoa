@@ -19,6 +19,9 @@ interface ActiveUsersData {
     origin: process.env.CORS_ORIGIN,
     credentials: true,
   },
+  transports: ['websocket'],
+  pingInterval: 10000,
+  pingTimeout: 5000,
 })
 export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
