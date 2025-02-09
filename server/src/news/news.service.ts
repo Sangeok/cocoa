@@ -18,7 +18,7 @@ export class NewsService {
 
 다음 구조로 기사를 작성해주세요:
 
-1. 제목: 코인의 현재 상황을 잘 반영한 흥미로운 제목 (50자 이내)
+1. 제목: 코인의 현재 상황을 잘 반영한 흥미로운 제목 (80자 이내)
 2. 첫 문단: 거래량과 가격 변동에 대한 객관적 데이터 설명
 3. 두번째 문단: 관련 뉴스 기사들의 핵심 내용 요약
 4. 세번째 문단: 전반적인 시장 영향과 향후 전망
@@ -42,7 +42,7 @@ export class NewsService {
     private readonly newsRepository: NewsRepository,
   ) {}
 
-  @Cron('0 */6 * * *') // 6시간마다 실행
+  @Cron('0 */3 * * *') // 3시간마다 실행
   async generateNews() {
     try {
       this.logger.debug('Starting news generation process...');
@@ -50,16 +50,16 @@ export class NewsService {
       // 1. 업비트 상위 10개 거래량 코인 조회
       const topCoins = await this.upbitClient.getTopVolumeCoins(10);
 
-      // 코인별로 15분 간격으로 처리
+      // 코인별로 1분 간격으로 처리
       for (let i = 0; i < topCoins.length; i++) {
         const coin = topCoins[i];
 
-        // 15분 대기 (첫 번째 코인은 제외)
+        // 1분 대기 (첫 번째 코인은 제외)
         if (i > 0) {
           this.logger.debug(
-            `Waiting 15 minutes before processing ${coin.symbol}...`,
+            `Waiting 1 minute before processing ${coin.symbol}...`,
           );
-          await new Promise((resolve) => setTimeout(resolve, 15 * 60 * 1000));
+          await new Promise((resolve) => setTimeout(resolve, 1 * 60 * 1000));
         }
 
         try {

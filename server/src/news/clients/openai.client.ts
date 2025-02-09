@@ -34,14 +34,14 @@ export class OpenAIClient {
         { role: 'user', content: userPrompt },
       ],
       temperature: 0.7,
-      max_tokens: 1000,
+      max_tokens: 5000,
     });
 
     const content = response.choices[0].message.content || '';
     
     try {
-      // 1. 줄바꿈 문자를 공백으로 대체
-      const sanitizedContent = content.replace(/\n/g, ' ');
+      // 1. 줄바꿈 문자를 \r\n으로 대체
+      const sanitizedContent = content.replace(/\n/g, '\r\n');
       
       // 2. 연속된 공백을 하나로 통일
       const normalizedContent = sanitizedContent.replace(/\s+/g, ' ');
