@@ -7,7 +7,7 @@ import { WebSearchClient } from './clients/web-search.client';
 import { TwitterClient } from './clients/twitter.client';
 import { NewsRepository } from './news.repository';
 import { NewsQueryOptions } from './types/news.types';
-
+import { RedisService } from '../redis/redis.service';
 @Injectable()
 export class NewsService {
   private readonly logger = new Logger(NewsService.name);
@@ -40,6 +40,7 @@ export class NewsService {
     private readonly webSearchClient: WebSearchClient,
     private readonly twitterClient: TwitterClient,
     private readonly newsRepository: NewsRepository,
+    private readonly redisService: RedisService,
   ) {}
 
   @Cron('0 */3 * * *') // 3시간마다 실행
@@ -226,12 +227,18 @@ ${JSON.stringify(newsData, null, 2)}
 
   async getNews(options: NewsQueryOptions) {
     try {
+      const cacheKey = `news:${options.symbol || 'all'}:${options.limit}:${options.offset}`;
+      const cachedData = await this.redisService.get(cacheKey);
+      if (cachedData) {
+        return JSON.parse(cachedData);
+      }
+
       const news = await this.newsRepository.findNews({
         ...options,
         orderBy: { timestamp: 'desc' },
       });
 
-      return {
+      const response = {
         success: true,
         data: news,
         pagination: {
@@ -239,6 +246,10 @@ ${JSON.stringify(newsData, null, 2)}
           page: Math.floor(options.offset / options.limit) + 1,
         },
       };
+
+      await this.redisService.set(cacheKey, JSON.stringify(response), 3600);
+
+      return response;
     } catch (error) {
       this.logger.error('Failed to fetch news', error);
       throw error;
@@ -247,7 +258,16 @@ ${JSON.stringify(newsData, null, 2)}
 
   async getRecentNews(options: NewsQueryOptions) {
     try {
-      // 최근 24시간 이내의 뉴스만 조회
+      // Create a cache key based on the options
+      const cacheKey = `recent-news:${options.symbol || 'all'}:${options.limit}:${options.offset}`;
+
+      // Try to get cached data
+      const cachedData = await this.redisService.get(cacheKey);
+      if (cachedData) {
+        return JSON.parse(cachedData);
+      }
+
+      // If no cached data, fetch from database
       const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
       const news = await this.newsRepository.findNews({
@@ -259,7 +279,7 @@ ${JSON.stringify(newsData, null, 2)}
         },
       });
 
-      return {
+      const response = {
         success: true,
         data: news,
         pagination: {
@@ -267,6 +287,11 @@ ${JSON.stringify(newsData, null, 2)}
           page: Math.floor(options.offset / options.limit) + 1,
         },
       };
+
+      // Cache the response for 1 hour (3600 seconds)
+      await this.redisService.set(cacheKey, JSON.stringify(response), 3600);
+
+      return response;
     } catch (error) {
       this.logger.error('Failed to fetch recent news', error);
       throw error;
@@ -275,7 +300,21 @@ ${JSON.stringify(newsData, null, 2)}
 
   async readNews(id: string) {
     try {
+      const newsRedisKey = `news-one:${id}`;
+      const cachedNews = await this.redisService.get(newsRedisKey);
+      if (cachedNews) {
+        return {
+          success: true,
+          data: JSON.parse(cachedNews),
+        };
+      }
+
       const news = await this.newsRepository.findNewsById(id);
+      await this.redisService.set(
+        newsRedisKey,
+        JSON.stringify(news),
+        3600 * 24,
+      );
       return {
         success: true,
         data: news,

@@ -7,7 +7,7 @@ import { WebSearchClient } from './clients/web-search.client';
 import { NewsRepository } from './news.repository';
 import { UpbitClient } from '../collector/clients/upbit.client';
 import { DrizzleClient } from '../database/database.module';
-
+import { RedisService } from '../redis/redis.service';
 @Module({
   controllers: [NewsController],
   providers: [
@@ -17,6 +17,7 @@ import { DrizzleClient } from '../database/database.module';
     WebSearchClient,
     NewsRepository,
     UpbitClient,
+    RedisService,
     {
       provide: 'DATABASE',
       useValue: DrizzleClient,
