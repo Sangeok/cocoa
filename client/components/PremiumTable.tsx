@@ -263,6 +263,15 @@ export default function PremiumTable() {
                 <th className="px-4 sm:px-6 py-3 text-left">코인명</th>
                 <th className="px-4 sm:px-6 py-3 text-right">
                   <button
+                    onClick={() => handleSort("premium")}
+                    className="flex items-center justify-end gap-1 whitespace-nowrap w-full"
+                  >
+                    프리미엄
+                    <SortIcon field="premium" />
+                  </button>
+                </th>
+                <th className="px-4 sm:px-6 py-3 text-right">
+                  <button
                     onClick={() => handleSort("fromPrice")}
                     className="flex items-center justify-end gap-1 whitespace-nowrap w-full"
                   >
@@ -289,15 +298,7 @@ export default function PremiumTable() {
                     <SortIcon field="toPrice" />
                   </button>
                 </th>
-                <th className="px-4 sm:px-6 py-3 text-right">
-                  <button
-                    onClick={() => handleSort("premium")}
-                    className="flex items-center justify-end gap-1 whitespace-nowrap w-full"
-                  >
-                    프리미엄
-                    <SortIcon field="premium" />
-                  </button>
-                </th>
+
                 <th className="px-4 sm:px-6 py-3 text-right">
                   <button
                     onClick={() => handleSort("volume")}
@@ -335,25 +336,13 @@ export default function PremiumTable() {
                         height={20}
                         className="mr-2 sm:w-6 sm:h-6"
                       />
-                      <span className="text-gray-900 dark:text-white font-medium">
-                        {getKoreanName(market.symbol)}
-                        <span className="text-gray-500 dark:text-gray-400 ml-2">
+                      <div className="text-gray-900 dark:text-white font-medium">
+                        <div>{getKoreanName(market.symbol)}</div>
+                        <div className="text-gray-500 dark:text-gray-400 text-xs">
                           {market.symbol.split("-")[0]}
-                        </span>
-                      </span>
+                        </div>
+                      </div>
                     </div>
-                  </td>
-                  <td className="px-4 sm:px-6 py-4 text-right whitespace-nowrap text-gray-900 dark:text-white">
-                    {(exchangePair.fromBase === "KRW" ||
-                      exchangePair.fromBase === "USDT") &&
-                      "₩"}
-                    {formatPrice(market.fromPrice, exchangePair.fromBase)}
-                  </td>
-                  <td className="px-4 sm:px-6 py-4 text-right whitespace-nowrap text-gray-900 dark:text-white">
-                    {(exchangePair.toBase === "KRW" ||
-                      exchangePair.toBase === "USDT") &&
-                      "₩"}
-                    {formatPrice(market.toPrice, exchangePair.toBase)}
                   </td>
                   <td className="px-4 sm:px-6 py-4 text-right whitespace-nowrap">
                     <span
@@ -369,6 +358,19 @@ export default function PremiumTable() {
                       {formatPercent(market.priceGapPercent)}
                     </span>
                   </td>
+                  <td className="px-4 sm:px-6 py-4 text-right whitespace-nowrap text-gray-900 dark:text-white">
+                    {(exchangePair.fromBase === "KRW" ||
+                      exchangePair.fromBase === "USDT") &&
+                      "₩"}
+                    {formatPrice(market.fromPrice, exchangePair.fromBase)}
+                  </td>
+                  <td className="px-4 sm:px-6 py-4 text-right whitespace-nowrap text-gray-900 dark:text-white">
+                    {(exchangePair.toBase === "KRW" ||
+                      exchangePair.toBase === "USDT") &&
+                      "₩"}
+                    {formatPrice(market.toPrice, exchangePair.toBase)}
+                  </td>
+
                   <td className="px-4 sm:px-6 py-4 text-right text-gray-500 dark:text-gray-400">
                     {formatPrice(market.volume, exchangePair.toBase)}
                   </td>
