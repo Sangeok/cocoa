@@ -30,7 +30,7 @@ services:
     command: >
       sh -c "
         npm run db:generate &&
-        npm run db:migrate &&
+        npm run db:migrate || true &&
         npm run start:dev
       "
     deploy:
