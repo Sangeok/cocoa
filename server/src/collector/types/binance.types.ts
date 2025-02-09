@@ -3,6 +3,7 @@ export interface BinanceRequest {
   method: 'ticker.24hr';
   params: {
     symbols: string[];
+    type: 'MINI' | 'FULL';
   };
 }
 
@@ -52,7 +53,7 @@ export interface BinanceOrderBookResult {
 export interface BinanceSuccessResponse {
   id: string;
   status: number;
-  result: Binance24hrTicker[];
+  result: Binance24hrFullTicker[];
   rateLimits: RateLimit[];
 }
 
@@ -68,7 +69,7 @@ export interface BinanceErrorResponse {
 
 export type BinanceResponse = BinanceSuccessResponse | BinanceErrorResponse;
 
-export interface Binance24hrTicker {
+export interface Binance24hrFullTicker {
   symbol: string;
   priceChange: string;
   priceChangePercent: string;
@@ -83,6 +84,21 @@ export interface Binance24hrTicker {
   openPrice: string;
   highPrice: string;
   lowPrice: string;
+  volume: string;
+  quoteVolume: string;
+  openTime: number;
+  closeTime: number;
+  firstId: number;
+  lastId: number;
+  count: number;
+}
+
+export interface Binance24hrMiniTicker {
+  symbol: string;
+  openPrice: string;
+  highPrice: string;
+  lowPrice: string;
+  lastPrice: string;
   volume: string;
   quoteVolume: string;
   openTime: number;

@@ -79,11 +79,11 @@ export class CollectorService {
     }
   }
 
-  @Cron('*/15 * * * * *') // Every 15 seconds
+  @Cron('*/60 * * * * *') // Every 60 seconds
   async collectExchangeRate() {
     try {
       const rate = await this.exchangeRateClient.getUsdKrwRate();
-      await this.redisService.set('krw-usd-rate', rate.toString(), 15); // 15초 TTL
+      await this.redisService.set('krw-usd-rate', rate.toString(), 60); // 60초 TTL
       this.logger.debug(`Updated USD-KRW rate: ${rate}`);
 
       this.appGateway.emitExchangeRate({

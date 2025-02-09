@@ -334,8 +334,23 @@ export class WithdrawService {
         }
         
         return ticker.price;
+      } else if (exchange === 'bithumb') {
+        // 빗썸의 경우 명시적으로 처리
+        const key = createTickerKey('bithumb', coin, 'KRW');
+        const tickerStr = await this.redisService.get(key);
+
+        if (!tickerStr) {
+          throw new Error(`No price data found for ${coin} on ${exchange}`);
+        }
+
+        const ticker = JSON.parse(tickerStr);
+        if (!ticker || typeof ticker.price !== 'number') {
+          throw new Error(`Invalid price data for ${coin} on ${exchange}`);
+        }
+
+        return ticker.price;
       } else {
-        // 한국 거래소는 항상 KRW 마켓 사용
+        // 업비트의 경우
         const key = createTickerKey(exchange, coin, 'KRW');
         const tickerStr = await this.redisService.get(key);
         
