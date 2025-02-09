@@ -40,18 +40,21 @@ export default function PremiumTable() {
     return Object.entries(coins)
       .filter(([marketSymbol, data]) => {
         const marketData = data[exchangePair.from];
-        if (!marketData) return false;
+        const compareData = data[exchangePair.to];
+        if (!marketData || !compareData) return false;
         const tokens = marketSymbol.split("-");
         return tokens[1] === exchangePair.fromBase;
       })
       .map(([marketSymbol, data]) => {
         const marketData = data[exchangePair.from];
-        if (!marketData) return null;
+        const compareData = data[exchangePair.to];
+        if (!marketData || !compareData) return null;
 
         return {
           symbol: marketSymbol,
           exchange: exchangePair.from,
-          price: marketData.price,
+          fromPrice: marketData.price,
+          toPrice: compareData.price,
           volume: marketData.volume,
           timestamp: marketData.timestamp,
           priceGapPercent: calculatePriceGap(
@@ -105,9 +108,9 @@ export default function PremiumTable() {
         case "name":
           return modifier * a.symbol.localeCompare(b.symbol);
         case "fromPrice":
-          return modifier * (a.price - b.price);
+          return modifier * (a.fromPrice - b.fromPrice);
         case "toPrice":
-          return modifier * (a.price - b.price);
+          return modifier * (a.toPrice - b.toPrice);
         case "premium":
           return modifier * (a.priceGapPercent - b.priceGapPercent);
         case "volume":
@@ -280,11 +283,11 @@ export default function PremiumTable() {
                   </td>
                   <td className="px-4 sm:px-6 py-4 text-right whitespace-nowrap text-gray-900 dark:text-white">
                     {exchangePair.fromBase === "KRW" ? "₩" : ""}
-                    {formatPrice(market.price, exchangePair.fromBase)}
+                    {formatPrice(market.fromPrice, exchangePair.fromBase)}
                   </td>
                   <td className="px-4 sm:px-6 py-4 text-right whitespace-nowrap text-gray-900 dark:text-white">
-                    {exchangePair.fromBase === "KRW" ? "₩" : ""}
-                    {formatPrice(market.price, exchangePair.toBase)}
+                    {exchangePair.toBase === "KRW" ? "₩" : "$"}
+                    {formatPrice(market.toPrice, exchangePair.toBase)}
                   </td>
                   <td className="px-4 sm:px-6 py-4 text-right whitespace-nowrap">
                     <span
