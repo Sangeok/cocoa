@@ -24,7 +24,7 @@ import useMarketsStore from "@/store/useMarketsStore";
 
 export default function PremiumTable() {
   const { coins, exchangeRate } = useMarketStore();
-  const { markets, fetchMarkets, getKoreanName } = useMarketsStore();
+  const { fetchMarkets, getKoreanName } = useMarketsStore();
   const [exchangePair, setExchangePair] = useState<ExchangePair>({
     from: "upbit",
     to: "binance",

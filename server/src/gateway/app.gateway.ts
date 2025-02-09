@@ -46,10 +46,6 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.server.emit('active-users', data);
   }
 
-  emitCoinPrice(data: TickerData) {
-    this.server.emit('coinPrice', data);
-  }
-
   emitExchangeRate(data: ExchangeRateData) {
     this.server.emit('exchange-rate', data);
   }

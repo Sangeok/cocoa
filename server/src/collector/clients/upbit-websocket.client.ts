@@ -103,14 +103,6 @@ export class UpbitWebsocketClient implements OnModuleInit {
 
       await this.redisService.set(redisKey, JSON.stringify(tickerData));
 
-      this.appGateway.emitCoinPrice({
-        exchange: 'upbit',
-        baseToken,
-        quoteToken,
-        price: data.trade_price,
-        timestamp: data.timestamp,
-        volume: data.acc_trade_price_24h,
-      });
     } catch (error) {
       this.logger.error(`Error handling ticker data: ${error.message}`, {
         data,
