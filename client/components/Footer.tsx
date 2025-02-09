@@ -31,7 +31,7 @@ export default function Footer() {
                 이용약관
               </Link>
               <Link
-                href="/privacy"
+                href="/pp"
                 className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
               >
                 개인정보처리방침
