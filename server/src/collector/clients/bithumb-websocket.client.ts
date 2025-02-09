@@ -6,7 +6,7 @@ import {
   BithumbMarketResponse,
 } from '../types/bithumb.types';
 import { createTickerKey, TickerData } from '../types/common.types';
-
+import { CollectorService } from '../collector.service';
 @Injectable()
 export class BithumbWebsocketClient implements OnModuleInit {
   private readonly logger = new Logger(BithumbWebsocketClient.name);
@@ -15,7 +15,10 @@ export class BithumbWebsocketClient implements OnModuleInit {
   private reconnectAttempts = 0;
   private readonly MAX_RECONNECT_ATTEMPTS = 5;
 
-  constructor(private readonly redisService: RedisService) {}
+  constructor(
+    private readonly redisService: RedisService,
+    private readonly collectorService: CollectorService,
+  ) {}
 
   async onModuleInit() {
     await this.connectWebSocket();
@@ -62,6 +65,7 @@ export class BithumbWebsocketClient implements OnModuleInit {
       const markets = await this.redisService.get('bithumb-markets');
       if (!markets) {
         this.logger.error('No markets found in Redis');
+        await this.collectorService.collectMarkets();
         return;
       }
 
