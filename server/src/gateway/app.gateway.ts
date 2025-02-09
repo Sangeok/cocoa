@@ -20,8 +20,9 @@ interface ActiveUsersData {
     credentials: true,
   },
   transports: ['websocket'],
-  pingInterval: 10000,
-  pingTimeout: 5000,
+  pingInterval: 5000,
+  pingTimeout: 3000,
+  maxHttpBufferSize: 1e6,
 })
 export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer()
