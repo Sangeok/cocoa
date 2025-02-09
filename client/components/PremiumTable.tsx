@@ -44,23 +44,25 @@ export default function PremiumTable() {
         if (!fromData || !toData) return false;
 
         const [baseToken, quoteToken] = marketSymbol.split("-");
-        if (exchangePair.from === "binance") {
-          return quoteToken === "USDT";
-        } else if (
-          exchangePair.from === "upbit" ||
-          exchangePair.from === "bithumb"
-        ) {
-          return quoteToken === exchangePair.fromBase;
-        }
-        return false;
+
+        const isValidFromMarket = exchangePair.from === "binance" 
+          ? quoteToken === "USDT"
+          : quoteToken === exchangePair.fromBase;
+
+        const toMarketSymbol = `${baseToken}-${exchangePair.toBase}`;
+        const toMarketData = coins[toMarketSymbol]?.[exchangePair.to];
+
+        return isValidFromMarket && toMarketData;
       })
       .map(([marketSymbol, data]) => {
+        const [baseToken] = marketSymbol.split("-");
         const fromData = data[exchangePair.from];
-        const toData = data[exchangePair.to];
+        
+        const toMarketSymbol = `${baseToken}-${exchangePair.toBase}`;
+        const toData = coins[toMarketSymbol]?.[exchangePair.to];
         
         if (!fromData?.price || !toData?.price) return null;
 
-        const [baseToken] = marketSymbol.split("-");
         return {
           symbol: `${baseToken}-${exchangePair.fromBase}`,
           exchange: exchangePair.from,
