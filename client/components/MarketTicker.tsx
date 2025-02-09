@@ -2,13 +2,12 @@
 
 import { useRef, useState, MouseEvent } from "react";
 import Image from "next/image";
-import { useExchangeRate, useMarketData } from "@/store/useMarketStore";
+import { useExchangeRate, useUpbitMarketData } from "@/store/useMarketStore";
 import Link from "next/link";
 
 export default function MarketTicker() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const exchangeRate = useExchangeRate();
-  const marketData = useMarketData();
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
@@ -37,8 +36,7 @@ export default function MarketTicker() {
   };
 
   // KRW 마켓의 코인 가격만 필터링
-  const krwMarketPrices = Object.entries(marketData)
-    .filter((data) => data[1].upbit) // upbit 데이터가 있는 코인만 필터
+  const krwMarketPrices = useUpbitMarketData()
     .map(([symbol, data]) => ({
       symbol,
       price: data.upbit!.price,

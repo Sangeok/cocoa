@@ -8,7 +8,7 @@ interface ActiveUsersStore {
 }
 
 const useActiveUsersStore = create<ActiveUsersStore>((set) => ({
-  count: 0,
+  count: 1,
   setCount: (count) => set({ count }),
   initializeSocket: () => {
     socket.on('active-users', (data: { count: number }) => {

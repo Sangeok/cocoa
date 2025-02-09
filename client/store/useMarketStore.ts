@@ -51,6 +51,7 @@ const useMarketStore = create<MarketStore>()(
 
 // 웹소켓 리스너 설정
 socket.on("coin-premium", (data: Record<string, CoinData>) => {
+  // console.log("🟢 coin-premium: ", Object.keys(data).length);
   useMarketStore.getState().updateMarketData(data);
 });
 
@@ -60,6 +61,12 @@ socket.on("exchange-rate", (data: { rate: number }) => {
 
 export const useMarketData = () => {
   return useMarketStore((state) => state.coins);
+};
+
+export const useUpbitMarketData = () => {
+  return useMarketStore((state) =>
+    Object.entries(state.coins).filter((coin) => coin[1].upbit),
+  );
 };
 
 export const useExchangeRate = () => {

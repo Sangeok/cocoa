@@ -95,6 +95,16 @@ export class CollectorService {
     }
   }
 
+  // 매 초마다 저장된 환율을 조회하여 웹소켓으로 전송
+  @Cron('*/1 * * * * *')
+  async emitExchangeRate() {
+    const rate = await this.redisService.get('krw-usd-rate');
+    this.appGateway.emitExchangeRate({
+      rate: Number(rate),
+      timestamp: Date.now(),
+    });
+  }
+
   @Cron(CronExpression.EVERY_HOUR)
   async storeExchangeRateHistory() {
     try {
