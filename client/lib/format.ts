@@ -13,6 +13,30 @@ export function formatKRW(amount: number): string {
 }
 
 /**
+ * 숫자를 한국 원화의 양식으로 조, 억, 만, 천원 단위로 변환합니다.
+ * @param amount 포맷팅할 금액
+ * @returns 포맷팅된 원화 문자열 (예: ₩1,234,567)
+ */
+export function formatKRWWithUnit(amount: number): string {
+  if (amount === null || amount === undefined) {
+    return "0";
+  }
+
+  if (amount >= 1_000_000_000_000) {
+    return `${(amount / 1_000_000_000_000).toFixed(2)}조`;
+  }
+  if (amount >= 1_000_000_000) {
+    return `${(amount / 1_000_000_000).toFixed(2)}억`;
+  }
+  if (amount >= 1_000_000) {
+    return `${(amount / 1_000_000).toFixed(2)}만`;
+  }
+  if (amount >= 1_000) {
+    return `${(amount / 1_000).toFixed(2)}천`;
+  }
+  return `${amount.toFixed(2)}`;
+}
+/**
  * 숫자를 암호화폐 수량 형식으로 포맷팅합니다.
  * @param amount 포맷팅할 수량
  * @returns 포맷팅된 수량 문자열 (예: 0.00123456)

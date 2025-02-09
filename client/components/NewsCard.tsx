@@ -1,17 +1,17 @@
-'use client'
+"use client";
 
-import { News } from '@/dto/news.dto'
-import { clsx } from 'clsx'
-import Link from 'next/link'
-import { formatCurrency } from '@/lib/format'
+import { News } from "@/dto/news.dto";
+import { clsx } from "clsx";
+import Link from "next/link";
+import { formatKRWWithUnit } from "@/lib/format";
 
 interface NewsCardProps {
-  news: News
+  news: News;
 }
 
 export default function NewsCard({ news }: NewsCardProps) {
   return (
-    <Link 
+    <Link
       href={`/news/${news.id}`}
       className="block bg-white dark:bg-gray-900 rounded-lg overflow-hidden hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
     >
@@ -39,29 +39,35 @@ export default function NewsCard({ news }: NewsCardProps) {
         {/* Market Data */}
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
           <div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Price</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">시세</p>
             <p className="text-sm text-gray-900 dark:text-white">
-              ${news.marketData.currentPrice.toLocaleString()}
+              {formatKRWWithUnit(news.marketData.currentPrice)}원
             </p>
           </div>
           <div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Volume</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">거래량</p>
             <p className="text-sm text-gray-900 dark:text-white">
-              {formatCurrency(news.marketData.volume)}
+              {formatKRWWithUnit(news.marketData.volume)}원
             </p>
           </div>
           <div>
-            <p className="text-xs text-gray-500 dark:text-gray-400">24h Change</p>
-            <p className={clsx(
-              'text-sm font-medium',
-              news.marketData.priceChange > 0 ? 'text-green-500 dark:text-green-400' : 'text-red-500 dark:text-red-400'
-            )}>
-              {news.marketData.priceChange > 0 ? '+' : ''}
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              24시간 변동률
+            </p>
+            <p
+              className={clsx(
+                "text-sm font-medium",
+                news.marketData.priceChange > 0
+                  ? "text-green-500 dark:text-green-400"
+                  : "text-red-500 dark:text-red-400"
+              )}
+            >
+              {news.marketData.priceChange > 0 ? "+" : ""}
               {news.marketData.priceChange.toFixed(2)}%
             </p>
           </div>
         </div>
       </article>
     </Link>
-  )
-} 
+  );
+}
