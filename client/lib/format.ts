@@ -136,7 +136,7 @@ export function convertPrice(
 /**
  * 두 거래소 간의 가격 차이(프리미엄) 계산
  */
-export function calculatePriceGap(
+export const calculatePriceGap = (
   coins: Record<string, CoinData>,
   market: Market,
   exchangePair: ExchangePair,
@@ -144,31 +144,40 @@ export function calculatePriceGap(
     USDT: { KRW: number };
     BTC: { KRW: number; USDT: number };
   }
-): number {
-  const [coin, fromQuote] = market.symbol.split("-") as [string, QuoteToken];
-  const toQuote = exchangePair.toBase as QuoteToken;
+) => {
+  try {
+    let fromPriceInKRW = market.price;
+    let toPriceInKRW = 0;
 
-  // 두 거래소의 가격을 동일한 기준 화폐로 변환 (KRW로 통일)
-  const standardQuote: QuoteToken = "KRW";
-  const fromPrice = convertPrice(
-    market.price,
-    fromQuote,
-    standardQuote,
-    exchangeRates
-  );
+    // 출발 거래소 가격을 원화로 변환
+    if (exchangePair.fromBase === "USDT") {
+      fromPriceInKRW = market.price * exchangeRates.USDT.KRW;
+    } else if (exchangePair.fromBase === "BTC") {
+      // 해당 거래소의 실제 BTC-KRW 가격 사용
+      const btcPrice = coins["BTC-KRW"]?.[exchangePair.from]?.price || 0;
+      fromPriceInKRW = market.price * btcPrice;
+    }
 
-  // 비교 거래소의 가격을 가져와서 변환
-  const toMarketSymbol = `${coin}-${toQuote}`;
-  const toMarketData = coins[toMarketSymbol]?.[exchangePair.to];
-  if (!toMarketData) return 0;
+    // 도착 거래소 가격을 원화로 변환
+    const [baseToken] = market.symbol.split("-");
+    const toMarketSymbol = `${baseToken}-${exchangePair.toBase}`;
+    const toPrice = coins[toMarketSymbol]?.[exchangePair.to]?.price || 0;
 
-  const toPrice = convertPrice(
-    toMarketData.price, // 비교 거래소의 실제 가격 사용
-    toQuote,
-    standardQuote,
-    exchangeRates
-  );
+    if (exchangePair.toBase === "USDT") {
+      toPriceInKRW = toPrice * exchangeRates.USDT.KRW;
+    } else if (exchangePair.toBase === "BTC") {
+      // 도착 거래소의 실제 BTC-KRW 가격 사용
+      const btcPrice = coins["BTC-KRW"]?.[exchangePair.to]?.price || 0;
+      toPriceInKRW = toPrice * btcPrice;
+    } else {
+      toPriceInKRW = toPrice;
+    }
 
-  // 프리미엄 계산 (%)
-  return ((fromPrice - toPrice) / toPrice) * 100;
-}
+    // 프리미엄 계산 (양쪽 모두 0이 아닌 경우에만)
+    if (fromPriceInKRW === 0 || toPriceInKRW === 0) return 0;
+    return ((fromPriceInKRW - toPriceInKRW) / toPriceInKRW) * 100;
+  } catch (error) {
+    console.error("Error calculating price gap:", error);
+    return 0;
+  }
+};

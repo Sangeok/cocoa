@@ -40,44 +40,35 @@ export default function PremiumTable() {
     return Object.entries(coins)
       .filter(([marketSymbol, data]) => {
         const fromData = data[exchangePair.from];
-        const toData = data[exchangePair.to];
-        if (!fromData || !toData) return false;
+        if (!fromData?.price) return false;
 
         const [baseToken, quoteToken] = marketSymbol.split("-");
-
-        const isValidFromMarket = exchangePair.from === "binance" 
-          ? quoteToken === "USDT"
-          : quoteToken === exchangePair.fromBase;
+        if (quoteToken !== exchangePair.fromBase) return false;
 
         const toMarketSymbol = `${baseToken}-${exchangePair.toBase}`;
-        const toMarketData = coins[toMarketSymbol]?.[exchangePair.to];
-
-        return isValidFromMarket && toMarketData;
+        return !!coins[toMarketSymbol]?.[exchangePair.to]?.price;
       })
       .map(([marketSymbol, data]) => {
         const [baseToken] = marketSymbol.split("-");
-        const fromData = data[exchangePair.from];
-        
+        const fromPrice = data[exchangePair.from]?.price || 0;
         const toMarketSymbol = `${baseToken}-${exchangePair.toBase}`;
-        const toData = coins[toMarketSymbol]?.[exchangePair.to];
-        
-        if (!fromData?.price || !toData?.price) return null;
+        const toPrice = coins[toMarketSymbol]?.[exchangePair.to]?.price || 0;
 
         return {
-          symbol: `${baseToken}-${exchangePair.fromBase}`,
+          symbol: marketSymbol,
           exchange: exchangePair.from,
-          fromPrice: fromData.price,
-          toPrice: toData.price,
-          volume: fromData.volume || 0,
-          timestamp: fromData.timestamp || Date.now(),
+          fromPrice,
+          toPrice,
+          volume: data[exchangePair.from]?.volume || 0,
+          timestamp: data[exchangePair.from]?.timestamp || Date.now(),
           priceGapPercent: calculatePriceGap(
             coins,
             {
               exchange: exchangePair.from,
               symbol: marketSymbol,
-              price: fromData.price,
-              volume: fromData.volume || 0,
-              timestamp: fromData.timestamp || Date.now(),
+              price: fromPrice,
+              volume: data[exchangePair.from]?.volume || 0,
+              timestamp: data[exchangePair.from]?.timestamp || Date.now(),
             },
             exchangePair,
             {
@@ -89,10 +80,7 @@ export default function PremiumTable() {
             }
           ),
         };
-      })
-      .filter((market): market is NonNullable<typeof market> => 
-        market !== null && market.fromPrice > 0 && market.toPrice > 0
-      );
+      });
   }, [coins, exchangePair, exchangeRate?.rate]);
 
   const handleSort = (field: SortField) => {
@@ -145,11 +133,24 @@ export default function PremiumTable() {
   };
 
   const formatPrice = (price: number, quoteToken: string) => {
+    let displayPrice = price;
+    let suffix = "";
+
+    // 가격 변환 로직
+    if (quoteToken === "USDT") {
+      displayPrice = price * (exchangeRate?.rate || 0);
+    } else if (quoteToken === "BTC") {
+      suffix = " BTC";
+    }
+
     const options: Intl.NumberFormatOptions = {
       maximumFractionDigits: quoteToken === "BTC" ? 8 : 0,
       minimumFractionDigits: quoteToken === "BTC" ? 8 : 0,
     };
-    return new Intl.NumberFormat("ko-KR", options).format(price);
+
+    return (
+      new Intl.NumberFormat("ko-KR", options).format(displayPrice) + suffix
+    );
   };
 
   const formatPercent = (value: number) => {
@@ -295,11 +296,15 @@ export default function PremiumTable() {
                     </div>
                   </td>
                   <td className="px-4 sm:px-6 py-4 text-right whitespace-nowrap text-gray-900 dark:text-white">
-                    {exchangePair.fromBase === "KRW" ? "₩" : ""}
+                    {(exchangePair.fromBase === "KRW" ||
+                      exchangePair.fromBase === "USDT") &&
+                      "₩"}
                     {formatPrice(market.fromPrice, exchangePair.fromBase)}
                   </td>
                   <td className="px-4 sm:px-6 py-4 text-right whitespace-nowrap text-gray-900 dark:text-white">
-                    {exchangePair.toBase === "KRW" ? "₩" : "$"}
+                    {(exchangePair.toBase === "KRW" ||
+                      exchangePair.toBase === "USDT") &&
+                      "₩"}
                     {formatPrice(market.toPrice, exchangePair.toBase)}
                   </td>
                   <td className="px-4 sm:px-6 py-4 text-right whitespace-nowrap">
