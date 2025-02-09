@@ -37,7 +37,7 @@ export class BinanceClient {
   ) {}
 
   async onModuleInit() {
-    // await this.connectWebSocket();
+    await this.connectWebSocket();
   }
 
   async connectWebSocket() {
