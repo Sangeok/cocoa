@@ -14,7 +14,7 @@ export class ExchangeService {
     private readonly appGateway: AppGateway,
   ) {}
 
-  @Interval(5000)
+  @Interval(1000)
   async processMarketData() {
     try {
       const premiumData: CoinPremiumData = {};
