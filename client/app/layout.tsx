@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import Script from 'next/script';
+import Script from "next/script";
 import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/providers/ThemeProvider";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import MarketTicker from '@/components/MarketTicker'
+import MarketTicker from "@/components/MarketTicker";
 
 const font = localFont({
   src: [
@@ -32,21 +32,24 @@ export const metadata: Metadata = {
   title: "코코아 | 코인코인코리아",
   description: "암호화폐 차익거래 기회를 실시간으로 모니터링하세요",
   icons: {
-    icon: '/favicon.ico',
-    apple: '/icons/logo.jpg',
+    icon: "/favicon.ico",
+    apple: "/icons/logo.jpg",
   },
   openGraph: {
     title: "코코아 | 코인코인코리아",
     description: "암호화폐 차익거래 기회를 실시간으로 모니터링하세요",
     images: [
       {
-        url: '/icons/logo.jpg',
+        url: "/icons/logo.jpg",
         width: 800,
         height: 600,
-        alt: '코코아 | 코인코인코리아',
+        alt: "코코아 | 코인코인코리아",
       },
     ],
-    type: 'website',
+    type: "website",
+    siteName: "코코아 | 코인코인코리아",
+    locale: "ko",
+    url: "https://cocoacoin.kr",
   },
 };
 
@@ -81,13 +84,15 @@ export default function RootLayout({
           `}
         </Script>
       </head>
-      <body className={`${font.variable} font-sans antialiased min-h-screen flex flex-col`}>
+      <body
+        className={`${font.variable} font-sans antialiased min-h-screen flex flex-col`}
+      >
         <noscript>
-          <iframe 
+          <iframe
             src="https://www.googletagmanager.com/ns.html?id=GTM-PBSLT3K9"
-            height="0" 
-            width="0" 
-            style={{display: 'none', visibility: 'hidden'}}
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
           />
         </noscript>
         <ThemeProvider>
