@@ -77,8 +77,13 @@ export default function KOLCard({
               </Link>
             )}
             {link.x && (
-              <Link href={link.x} target="_blank" rel="noopener noreferrer">
-                <Image src="/icons/x.svg" alt="x" width={32} height={32} />
+              <Link
+                href={link.x}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-1"
+              >
+                <Image src="/icons/x.svg" alt="x" width={24} height={24} />
               </Link>
             )}
           </div>

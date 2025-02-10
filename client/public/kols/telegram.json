@@ -127,8 +127,20 @@
       },
       "followers": 444,
       "image": "/kols/images/moneybank25.jpeg",
-      "keywords": ["에어드랍"],
+      "keywords": ["에드작"],
       "selfIntroduction": "코인 에어드랍 작업 및 꿀통 추천해주는 허니박스클럽입니다!",
+      "registeredAt": "2025-02-10"
+    },
+    {
+      "name": "인후는 외롭지 않아요",
+      "link": {
+        "telegram": "https://t.me/inhu0",
+        "x": "https://x.com/inhuau"
+      },
+      "followers": 1000,
+      "image": "/kols/images/inhu0.jpeg",
+      "keywords": ["에드작"],
+      "selfIntroduction": "돈 되면 움직이는 올라운더 파머",
       "registeredAt": "2025-02-10"
     }
   ],
