@@ -23,9 +23,9 @@ export default function Footer() {
           {/* Right side links and copyright */}
           <div className="flex flex-col space-y-4 md:items-end">
             {/* Links */}
-            <div className="flex flex-wrap gap-4 md:gap-6">
+            <div className="flex space-x-4">
               <Link
-                href="/tos"
+                href="/terms"
                 className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
               >
                 이용약관
@@ -45,6 +45,16 @@ export default function Footer() {
                 소스코드
               </Link>
             </div>
+            {/* Email */}
+            <div className="text-sm text-gray-500 dark:text-gray-400">
+              문의 이메일:{" "}
+              <a
+                href="mailto:joseph.han@nullenterprise.com"
+                className="hover:text-gray-900 dark:hover:text-white transition-colors"
+              >
+                joseph.han@nullenterprise.com
+              </a>
+            </div>
             <Link
               href="https://nullenterprise.com"
               target="_blank"
@@ -53,6 +63,7 @@ export default function Footer() {
             >
               Powered by NULL ENTERPRISE PTE. LTD.
             </Link>
+
             {/* Copyright */}
             <div className="text-sm text-gray-500 dark:text-gray-400">
               © {new Date().getFullYear()} NULL ENTERPRISE PTE. LTD. All rights

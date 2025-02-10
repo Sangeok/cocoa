@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        hostname: "static.upbit.com",
+        hostname: "**",
       },
     ],
   },

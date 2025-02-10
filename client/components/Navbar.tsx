@@ -16,6 +16,7 @@ const navigation = [
   { name: "실시간 김프", href: "/premium" },
   { name: "코코아 뉴스", href: "/news" },
   { name: "송금 계산기", href: "/withdraw" },
+  { name: "국내 KOL 목록", href: "/kol" },
 ];
 
 export default function Navbar() {
@@ -36,8 +37,8 @@ export default function Navbar() {
             <Logo />
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-4">
+          {/* Desktop Navigation (lg 이상에서만 표시) */}
+          <div className="hidden lg:ml-6 lg:flex lg:items-center lg:space-x-4">
             {navigation.map((item) => (
               <Link
                 key={item.name}
@@ -72,8 +73,8 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* Mobile menu button */}
-          <div className="sm:hidden">
+          {/* Mobile & Tablet menu button (lg 미만에서 표시) */}
+          <div className="lg:hidden">
             <Menu as="div" className="relative inline-block text-left">
               <div className="flex items-center space-x-2">
                 {/* Active Users Counter for mobile */}

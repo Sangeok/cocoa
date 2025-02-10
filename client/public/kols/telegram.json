@@ -1,0 +1,23 @@
+{
+  "list": [
+    {
+      "name": "영우의 크립토로 백억벌기",
+      "link": "https://t.me/kwakCrypto",
+      "followers": 1600,
+      "image": "/kols/images/kwakCrypto.jpeg",
+      "keywords": ["폐지줍기", "에드작"],
+      "selfIntroduction": "다계정치다가 패가망신한 사람",
+      "registeredAt": "2025-02-10"
+    },
+    {
+      "name": "멍청코인",
+      "link": "https://t.me/karmycrypto",
+      "followers": 3200,
+      "image": "/kols/images/karmycrypto.jpeg",
+      "keywords": ["덱스플레이"],
+      "selfIntroduction": "아이큐 20 디젠",
+      "registeredAt": "2025-02-10"
+    }
+  ],
+  "updatedAt": "2025-02-10T00:00:00.000Z"
+}
