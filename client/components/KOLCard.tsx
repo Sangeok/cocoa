@@ -76,6 +76,11 @@ export default function KOLCard({
                 />
               </Link>
             )}
+            {link.x && (
+              <Link href={link.x} target="_blank" rel="noopener noreferrer">
+                <Image src="/icons/x.svg" alt="x" width={32} height={32} />
+              </Link>
+            )}
           </div>
           <p className="text-sm text-gray-500 dark:text-gray-400">
             등록일: {registeredAt}

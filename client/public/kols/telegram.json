@@ -47,6 +47,55 @@
       "keywords": ["덱스플레이", "에드작"],
       "selfIntroduction": "돈잘버는방",
       "registeredAt": "2025-02-10"
+    },
+    {
+      "name": "점퍼하는 꼬맹",
+      "link": {
+        "telegram": "https://t.me/Dove262",
+        "youtube": ""
+      },
+      "followers": 830,
+      "image": "/kols/images/Dove262.jpeg",
+      "keywords": ["브릿지", "에드작"],
+      "selfIntroduction": "점퍼 하다 패가망신..",
+      "registeredAt": "2025-02-10"
+    },
+    {
+      "name": "백호의 코인갤러리",
+      "link": {
+        "telegram": "https://t.me/baekobaeko",
+        "youtube": "",
+        "x": "https://twitter.com/baeko_02"
+      },
+      "followers": 6163,
+      "image": "/kols/images/baekobaeko.jpeg",
+      "keywords": ["에드작", "소셜그라인딩"],
+      "selfIntroduction": "에어드랍 작업 전문 채널입니다!",
+      "registeredAt": "2025-02-10"
+    },
+    {
+      "name": "MadCurve",
+      "link": {
+        "telegram": "https://t.me/madcurve",
+        "youtube": "https://www.youtube.com/@cryptocurrencymage"
+      },
+      "followers": 111,
+      "image": "/kols/images/madcurve.jpeg",
+      "keywords": ["리서치"],
+      "selfIntroduction": "프로젝트를 기술적으로 쉽게 설명하는 채널",
+      "registeredAt": "2025-02-10"
+    },
+    {
+      "name": "크립토메이지",
+      "link": {
+        "telegram": "https://t.me/cryptocurrencymage",
+        "youtube": ""
+      },
+      "followers": 3220,
+      "image": "/kols/images/cryptocurrencymage.jpeg",
+      "keywords": ["에드작"],
+      "selfIntroduction": "알기쉬운 에드작",
+      "registeredAt": "2025-02-10"
     }
   ],
   "updatedAt": "2025-02-10T00:00:00.000Z"

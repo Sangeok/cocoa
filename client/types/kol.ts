@@ -1,8 +1,9 @@
 export interface KOL {
   name: string;
   link: {
-    telegram: string;
-    youtube: string;
+    telegram?: string;
+    youtube?: string;
+    x?: string;
   };
   followers: number;
   image: string;
