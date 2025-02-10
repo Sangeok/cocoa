@@ -89,11 +89,11 @@ export class WithdrawService {
           try {
             const fromPrice = await this.getCurrentPrice(coin, from);
             const toPrice = await this.getCurrentPrice(coin, to);
-            
+
             this.logger.debug(
               `Coin ${coin}: ${from} price = ${fromPrice}, ${to} price = ${toPrice}`,
             );
-            
+
             if (fromPrice > 0 && toPrice > 0) {
               return coin;
             }
@@ -133,9 +133,11 @@ export class WithdrawService {
         // 1. 원화로 코인 구매 시의 수량 계산
         const fromPrice = await this.getCurrentPrice(coin, from);
         if (fromPrice <= 0) continue;
-        
+
         const coinAmount = amount / fromPrice;
-        this.logger.debug(`${coin}: Amount = ${amount}, Price = ${fromPrice}, Coins = ${coinAmount}`);
+        this.logger.debug(
+          `${coin}: Amount = ${amount}, Price = ${fromPrice}, Coins = ${coinAmount}`,
+        );
 
         // 2. 출금 수수료 계산
         const withdrawFee = await this.getWithdrawalFee(coin, from);
@@ -149,7 +151,7 @@ export class WithdrawService {
         // 3. 도착 거래소에서의 가치 계산 (USDT)
         const toPrice = await this.getCurrentPrice(coin, to);
         if (toPrice <= 0) continue;
-        
+
         const finalValueInUSD = estimatedReceiveAmount * toPrice;
         this.logger.debug(`${coin}: Final value in USD = ${finalValueInUSD}`);
 
@@ -158,7 +160,7 @@ export class WithdrawService {
 
         // 5. 최종 원화 가치 계산
         const finalValueInKRW = finalValueInUSD * exchangeRate;
-        
+
         // 6. 수익률 계산 ((도착지 가치 - 출발지 가치) / 출발지 가치 * 100)
         const profitRate = ((finalValueInKRW - amount) / amount) * 100;
 
@@ -196,7 +198,7 @@ export class WithdrawService {
 
     // 수익률 기준으로 정렬하고 필터링
     return paths
-      .filter(path => !isNaN(path.profitRate) && path.profitRate > -100) // 비정상적인 수익률 제외
+      .filter((path) => !isNaN(path.profitRate) && path.profitRate > -100) // 비정상적인 수익률 제외
       .sort((a, b) => b.profitRate - a.profitRate)
       .slice(0, 10);
   }
@@ -216,7 +218,7 @@ export class WithdrawService {
         const coinAmount = amount / fromPrice;
 
         // 수량이 0인 경우 스킵
-        if (coinAmount <= 0) {
+        if (coinAmount <= 0 || amount <= 0) {
           continue;
         }
 
@@ -270,7 +272,10 @@ export class WithdrawService {
       }
     }
 
-    return paths.sort((a, b) => b.profitRate - a.profitRate).slice(0, 10);
+    return paths
+      .filter((path) => !isNaN(path.profitRate) && path.profitRate > -100) // 비정상적인 수익률 제외
+      .sort((a, b) => b.profitRate - a.profitRate)
+      .slice(0, 10);
   }
 
   private async getExchangeRate(): Promise<number> {
@@ -319,20 +324,20 @@ export class WithdrawService {
 
       if (exchange === 'binance') {
         if (coin === 'USDT') return 1;
-        
+
         // binance는 항상 USDT 마켓 사용
         const key = createTickerKey('binance', coin, 'USDT');
         const tickerStr = await this.redisService.get(key);
-        
+
         if (!tickerStr) {
           throw new Error(`No price data found for ${coin} on ${exchange}`);
         }
-        
+
         const ticker = JSON.parse(tickerStr);
         if (!ticker || typeof ticker.price !== 'number') {
           throw new Error(`Invalid price data for ${coin} on ${exchange}`);
         }
-        
+
         return ticker.price;
       } else if (exchange === 'bithumb') {
         // 빗썸의 경우 명시적으로 처리
@@ -353,16 +358,16 @@ export class WithdrawService {
         // 업비트의 경우
         const key = createTickerKey(exchange, coin, 'KRW');
         const tickerStr = await this.redisService.get(key);
-        
+
         if (!tickerStr) {
           throw new Error(`No price data found for ${coin} on ${exchange}`);
         }
-        
+
         const ticker = JSON.parse(tickerStr);
         if (!ticker || typeof ticker.price !== 'number') {
           throw new Error(`Invalid price data for ${coin} on ${exchange}`);
         }
-        
+
         return ticker.price;
       }
     } catch (error) {
