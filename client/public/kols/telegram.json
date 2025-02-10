@@ -239,6 +239,17 @@
       "keywords": ["에드작", "노드"],
       "selfIntroduction": "하기 귀찮은걸 할수있게 해줍니다",
       "registeredAt": "2025-02-10"
+    },
+    {
+      "name": "기분좋은 마곤",
+      "link": {
+        "telegram": "https://t.me/magonia_B"
+      },
+      "followers": 12862,
+      "image": "/kols/images/magonia_B.jpeg",
+      "keywords": ["리서치", "온체인 활동"],
+      "selfIntroduction": "기분 가끔 안좋음",
+      "registeredAt": "2025-02-10"
     }
   ],
   "updatedAt": "2025-02-10T00:00:00.000Z"
