@@ -203,6 +203,18 @@
       "keywords": ["에어드랍", "NFT", "디파이"],
       "selfIntroduction": "에어드랍 전문으로 하는 채널입니다.",
       "registeredAt": "2025-02-10"
+    },
+    {
+      "name": "애드작 서리하기",
+      "link": {
+        "telegram": "https://t.me/seori_nft",
+        "youtube": ""
+      },
+      "followers": 296,
+      "image": "/kols/images/seori_nft.jpeg",
+      "keywords": ["에드작", "덱스플레이"],
+      "selfIntroduction": "꿀통못찾고 껄무새하는 방",
+      "registeredAt": "2025-02-10"
     }
   ],
   "updatedAt": "2025-02-10T00:00:00.000Z"
