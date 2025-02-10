@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import NewsDetailSkeleton from "@/components/NewsDetailSkeleton";
 import { clsx } from "clsx";
 import { formatKRWWithUnit } from "@/lib/format";
+import Image from "next/image";
 interface ApiResponse {
   success: boolean;
   data: NewsResponse[];
@@ -70,9 +71,17 @@ export default function NewsDetail({ id }: NewsDetailProps) {
           {news.title}
         </h1>
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-          <span className="text-base sm:text-lg font-medium text-gray-700 dark:text-white/80">
-            {news.symbol}
-          </span>
+          <div className="flex items-center gap-2">
+            <Image
+              src={`https://static.upbit.com/logos/${news.symbol}.png`}
+              alt={news.symbol}
+              width={20}
+              height={20}
+            />
+            <span className="text-base sm:text-lg font-medium text-gray-700 dark:text-white/80">
+              {news.symbol}
+            </span>
+          </div>
           <time className="text-sm text-gray-500 dark:text-gray-400 sm:ml-auto">
             {new Date(news.timestamp).toLocaleString()}
           </time>
@@ -81,7 +90,7 @@ export default function NewsDetail({ id }: NewsDetailProps) {
 
       {/* Content */}
       <div className="prose prose-gray dark:prose-invert max-w-none">
-        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-200 whitespace-pre-wrap leading-relaxed">
+        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-200 whitespace-pre-wrap leading-relaxed break-words">
           {news.content}
         </p>
       </div>
@@ -130,6 +139,24 @@ export default function NewsDetail({ id }: NewsDetailProps) {
           </div>
         </div>
       </div>
+
+      {/* News Data */}
+      {news.newsData && (
+        <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-3 sm:p-4">
+          <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3">
+            분석에 참조한 뉴스 기사 정보:
+          </h2>
+          <ul className="list-disc list-inside">
+            {news.newsData?.map((news) => (
+              <li key={news.url}>
+                <a href={news.url} target="_blank" rel="noopener noreferrer">
+                  {news.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </article>
   );
 }

@@ -7,6 +7,13 @@ export const MarketDataSchema = z.object({
   currentPrice: z.number()
 })
 
+export const NewsDataSchema = z.object({
+  title: z.string(),
+  url: z.string(),
+  source: z.string(),
+  publishedAt: z.string(),
+})
+
 // News schema
 export const NewsSchema = z.object({
   id: z.string(),
@@ -14,7 +21,8 @@ export const NewsSchema = z.object({
   symbol: z.string(),
   content: z.string(),
   timestamp: z.string(),
-  marketData: MarketDataSchema
+  marketData: MarketDataSchema,
+  newsData: z.array(NewsDataSchema).optional(),
 })
 
 // Create news request schema

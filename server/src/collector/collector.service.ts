@@ -79,7 +79,7 @@ export class CollectorService {
     }
   }
 
-  @Cron('*/60 * * * * *') // Every 60 seconds
+  @Cron('*/15 * * * * *') // Every 15 seconds
   async collectExchangeRate() {
     try {
       const rate = await this.exchangeRateClient.getUsdKrwRate();

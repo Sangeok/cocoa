@@ -1,9 +1,14 @@
-import { WebSocketGateway, WebSocketServer, OnGatewayConnection, OnGatewayDisconnect } from '@nestjs/websockets';
+import {
+  WebSocketGateway,
+  WebSocketServer,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+} from '@nestjs/websockets';
 import { Server } from 'socket.io';
-import { TickerData, CoinPremiumData } from '../collector/types/common.types';
+import { CoinPremiumData } from '../collector/types/common.types';
 import { config } from 'dotenv';
 
-config(); 
+config();
 
 interface ExchangeRateData {
   rate: number;

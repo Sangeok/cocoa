@@ -96,6 +96,7 @@ export class NewsService {
               priceChange: coin.priceChange,
               currentPrice: coin.currentPrice,
             },
+            newsData: newsData,
           });
 
           this.logger.debug(`Generated news for ${coin.symbol}`);
@@ -152,6 +153,7 @@ export class NewsService {
           priceChange: coin.priceChange,
           currentPrice: coin.currentPrice,
         },
+        newsData: newsData,
       });
 
       return savedNews;

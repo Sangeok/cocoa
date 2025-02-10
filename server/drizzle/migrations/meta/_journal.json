@@ -29,6 +29,13 @@
       "when": 1739087261688,
       "tag": "0003_easy_firestar",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1739168167887,
+      "tag": "0004_numerous_shinko_yamashiro",
+      "breakpoints": true
     }
   ]
 }

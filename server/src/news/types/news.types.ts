@@ -8,6 +8,12 @@ export interface NewsData {
     priceChange: number;
     currentPrice: number;
   };
+  newsData: {
+    title: string;
+    url: string;
+    source: string;
+    publishedAt: Date;
+  }[];
 }
 
 export interface NewsQueryOptions {

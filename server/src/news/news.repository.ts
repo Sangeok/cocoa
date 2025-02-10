@@ -15,6 +15,7 @@ export class NewsRepository {
       content: newsData.content,
       timestamp: newsData.timestamp,
       marketData: newsData.marketData,
+      newsData: newsData.newsData,
     });
   }
 
