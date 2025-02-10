@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { RedisService } from '../redis/redis.service';
 import { FeeClient } from '../collector/clients/fee.client';
 import { PathOption, Exchange } from './types/withdraw.types';
-import { createTickerKey, TickerData } from '../collector/types/common.types';
+import { createTickerKey } from '../collector/types/common.types';
 
 @Injectable()
 export class WithdrawService {

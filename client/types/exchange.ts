@@ -10,30 +10,6 @@ export interface ExchangePair {
   toBase: QuoteToken;
 }
 
-export interface Market {
-  exchange: Exchange;
-  symbol: string;
-  price: number;
-  volume: number;
-  timestamp: number;
-}
-
-export interface CoinData {
-  [exchange: string]: {
-    price: number;
-    volume: number;
-    timestamp: number;
-  };
-}
-
-export interface ExchangeRates {
-  USDT: { KRW: number };
-  BTC: { 
-    KRW: number;
-    USDT: number;
-  };
-}
-
 export type SortField = 'name' | 'fromPrice' | 'toPrice' | 'premium' | 'volume' | 'timestamp';
 export type SortDirection = 'asc' | 'desc' | null;
 

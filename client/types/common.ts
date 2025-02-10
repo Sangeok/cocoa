@@ -3,4 +3,5 @@ export interface TickerData {
   quoteToken: string;
   price: number;
   volume: number;
+  change24h: number;
 }

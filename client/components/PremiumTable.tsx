@@ -73,6 +73,8 @@ export default function PremiumTable() {
           toPrice,
           volume: data[exchangePair.from]?.volume || 0,
           timestamp: data[exchangePair.from]?.timestamp || Date.now(),
+          fromPriceChange24h: data[exchangePair.from]?.change24h || 0,
+          toPriceChange24h: data[exchangePair.to]?.change24h || 0,
           priceGapPercent: calculatePriceGap(
             coins,
             {
@@ -275,12 +277,19 @@ export default function PremiumTable() {
                     onClick={() => handleSort("fromPrice")}
                     className="flex items-center justify-end gap-1 whitespace-nowrap w-full"
                   >
-                    {
-                      EXCHANGE_OPTIONS.find(
-                        (option) => option.value === exchangePair.from
-                      )?.label
-                    }{" "}
-                    가격
+                    <div className="flex flex-col items-end gap-1">
+                      <div>
+                        {
+                          EXCHANGE_OPTIONS.find(
+                            (option) => option.value === exchangePair.from
+                          )?.label
+                        }{" "}
+                        가격
+                      </div>
+                      <span className="text-xs text-gray-500 dark:text-gray-400 block">
+                        전일대비(%)
+                      </span>
+                    </div>
                     <SortIcon field="fromPrice" />
                   </button>
                 </th>
@@ -289,16 +298,22 @@ export default function PremiumTable() {
                     onClick={() => handleSort("toPrice")}
                     className="flex items-center justify-end gap-1 whitespace-nowrap w-full"
                   >
-                    {
-                      EXCHANGE_OPTIONS.find(
-                        (option) => option.value === exchangePair.to
-                      )?.label
-                    }{" "}
-                    가격
+                    <div className="flex flex-col items-end gap-1">
+                      <div>
+                        {
+                          EXCHANGE_OPTIONS.find(
+                            (option) => option.value === exchangePair.to
+                          )?.label
+                        }{" "}
+                        가격
+                      </div>
+                      <span className="text-xs text-gray-500 dark:text-gray-400 block">
+                        전일대비(%)
+                      </span>
+                    </div>
                     <SortIcon field="toPrice" />
                   </button>
                 </th>
-
                 <th className="px-4 sm:px-6 py-3 text-right">
                   <button
                     onClick={() => handleSort("volume")}
@@ -358,17 +373,45 @@ export default function PremiumTable() {
                       {formatPercent(market.priceGapPercent)}
                     </span>
                   </td>
-                  <td className="px-4 sm:px-6 py-4 text-right whitespace-nowrap text-gray-900 dark:text-white">
+                  <td className="px-4 sm:px-6 py-4 text-right font-medium whitespace-nowrap text-gray-800 dark:text-gray-200">
                     {(exchangePair.fromBase === "KRW" ||
                       exchangePair.fromBase === "USDT") &&
                       "₩"}
                     {formatPrice(market.fromPrice, exchangePair.fromBase)}
+                    {
+                      <div
+                        className={clsx(
+                          "text-xs",
+                          market.fromPriceChange24h > 0
+                            ? "text-green-500 dark:text-green-400"
+                            : market.fromPriceChange24h < 0
+                            ? "text-red-500 dark:text-red-400"
+                            : "text-gray-500 dark:text-gray-400"
+                        )}
+                      >
+                        {market.fromPriceChange24h.toFixed(2)}%
+                      </div>
+                    }
                   </td>
-                  <td className="px-4 sm:px-6 py-4 text-right whitespace-nowrap text-gray-900 dark:text-white">
+                  <td className="px-4 sm:px-6 py-4 text-right font-medium whitespace-nowrap text-gray-800 dark:text-gray-200">
                     {(exchangePair.toBase === "KRW" ||
                       exchangePair.toBase === "USDT") &&
                       "₩"}
                     {formatPrice(market.toPrice, exchangePair.toBase)}
+                    {
+                      <div
+                        className={clsx(
+                          "text-xs",
+                          market.toPriceChange24h > 0
+                            ? "text-green-500 dark:text-green-400"
+                            : market.toPriceChange24h < 0
+                            ? "text-red-500 dark:text-red-400"
+                            : "text-gray-500 dark:text-gray-400"
+                        )}
+                      >
+                        {market.toPriceChange24h.toFixed(2)}%
+                      </div>
+                    }
                   </td>
 
                   <td className="px-4 sm:px-6 py-4 text-right text-gray-500 dark:text-gray-400">

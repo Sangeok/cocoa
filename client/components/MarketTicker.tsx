@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, MouseEvent } from "react";
+import React, { useRef, useState, MouseEvent } from "react";
 import Image from "next/image";
 import { useExchangeRate, useUpbitMarketData } from "@/store/useMarketStore";
 import Link from "next/link";
@@ -94,30 +94,32 @@ export default function MarketTicker() {
     );
   };
 
-  const CoinItem = ({ coin }: { coin: (typeof krwMarketPrices)[0] }) => (
-    <span className="inline-flex items-center px-4 h-8 text-sm text-gray-600 dark:text-gray-400">
-      <div className="flex items-center">
-        <Image
-          src={`https://static.upbit.com/logos/${
-            coin.symbol.split("-")[0]
-          }.png`}
-          alt={coin.symbol.split("-")[0]}
-          width={16}
-          height={16}
-          className="mr-2"
-        />
-        <span className="font-medium text-gray-900 dark:text-white">
-          {coin.symbol.split("-")[0]}
+  const CoinItem = React.memo(
+    ({ coin }: { coin: (typeof krwMarketPrices)[0] }) => (
+      <span className="inline-flex items-center px-4 h-8 text-sm text-gray-600 dark:text-gray-400">
+        <div className="flex items-center">
+          <Image
+            src={`https://static.upbit.com/logos/${
+              coin.symbol.split("-")[0]
+            }.png`}
+            alt={coin.symbol.split("-")[0]}
+            width={16}
+            height={16}
+            className="mr-2"
+          />
+          <span className="font-medium text-gray-900 dark:text-white">
+            {coin.symbol.split("-")[0]}
+          </span>
+        </div>
+        <span
+          className={`ml-4 ${getWidthClass(
+            coin.price
+          )} text-right text-gray-900 dark:text-white`}
+        >
+          {formatPrice(coin.price)}
         </span>
-      </div>
-      <span
-        className={`ml-4 ${getWidthClass(
-          coin.price
-        )} text-right text-gray-900 dark:text-white`}
-      >
-        {formatPrice(coin.price)}
       </span>
-    </span>
+    )
   );
 
   return (

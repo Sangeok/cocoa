@@ -98,6 +98,7 @@ export class UpbitWebsocketClient implements OnModuleInit {
         quoteToken,
         price: data.trade_price,
         volume: data.acc_trade_price_24h,
+        change24h: data.signed_change_rate,
         timestamp: data.timestamp,
       };
 

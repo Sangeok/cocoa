@@ -108,6 +108,7 @@ export class BinanceClient {
             quoteToken,
             price: parseFloat(ticker.lastPrice),
             volume: parseFloat(ticker.volume),
+            change24h: parseFloat(ticker.priceChangePercent),
             timestamp: ticker.closeTime,
           };
 
@@ -119,7 +120,9 @@ export class BinanceClient {
       }
     } else if (!response.id?.startsWith('validate-')) {
       const error = (response as BinanceErrorResponse).error;
-      this.logger.error(`Ticker request failed: ${error?.msg || 'Unknown error'}`);
+      this.logger.error(
+        `Ticker request failed: ${error?.msg || 'Unknown error'}`,
+      );
       await this.validateSymbols(); // API 에러 발생 시 재검증
     }
   }
@@ -148,7 +151,7 @@ export class BinanceClient {
         .from(binanceMarkets)
         .execute();
 
-      this.validSymbols = new Set(validatedSymbols.map(s => s.symbol));
+      this.validSymbols = new Set(validatedSymbols.map((s) => s.symbol));
 
       // 검증된 심볼이 없는 경우에만 검증 진행
       if (this.validSymbols.size === 0) {
@@ -177,13 +180,13 @@ export class BinanceClient {
       .execute();
 
     // 이미 검증된 심볼들을 validSymbols에 추가
-    validatedSymbols.forEach(symbol => {
+    validatedSymbols.forEach((symbol) => {
       this.validSymbols.add(symbol.symbol);
     });
 
     // 아직 검증되지 않은 심볼만 검증
     const unvalidatedSymbols = this.symbols.filter(
-      symbol => !this.validSymbols.has(symbol)
+      (symbol) => !this.validSymbols.has(symbol),
     );
 
     for (let i = 0; i < unvalidatedSymbols.length; i += this.CHUNK_SIZE) {
@@ -213,7 +216,7 @@ export class BinanceClient {
                   updatedAt: now,
                 },
               });
-          })
+          }),
         );
       } else if (symbolsChunk.length > 1) {
         // 개별 검증
@@ -244,14 +247,14 @@ export class BinanceClient {
     }
 
     this.logger.debug(
-      `Validation complete. Valid symbols: ${this.validSymbols.size}`
+      `Validation complete. Valid symbols: ${this.validSymbols.size}`,
     );
   }
 
   private async validateSymbolChunk(symbols: string[]): Promise<boolean> {
     return new Promise((resolve) => {
       const requestId = `validate-${new Date().getTime()}`;
-      
+
       // 이 청크에 대한 응답을 기다리는 핸들러
       const responseHandler = async (data: Buffer) => {
         try {
@@ -259,13 +262,14 @@ export class BinanceClient {
           if (response.id === requestId) {
             // 응답을 받으면 핸들러 제거
             this.ws.removeListener('message', responseHandler);
-            
+
             if (response.status === 200) {
               resolve(true);
             } else {
               this.logger.error(
                 `Failed to validate symbols [${symbols.join(',')}]: ${
-                  (response as BinanceErrorResponse).error?.msg || 'Unknown error'
+                  (response as BinanceErrorResponse).error?.msg ||
+                  'Unknown error'
                 }`,
               );
               resolve(false);
@@ -287,7 +291,7 @@ export class BinanceClient {
         method: 'ticker.24hr',
         params: {
           symbols: symbols,
-          type: 'MINI',
+          type: 'FULL',
         },
       };
 
@@ -342,16 +346,23 @@ export class BinanceClient {
     this.logger.debug(`Requesting ${validSymbolsList.length} valid symbols`);
 
     // weight 제한을 고려한 청크 사이즈로 요청
-    for (let i = 0; i < validSymbolsList.length; i += this.TICKER_REQUEST_CHUNK_SIZE) {
+    for (
+      let i = 0;
+      i < validSymbolsList.length;
+      i += this.TICKER_REQUEST_CHUNK_SIZE
+    ) {
       await this.checkRateLimit();
 
-      const symbolsChunk = validSymbolsList.slice(i, i + this.TICKER_REQUEST_CHUNK_SIZE);
+      const symbolsChunk = validSymbolsList.slice(
+        i,
+        i + this.TICKER_REQUEST_CHUNK_SIZE,
+      );
       const request: BinanceRequest = {
         id: `tickers-${new Date().getTime()}`,
         method: 'ticker.24hr',
         params: {
           symbols: symbolsChunk,
-          type: 'MINI',
+          type: 'FULL',
         },
       };
 
@@ -360,7 +371,7 @@ export class BinanceClient {
         this.requestCount++;
 
         if (i + this.TICKER_REQUEST_CHUNK_SIZE < validSymbolsList.length) {
-          await new Promise((resolve) => setTimeout(resolve, 200));
+          await new Promise((resolve) => setTimeout(resolve, 5000));
         }
       } catch (error) {
         this.logger.error(`Failed to request tickers: ${error.message}`);

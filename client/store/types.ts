@@ -38,6 +38,7 @@ export interface MarketStore extends MarketState {
 export interface TickerData {
   price: number;
   volume: number;
+  change24h: number;
   timestamp: number;
 }
 

@@ -113,9 +113,10 @@ export class BithumbWebsocketClient implements OnModuleInit {
         exchange: 'bithumb',
         baseToken,
         quoteToken,
-        price: parseFloat(data.content.closePrice),
-        volume: parseFloat(data.content.value),
-        timestamp: Date.parse(`${data.content.date}${data.content.time}`),
+        price: parseFloat(data.content.lastPrice),
+        volume: parseFloat(data.content.volume),
+        change24h: parseFloat(data.content.priceChangePercent),
+        timestamp: data.content.closeTime,
       };
       await this.redisService.set(redisKey, JSON.stringify(tickerData));
     } catch (error) {

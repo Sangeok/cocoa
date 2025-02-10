@@ -9,6 +9,7 @@ export interface TickerData {
   quoteToken: string;
   price: number;
   volume: number;
+  change24h: number;
   timestamp: number;
 }
 
@@ -16,6 +17,7 @@ export interface ExchangeTickerData {
   price: number;
   timestamp: number;
   volume: number;
+  change24h: number;
 }
 
 export interface CoinPremiumData {

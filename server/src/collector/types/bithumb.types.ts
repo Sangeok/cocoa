@@ -7,21 +7,26 @@ export interface BithumbMarketResponse {
 
 export interface BithumbTickerContent {
   symbol: string;
-  tickType: string;
-  date: string;
-  time: string;
-  openPrice: string;
-  closePrice: string;
-  lowPrice: string;
-  highPrice: string;
-  value: string;
-  volume: string;
-  sellVolume: string;
-  buyVolume: string;
+  priceChange: string;
+  priceChangePercent: string;
+  weightedAvgPrice: string;
   prevClosePrice: string;
-  chgRate: string;
-  chgAmt: string;
-  volumePower: string;
+  lastPrice: string;
+  lastQty: string;
+  bidPrice: string;
+  bidQty: string;
+  askPrice: string;
+  askQty: string;
+  openPrice: string;
+  highPrice: string;
+  lowPrice: string;
+  volume: string;
+  quoteVolume: string;
+  openTime: number;
+  closeTime: number;
+  firstId: number;
+  lastId: number;
+  count: number;
 }
 
 export interface BithumbTickerResponse {

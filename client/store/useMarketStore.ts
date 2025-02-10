@@ -6,6 +6,7 @@ interface MarketData {
   price: number;
   timestamp: number;
   volume: number;
+  change24h: number;
 }
 
 interface CoinData {

@@ -43,6 +43,7 @@ export class ExchangeService {
           price: tickerData.price,
           timestamp: tickerData.timestamp,
           volume: tickerData.volume,
+          change24h: tickerData.change24h,
         };
       }
 
@@ -62,6 +63,7 @@ export class ExchangeService {
           price: tickerData.price,
           timestamp: tickerData.timestamp,
           volume: tickerData.volume,
+          change24h: tickerData.change24h,
         };
       }
 
@@ -81,6 +83,7 @@ export class ExchangeService {
           price: tickerData.price,
           timestamp: tickerData.timestamp,
           volume: tickerData.volume,
+          change24h: tickerData.change24h,
         };
       }
 
