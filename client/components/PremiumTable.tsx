@@ -74,7 +74,8 @@ export default function PremiumTable() {
           volume: data[exchangePair.from]?.volume || 0,
           timestamp: data[exchangePair.from]?.timestamp || Date.now(),
           fromPriceChange24h: data[exchangePair.from]?.change24h || 0,
-          toPriceChange24h: data[exchangePair.to]?.change24h || 0,
+          toPriceChange24h:
+            coins[toMarketSymbol]?.[exchangePair.to]?.change24h || 0,
           priceGapPercent: calculatePriceGap(
             coins,
             {
