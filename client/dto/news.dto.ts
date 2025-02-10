@@ -22,7 +22,7 @@ export const NewsSchema = z.object({
   content: z.string(),
   timestamp: z.string(),
   marketData: MarketDataSchema,
-  newsData: z.array(NewsDataSchema).optional(),
+  newsData: z.array(NewsDataSchema).nullable(),
 })
 
 // Create news request schema
