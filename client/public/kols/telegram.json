@@ -2,7 +2,10 @@
   "list": [
     {
       "name": "영우의 크립토로 백억벌기",
-      "link": "https://t.me/kwakCrypto",
+      "link": {
+        "telegram": "https://t.me/kwakCrypto",
+        "youtube": "https://www.youtube.com/@youngwoo1234"
+      },
       "followers": 1600,
       "image": "/kols/images/kwakCrypto.jpeg",
       "keywords": ["폐지줍기", "에드작"],
@@ -11,11 +14,26 @@
     },
     {
       "name": "멍청코인",
-      "link": "https://t.me/karmycrypto",
+      "link": {
+        "telegram": "https://t.me/karmycrypto",
+        "youtube": ""
+      },
       "followers": 3200,
       "image": "/kols/images/karmycrypto.jpeg",
       "keywords": ["덱스플레이"],
       "selfIntroduction": "아이큐 20 디젠",
+      "registeredAt": "2025-02-10"
+    },
+    {
+      "name": "폐지줍기 연구소",
+      "link": {
+        "telegram": "https://t.me/airdr0p_lab",
+        "youtube": ""
+      },
+      "followers": 14230,
+      "image": "/kols/images/airdr0p_lab.jpeg",
+      "keywords": ["폐지줍기", "뉴스"],
+      "selfIntroduction": "web3 사이버렉카",
       "registeredAt": "2025-02-10"
     }
   ],

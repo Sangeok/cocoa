@@ -1,6 +1,9 @@
 export interface KOL {
   name: string;
-  link: string;
+  link: {
+    telegram: string;
+    youtube: string;
+  };
   followers: number;
   image: string;
   keywords: string[];
@@ -11,4 +14,4 @@ export interface KOL {
 export interface KOLData {
   list: KOL[];
   updatedAt: string;
-} 
+}

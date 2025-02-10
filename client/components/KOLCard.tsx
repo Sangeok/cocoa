@@ -1,16 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { formatNumber } from "@/lib/format";
-
-interface KOLCardProps {
-  name: string;
-  link: string;
-  followers: number;
-  image: string;
-  keywords: string[];
-  selfIntroduction: string;
-  registeredAt: string;
-}
+import { KOL } from "@/types/kol";
 
 export default function KOLCard({
   name,
@@ -20,14 +11,9 @@ export default function KOLCard({
   keywords,
   selfIntroduction,
   registeredAt,
-}: KOLCardProps) {
+}: KOL) {
   return (
-    <Link
-      href={link}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="block bg-white dark:bg-gray-900 rounded-lg shadow hover:shadow-md transition-shadow"
-    >
+    <div className="block bg-white dark:bg-gray-900 rounded-lg shadow hover:shadow-md transition-shadow">
       <div className="p-6 space-y-4">
         <div className="flex items-center gap-4">
           <div className="relative w-16 h-16">
@@ -60,10 +46,42 @@ export default function KOLCard({
             </span>
           ))}
         </p>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          등록일: {registeredAt}
-        </p>
+        <div className="flex gap-2 justify-between items-center">
+          <div className="flex items-center gap-3">
+            {link.telegram && (
+              <Link
+                href={link.telegram}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Image
+                  src="/icons/telegram.svg"
+                  alt="telegram"
+                  width={28}
+                  height={28}
+                />
+              </Link>
+            )}
+            {link.youtube && (
+              <Link
+                href={link.youtube}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Image
+                  src="/icons/youtube.svg"
+                  alt="youtube"
+                  width={32}
+                  height={32}
+                />
+              </Link>
+            )}
+          </div>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            등록일: {registeredAt}
+          </p>
+        </div>
       </div>
-    </Link>
+    </div>
   );
 }
