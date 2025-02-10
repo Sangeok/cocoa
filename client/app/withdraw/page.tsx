@@ -77,12 +77,14 @@ export default function WithdrawPage() {
             options={[...KOREA_EXCHANGES, ...GLOBAL_EXCHANGES]}
             value={fromExchange}
             onChange={setFromExchange}
+            placeholder="거래소 선택"
           />
           <Select
             label="도착 거래소"
             options={toOptions}
             value={toExchange}
             onChange={setToExchange}
+            placeholder="거래소 선택"
           />
         </div>
 

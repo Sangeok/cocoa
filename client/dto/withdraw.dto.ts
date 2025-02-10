@@ -53,13 +53,13 @@ export type WithdrawResponse = z.infer<typeof WithdrawResponseSchema>
 
 // Constants
 export const KOREA_EXCHANGES = [
-  { value: 'upbit', label: '업비트' },
-  { value: 'bithumb', label: '빗썸' },
-]
+  { value: "upbit", label: "업비트", image: true },
+  { value: "bithumb", label: "빗썸", image: true },
+] as const;
 
 export const GLOBAL_EXCHANGES = [
-  { value: 'binance', label: '바이낸스' },
-]
+  { value: "binance", label: "바이낸스", image: true },
+] as const;
 
 // Helper functions
 export function formatKRW(amount: number): string {
