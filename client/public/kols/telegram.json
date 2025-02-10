@@ -35,6 +35,18 @@
       "keywords": ["폐지줍기", "뉴스"],
       "selfIntroduction": "web3 사이버렉카",
       "registeredAt": "2025-02-10"
+    },
+    {
+      "name": "바나나우유 2.0",
+      "link": {
+        "telegram": "https://t.me/Bananamilkrich",
+        "youtube": ""
+      },
+      "followers": 8350,
+      "image": "/kols/images/Bananamilkrich.jpeg",
+      "keywords": ["덱스플레이", "에드작"],
+      "selfIntroduction": "돈잘버는방",
+      "registeredAt": "2025-02-10"
     }
   ],
   "updatedAt": "2025-02-10T00:00:00.000Z"
