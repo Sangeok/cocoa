@@ -1,20 +1,22 @@
 export const EXCHANGE_OPTIONS = [
-  { value: "upbit", label: "업비트" },
-  { value: "bithumb", label: "빗썸" },
-  { value: "binance", label: "바이낸스" },
+  { value: "upbit", label: "업비트", image: true },
+  { value: "bithumb", label: "빗썸", image: true },
+  { value: "binance", label: "바이낸스", image: true },
 ] as const;
 
 export const BASE_TOKEN_OPTIONS = {
   upbit: [
-    { value: "KRW", label: "KRW" },
-    { value: "BTC", label: "BTC" },
-    { value: "USDT", label: "USDT" },
+    { value: "KRW", label: "KRW", image: true },
+    { value: "BTC", label: "BTC", image: true },
+    { value: "USDT", label: "USDT", image: true },
   ],
   bithumb: [
-    { value: "KRW", label: "KRW" },
-    { value: "BTC", label: "BTC" },
+    { value: "KRW", label: "KRW", image: true },
+    { value: "BTC", label: "BTC", image: true },
   ],
-  binance: [{ value: "USDT", label: "USDT" }],
+  binance: [
+    { value: "USDT", label: "USDT", image: true }
+  ],
 } as const;
 
 // 타입 추출을 위한 헬퍼 타입

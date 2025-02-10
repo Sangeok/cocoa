@@ -4,10 +4,12 @@ import { Fragment } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { ChevronUpDownIcon } from "@heroicons/react/24/outline";
 import { clsx } from "clsx";
+import Image from "next/image";
 
 interface SelectOption {
   value: string;
   label: string;
+  image?: boolean;
 }
 
 interface SelectProps {
@@ -33,6 +35,23 @@ export default function Select({
 }: SelectProps) {
   const selectedOption = options.find((option) => option.value === value);
 
+  const renderOptionContent = (option: SelectOption) => (
+    <div className="flex items-center gap-2">
+      {option.image && (
+        <Image
+          src={option.value === "KRW" || option.value === "USDT" || option.value === "BTC"
+            ? `https://static.upbit.com/logos/${option.value}.png`
+            : `/exchanges/${option.value}.svg`}
+          alt={option.label}
+          width={20}
+          height={20}
+          className="w-5 h-5"
+        />
+      )}
+      <span>{option.label}</span>
+    </div>
+  );
+
   return (
     <Listbox value={value} onChange={onChange} disabled={disabled}>
       {() => (
@@ -56,7 +75,11 @@ export default function Select({
               )}
             >
               <span className="block truncate text-gray-900 dark:text-white">
-                {selectedOption ? selectedOption.label : placeholder}
+                {selectedOption ? (
+                  renderOptionContent(selectedOption)
+                ) : (
+                  placeholder
+                )}
               </span>
               <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                 <ChevronUpDownIcon
@@ -94,16 +117,7 @@ export default function Select({
                       )
                     }
                   >
-                    {({ selected }) => (
-                      <span
-                        className={clsx(
-                          "block truncate",
-                          selected && "font-semibold"
-                        )}
-                      >
-                        {option.label}
-                      </span>
-                    )}
+                    {renderOptionContent(option)}
                   </Listbox.Option>
                 ))}
               </Listbox.Options>
