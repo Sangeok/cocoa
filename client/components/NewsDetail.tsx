@@ -9,6 +9,7 @@ import NewsDetailSkeleton from "@/components/NewsDetailSkeleton";
 import { clsx } from "clsx";
 import { formatKRWWithUnit } from "@/lib/format";
 import Image from "next/image";
+
 interface ApiResponse {
   success: boolean;
   data: NewsResponse[];
@@ -17,6 +18,24 @@ interface ApiResponse {
 interface NewsDetailProps {
   id: string;
 }
+
+const formatContent = (content: string) => {
+  // 문장 단위로 분리 (마침표, 느낌표, 물음표 기준)
+  const sentences = content.split(/(?<=[.!?])\s+/);
+  
+  // 3문장씩 그룹화하여 단락 만들기
+  const paragraphs = sentences.reduce((acc: string[], sentence, index) => {
+    const paragraphIndex = Math.floor(index / 3);
+    if (!acc[paragraphIndex]) {
+      acc[paragraphIndex] = sentence;
+    } else {
+      acc[paragraphIndex] += ' ' + sentence;
+    }
+    return acc;
+  }, []);
+
+  return paragraphs;
+};
 
 export default function NewsDetail({ id }: NewsDetailProps) {
   const [news, setNews] = useState<NewsResponse | null>(null);
@@ -90,9 +109,16 @@ export default function NewsDetail({ id }: NewsDetailProps) {
 
       {/* Content */}
       <div className="prose prose-gray dark:prose-invert max-w-none">
-        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-200 whitespace-pre-wrap leading-relaxed break-words">
-          {news.content}
-        </p>
+        <div className="text-sm sm:text-base text-gray-600 dark:text-gray-200 space-y-4">
+          {formatContent(news.content).map((paragraph, index) => (
+            <p 
+              key={index} 
+              className="whitespace-pre-wrap leading-relaxed break-all sm:break-words"
+            >
+              {paragraph}
+            </p>
+          ))}
+        </div>
       </div>
 
       {/* Market Data */}
