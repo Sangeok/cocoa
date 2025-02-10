@@ -142,6 +142,67 @@
       "keywords": ["에드작"],
       "selfIntroduction": "돈 되면 움직이는 올라운더 파머",
       "registeredAt": "2025-02-10"
+    },
+    {
+      "name": "고구마의 비트코인 생존일기",
+      "link": {
+        "telegram": "https://t.me/ggogumma",
+        "x": "https://x.com/GGo_gum_ma?t=o9lTtXKuik6MINPVLrBoNA&s=09",
+        "youtube": "https://www.youtube.com/@ggogumma"
+      },
+      "followers": 153,
+      "image": "/kols/images/ggogumma.jpeg",
+      "keywords": ["매매", "선물"],
+      "selfIntroduction": "코인 매매하다 반강제로 코인만드는 사람",
+      "registeredAt": "2025-02-10"
+    },
+    {
+      "name": "시골소녀의 반지하 탈출기",
+      "link": {
+        "telegram": "https://t.me/mysigolgirl",
+        "x": "https://x.com/sigolgirl"
+      },
+      "followers": 90,
+      "image": "/kols/images/mysigolgirl.jpeg",
+      "keywords": ["폐지줍기", "에드작"],
+      "selfIntroduction": "시골소녀의 코인으로 우당탕탕 반지하 탈출하기 프로젝트",
+      "registeredAt": "2025-02-10"
+    },
+    {
+      "name": "크립토 부엉이",
+      "link": {
+        "telegram": "https://t.me/CryptoOwlNotice",
+        "youtube": ""
+      },
+      "followers": 5075,
+      "image": "/kols/images/CryptoOwlNotice.jpeg",
+      "keywords": ["에드작", "증정금", "NFT", "이벤트"],
+      "selfIntroduction": "돈 되는건 다하는 채널!",
+      "registeredAt": "2025-02-10"
+    },
+    {
+      "name": "DH CALL 공지방",
+      "link": {
+        "telegram": "https://t.me/DHCALL0",
+        "x": "https://x.com/DHKM95?t=XPlJ8rlRy7YBxrYYSJEeTQ&s=09"
+      },
+      "followers": 2655,
+      "image": "/kols/images/DHCALL0.jpeg",
+      "keywords": ["밈"],
+      "selfIntroduction": "코인 안팔아요. 크립토로 100억벌기.",
+      "registeredAt": "2025-02-10"
+    },
+    {
+      "name": "개인적인DYOR",
+      "link": {
+        "telegram": "https://t.me/LEEHEESANGDYOR",
+        "youtube": ""
+      },
+      "followers": 6625,
+      "image": "/kols/images/LEEHEESANGDYOR.jpeg",
+      "keywords": ["에어드랍", "NFT", "디파이"],
+      "selfIntroduction": "에어드랍 전문으로 하는 채널입니다.",
+      "registeredAt": "2025-02-10"
     }
   ],
   "updatedAt": "2025-02-10T00:00:00.000Z"
