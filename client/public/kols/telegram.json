@@ -227,6 +227,18 @@
       "keywords": ["에어드랍 소개"],
       "selfIntroduction": "잃은 돈 되찾아올때까지 코인함",
       "registeredAt": "2025-02-10"
+    },
+    {
+      "name": "종명이의 딸깍",
+      "link": {
+        "telegram": "https://t.me/jh_6598",
+        "x": "https://x.com/hyeon__dev"
+      },
+      "followers": 2537,
+      "image": "/kols/images/jh_6598.jpeg",
+      "keywords": ["에드작", "노드"],
+      "selfIntroduction": "하기 귀찮은걸 할수있게 해줍니다",
+      "registeredAt": "2025-02-10"
     }
   ],
   "updatedAt": "2025-02-10T00:00:00.000Z"
