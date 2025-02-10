@@ -4,7 +4,7 @@ import React, { useRef, useState, MouseEvent } from "react";
 import Image from "next/image";
 import { useExchangeRate, useUpbitMarketData } from "@/store/useMarketStore";
 import Link from "next/link";
-
+import { formatKRWWithUnit } from "@/lib/format";
 export default function MarketTicker() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const exchangeRate = useExchangeRate();
@@ -41,6 +41,8 @@ export default function MarketTicker() {
       symbol,
       price: data.upbit!.price,
       timestamp: data.upbit!.timestamp,
+      image: `https://static.upbit.com/logos/${symbol.split("-")[0]}.png`,
+      change24h: data.upbit!.change24h,
     }))
     .sort((a, b) => b.price - a.price); // 가격 기준 내림차순 정렬
 
@@ -79,11 +81,11 @@ export default function MarketTicker() {
 
   const getWidthClass = (price: number) => {
     const digits = Math.floor(Math.log10(price)) + 1;
-    if (digits <= 4) return "w-[50px]"; // ~9,999
-    if (digits <= 5) return "w-[60px]"; // ~99,999
-    if (digits <= 6) return "w-[70px]"; // ~999,999
-    if (digits <= 7) return "w-[80px]"; // ~9,999,999
-    return "w-[90px]"; // 10,000,000~
+    if (digits <= 4) return "w-[90px]"; // ~9,999
+    if (digits <= 5) return "w-[100px]"; // ~99,999
+    if (digits <= 6) return "w-[110px]"; // ~999,999
+    if (digits <= 7) return "w-[120px]"; // ~9,999,999
+    return "w-[130px]"; // 10,000,000~
   };
 
   const formatPrice = (price: number) => {
@@ -96,27 +98,26 @@ export default function MarketTicker() {
 
   const CoinItem = React.memo(
     ({ coin }: { coin: (typeof krwMarketPrices)[0] }) => (
-      <span className="inline-flex items-center px-4 h-8 text-sm text-gray-600 dark:text-gray-400">
+      <span className="inline-flex items-center px-4 h-8 text-sm text-gray-600 dark:text-gray-400 font-medium mr-1">
         <div className="flex items-center">
           <Image
-            src={`https://static.upbit.com/logos/${
-              coin.symbol.split("-")[0]
-            }.png`}
+            src={coin.image}
             alt={coin.symbol.split("-")[0]}
             width={16}
             height={16}
-            className="mr-2"
+            className="mr-1"
           />
-          <span className="font-medium text-gray-900 dark:text-white">
+          <span className="font-bold text-gray-900 dark:text-white">
             {coin.symbol.split("-")[0]}
           </span>
         </div>
         <span
-          className={`ml-4 ${getWidthClass(
-            coin.price
-          )} text-right text-gray-900 dark:text-white`}
+          className={`ml-2 ${getWidthClass(coin.price)} text-right ${
+            coin.change24h > 0 ? "text-green-500" : "text-red-500"
+          }`}
         >
-          {formatPrice(coin.price)}
+          {formatKRWWithUnit(coin.price)}({coin.change24h > 0 ? "+" : ""}
+          {coin.change24h.toFixed(2)}%)
         </span>
       </span>
     )

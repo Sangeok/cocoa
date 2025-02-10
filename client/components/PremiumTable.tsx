@@ -4,7 +4,11 @@ import { useState, useMemo, useEffect } from "react";
 import Image from "next/image";
 import clsx from "clsx";
 import Select from "@/components/Select";
-import { calculatePriceGap } from "@/lib/format";
+import {
+  calculatePriceGap,
+  formatKRWWithUnit,
+  formatCryptoToKRWWithUnit,
+} from "@/lib/format";
 import PremiumTableSkeleton from "@/components/PremiumTableSkeleton";
 import {
   ChevronUpDownIcon,
@@ -99,6 +103,8 @@ export default function PremiumTable() {
   }, [coins, exchangePair, exchangeRate?.rate, searchTerm]);
 
   const handleSort = (field: SortField) => {
+   
+
     setSort((prev) => ({
       field,
       direction:
@@ -130,7 +136,7 @@ export default function PremiumTable() {
         case "premium":
           return modifier * (a.priceGapPercent - b.priceGapPercent);
         case "volume":
-          return modifier * (a.volume - b.volume);
+          return modifier * (a.volume * a.fromPrice - b.volume * b.fromPrice);
         case "timestamp":
           return modifier * (a.timestamp - b.timestamp);
         default:
@@ -320,7 +326,12 @@ export default function PremiumTable() {
                     onClick={() => handleSort("volume")}
                     className="flex items-center justify-end gap-1 whitespace-nowrap w-full"
                   >
-                    거래량
+                    <div className="flex flex-col items-end gap-1">
+                      <div>일일 거래량</div>
+                      <span className="text-xs text-gray-500 dark:text-gray-400 block">
+                        (시작거래소)
+                      </span>
+                    </div>
                     <SortIcon field="volume" />
                   </button>
                 </th>
@@ -374,7 +385,7 @@ export default function PremiumTable() {
                       {formatPercent(market.priceGapPercent)}
                     </span>
                   </td>
-                  <td className="px-4 sm:px-6 py-4 text-right font-medium whitespace-nowrap text-gray-800 dark:text-gray-200">
+                  <td className="px-4 sm:px-6 py-4 text-right font-medium whitespace-nowrap text-gray-700 dark:text-gray-300">
                     {(exchangePair.fromBase === "KRW" ||
                       exchangePair.fromBase === "USDT") &&
                       "₩"}
@@ -394,7 +405,7 @@ export default function PremiumTable() {
                       </div>
                     }
                   </td>
-                  <td className="px-4 sm:px-6 py-4 text-right font-medium whitespace-nowrap text-gray-800 dark:text-gray-200">
+                  <td className="px-4 sm:px-6 py-4 text-right font-medium whitespace-nowrap text-gray-700 dark:text-gray-300">
                     {(exchangePair.toBase === "KRW" ||
                       exchangePair.toBase === "USDT") &&
                       "₩"}
@@ -416,7 +427,13 @@ export default function PremiumTable() {
                   </td>
 
                   <td className="px-4 sm:px-6 py-4 text-right text-gray-500 dark:text-gray-400">
-                    {formatPrice(market.volume, exchangePair.toBase)}
+                    {exchangePair.fromBase === "KRW"
+                      ? formatKRWWithUnit(market.volume)
+                      : formatCryptoToKRWWithUnit(
+                          market.volume,
+                          market.fromPrice,
+                          exchangeRate.rate
+                        )}
                   </td>
                   <td className="px-4 sm:px-6 py-4 text-right text-gray-500 dark:text-gray-400">
                     {new Date(market.timestamp).toLocaleTimeString()}

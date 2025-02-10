@@ -28,17 +28,20 @@ export function formatKRWWithUnit(amount: number): string {
   if (amount >= 100_000_000) {
     return `${(amount / 100_000_000).toFixed(2)}억`;
   }
-  if (amount >= 1_000_000) {
-    return `${(amount / 1_000_000).toFixed(2)}백만`;
-  }
   if (amount >= 10_000) {
     return `${(amount / 10_000).toFixed(2)}만`;
   }
-  if (amount >= 1_000) {
-    return `${(amount / 1_000).toFixed(2)}천`;
-  }
   return `${amount.toFixed(2)}`;
 }
+
+export function formatCryptoToKRWWithUnit(
+  amount: number,
+  price: number,
+  exchangeRate: number
+): string {
+  return formatKRWWithUnit(amount * price * exchangeRate);
+}
+
 /**
  * 숫자를 암호화폐 수량 형식으로 포맷팅합니다.
  * @param amount 포맷팅할 수량
@@ -183,5 +186,5 @@ export const calculatePriceGap = (
 };
 
 export function formatNumber(num: number): string {
-  return new Intl.NumberFormat('ko-KR').format(num);
+  return new Intl.NumberFormat("ko-KR").format(num);
 }

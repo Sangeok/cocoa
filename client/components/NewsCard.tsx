@@ -17,7 +17,7 @@ export default function NewsCard({ news }: NewsCardProps) {
   return (
     <Link
       href={`/news/${news.id}`}
-      className="block bg-white dark:bg-gray-900 rounded-lg overflow-hidden hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+      className="block bg-white dark:bg-gray-900 rounded-lg overflow-hidden hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
     >
       <article className="p-4 space-y-3">
         {/* Header */}
