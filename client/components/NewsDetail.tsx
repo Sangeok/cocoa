@@ -141,7 +141,7 @@ export default function NewsDetail({ id }: NewsDetailProps) {
       </div>
 
       {/* News Data */}
-      {news.newsData && (
+      {news.newsData && news.newsData.length > 0 && (
         <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-3 sm:p-4">
           <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-3">
             분석에 참조한 뉴스 기사 정보:

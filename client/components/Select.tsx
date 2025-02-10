@@ -36,7 +36,7 @@ export default function Select({
   const selectedOption = options.find((option) => option.value === value);
 
   const renderOptionContent = (option: SelectOption) => (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 whitespace-nowrap">
       {option.image && (
         <Image
           src={option.value === "KRW" || option.value === "USDT" || option.value === "BTC"
@@ -45,10 +45,10 @@ export default function Select({
           alt={option.label}
           width={20}
           height={20}
-          className="w-5 h-5"
+          className="w-5 h-5 flex-shrink-0"
         />
       )}
-      <span>{option.label}</span>
+      <span className="truncate">{option.label}</span>
     </div>
   );
 
@@ -66,7 +66,7 @@ export default function Select({
           <div className="relative">
             <Listbox.Button
               className={clsx(
-                "relative w-full cursor-default rounded-lg py-2.5 pl-3 pr-10 text-left",
+                "relative w-full min-w-[135px] sm:min-w-[100px] cursor-default rounded-lg py-2.5 pl-3 pr-10 text-left",
                 "bg-gray-100 dark:bg-gray-800",
                 "hover:bg-gray-200 dark:hover:bg-gray-700",
                 "focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 dark:focus-visible:ring-white/25",
@@ -97,7 +97,7 @@ export default function Select({
             >
               <Listbox.Options
                 className={clsx(
-                  "absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg",
+                  "absolute z-10 mt-1 max-h-60 w-full min-w-[135px] sm:min-w-[100px] overflow-auto rounded-lg",
                   "bg-gray-100 dark:bg-gray-800 py-1",
                   "focus:outline-none shadow-lg",
                   "scrollbar-thin scrollbar-track-transparent dark:scrollbar-track-transparent scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-600"
