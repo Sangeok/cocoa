@@ -188,3 +188,56 @@ export const calculatePriceGap = (
 export function formatNumber(num: number): string {
   return new Intl.NumberFormat("ko-KR").format(num);
 }
+
+/**
+ * 가격을 포맷팅합니다.
+ * @param price 포맷팅할 가격
+ * @param decimals 소수점 자릿수 (기본값: 0)
+ * @returns 포맷팅된 가격 문자열
+ */
+export function formatPrice(price: number, decimals: number = 0): string {
+  return new Intl.NumberFormat("ko-KR", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(price);
+}
+
+/**
+ * 퍼센트를 포맷팅합니다.
+ * @param percent 포맷팅할 퍼센트 값
+ * @param decimals 소수점 자릿수 (기본값: 2)
+ * @returns 포맷팅된 퍼센트 문자열 (예: "12.34%")
+ */
+export function formatPercent(percent: number, decimals: number = 2): string {
+  return `${new Intl.NumberFormat("ko-KR", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(percent)}%`;
+}
+
+/**
+ * 거래소 가격을 포맷팅합니다.
+ */
+export function formatExchangePrice(
+  price: number,
+  quoteToken: string,
+  exchangeRate: { rate: number }
+): string {
+  let displayPrice = price;
+  let suffix = "";
+
+  if (quoteToken === "BTC") {
+    suffix = " BTC";
+  }
+
+  // 가격 변환 로직
+  if (quoteToken === "USDT") {
+    displayPrice = price * (exchangeRate?.rate || 0);
+  } 
+
+
+  return new Intl.NumberFormat("ko-KR", {
+    maximumFractionDigits: quoteToken === "BTC" ? 8 : 0,
+    minimumFractionDigits: quoteToken === "BTC" ? 8 : 0,
+  }).format(displayPrice) + suffix;
+}

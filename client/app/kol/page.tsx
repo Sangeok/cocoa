@@ -1,70 +1,22 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import KOLCard from "@/components/KOLCard";
 import KOLCardSkeleton from "@/components/KOLCardSkeleton";
 import KOLSortSelect from "@/components/KOLSortSelect";
 import KOLSocialFilter from "@/components/KOLSocialFilter";
-import { apiClient } from "@/lib/axios";
-import { API_ROUTES } from "@/const/api";
-import type {
-  KOL,
-  KOLSortOption,
-  KOLSocialFilter as KOLSocialFilterType,
-} from "@/types/kol";
+import { useKOLs } from "@/hooks/useKOLs";
 
 export default function KOLPage() {
-  const [data, setData] = useState<KOL[] | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [sortOption, setSortOption] = useState<KOLSortOption>("followers-desc");
-  const [socialFilter, setSocialFilter] = useState<KOLSocialFilterType>([]);
-
-  useEffect(() => {
-    const fetchKOLs = async () => {
-      try {
-        const response = await apiClient.get(API_ROUTES.KOL.GET.url);
-        setData(response.data);
-      } catch (err) {
-        console.error("Failed to fetch KOLs:", err);
-        setError("KOL 목록을 불러오는데 실패했습니다.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchKOLs();
-  }, []);
-
-  const filteredAndSortedKOLs = useMemo(() => {
-    if (!data) return null;
-
-    let filtered = data;
-
-    // 소셜 필터 적용
-    if (socialFilter.length > 0) {
-      filtered = filtered.filter((kol) =>
-        socialFilter.every((social) => kol[social])
-      );
-    }
-
-    // 정렬 적용
-    return [...filtered].sort((a, b) => {
-      switch (sortOption) {
-        case "followers-desc":
-          return b.followers - a.followers;
-        case "followers-asc":
-          return a.followers - b.followers;
-        case "registered-desc":
-          return b.id.localeCompare(a.id);
-        case "registered-asc":
-          return a.id.localeCompare(b.id);
-        default:
-          return 0;
-      }
-    });
-  }, [data, sortOption, socialFilter]);
+  const {
+    kols,
+    isLoading,
+    error,
+    sortOption,
+    setSortOption,
+    socialFilter,
+    setSocialFilter,
+  } = useKOLs();
 
   if (error) {
     return (
@@ -82,7 +34,7 @@ export default function KOLPage() {
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
               국내 KOL 목록
             </h1>
-            {data && (
+            {kols && (
               <p className="mt-2 text-gray-500 dark:text-gray-400">
                 마지막 업데이트: {new Date().toLocaleDateString()}
               </p>
@@ -116,9 +68,7 @@ export default function KOLPage() {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {isLoading
             ? [...Array(9)].map((_, i) => <KOLCardSkeleton key={i} />)
-            : filteredAndSortedKOLs?.map((kol) => (
-                <KOLCard key={kol.id} {...kol} />
-              ))}
+            : kols?.map((kol) => <KOLCard key={kol.id} {...kol} />)}
         </div>
       </div>
     </div>
