@@ -1,10 +1,10 @@
 export interface MarketPair {
-  baseToken: string; // 실제 거래되는 토큰 (BTC, ETH 등)
-  quoteToken: string; // 가격의 기준이 되는 토큰 (KRW, USDT 등)
+  baseToken: string; // 실제 거래되는 토큰 (BTC, ETH, XRP, DOGE, SOL, ADA, APE, 등)
+  quoteToken: string; // 가격의 기준이 되는 토큰 (KRW, USDT, USDC, BTC 등)
 }
 
 export interface TickerData {
-  exchange: 'upbit' | 'binance' | 'bithumb';
+  exchange: 'upbit' | 'binance' | 'bithumb' | 'coinone';
   baseToken: string;
   quoteToken: string;
   price: number;
@@ -25,6 +25,7 @@ export interface CoinPremiumData {
     upbit?: ExchangeTickerData;
     binance?: ExchangeTickerData;
     bithumb?: ExchangeTickerData;
+    coinone?: ExchangeTickerData;
   };
 }
 

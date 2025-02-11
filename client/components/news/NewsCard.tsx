@@ -5,6 +5,8 @@ import { clsx } from "clsx";
 import Link from "next/link";
 import { formatKRWWithUnit } from "@/lib/format";
 import Image from "next/image";
+import { UPBIT_STATIC_IMAGE_URL } from "@/const";
+
 interface NewsCardProps {
   news: News;
 }
@@ -24,9 +26,7 @@ export default function NewsCard({ news }: NewsCardProps) {
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-2">
             <Image
-              src={`https://static.upbit.com/logos/${
-                news.symbol.split("-")[0]
-              }.png`}
+              src={`${UPBIT_STATIC_IMAGE_URL}/${news.symbol.split("-")[0]}.png`}
               alt={news.symbol.split("-")[0]}
               width={20}
               height={20}

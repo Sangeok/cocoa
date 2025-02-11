@@ -40,10 +40,12 @@ export class TestController {
   async getExchangeFees() {
     const upbitFees = await this.feeClient.getUpbitFees();
     const binanceFees = await this.feeClient.getBinanceFees();
+    const coinoneFees = await this.feeClient.getCoinoneFees();
 
     return {
       upbit: upbitFees,
-      binance: binanceFees
+      binance: binanceFees,
+      coinone: coinoneFees,
     };
   }
 
@@ -65,7 +67,7 @@ export class TestController {
       const topCoins = await this.upbitClient.getTopVolumeCoins(Number(limit));
       return {
         success: true,
-        data: topCoins.map(coin => ({
+        data: topCoins.map((coin) => ({
           ...coin,
           volume: Number(coin.volume.toFixed(0)), // 거래량을 정수로 표시
           priceChange: Number(coin.priceChange.toFixed(2)), // 변동률을 소수점 2자리까지 표시
@@ -129,16 +131,12 @@ export class TestController {
 
   @Post('generate-article')
   async generateArticle(
-    @Body() data: { 
-      symbol: string,
-      twitterData?: any,
-      newsData?: any 
-    }
+    @Body() data: { symbol: string; twitterData?: any; newsData?: any },
   ) {
     try {
       const coinData = await this.upbitClient.getTopVolumeCoins(20);
-      const coin = coinData.find(c => c.symbol === data.symbol);
-      
+      const coin = coinData.find((c) => c.symbol === data.symbol);
+
       if (!coin) {
         throw new Error(`No data found for coin: ${data.symbol}`);
       }
@@ -146,9 +144,14 @@ export class TestController {
       // 트위터와 뉴스 데이터가 제공되지 않은 경우 수집
       // const twitterData = data.twitterData || await this.newsService.collectTwitterData(data.symbol);
       const twitterData = [];
-      const newsData = data.newsData || await this.newsService.collectNewsData(data.symbol);
+      const newsData =
+        data.newsData || (await this.newsService.collectNewsData(data.symbol));
 
-      const article = await this.newsService.generateArticle(coin, twitterData, newsData);
+      const article = await this.newsService.generateArticle(
+        coin,
+        twitterData,
+        newsData,
+      );
       return {
         success: true,
         data: article,
@@ -168,13 +171,13 @@ export class TestController {
       if (exchange) {
         pattern = `ticker-${exchange}-*`;
       }
-      
+
       // 디버깅을 위한 로그 추가
       this.logger.debug(`Searching for pattern: ${pattern}`);
-      
+
       const keys = await this.redisService.getKeys(pattern);
       this.logger.debug(`Found keys: ${keys.join(', ')}`);
-      
+
       const tickers = await Promise.all(
         keys.map(async (key) => {
           const data = await this.redisService.get(key);
@@ -182,9 +185,9 @@ export class TestController {
             symbol: key.replace('ticker-', '').replace(`${exchange}-`, ''),
             data: JSON.parse(data || '{}'),
           };
-        })
+        }),
       );
-      
+
       return {
         success: true,
         data: tickers,
@@ -214,13 +217,13 @@ export class TestController {
         binanceKeys.map(async (key) => {
           const value = await this.redisService.get(key);
           return { key, value };
-        })
+        }),
       );
 
       return {
         totalKeys: allKeys.length,
         binanceKeys: binanceKeys.length,
-        keyValues
+        keyValues,
       };
     } catch (error) {
       this.logger.error('Redis debug failed:', error);
@@ -234,53 +237,33 @@ export class TestController {
       await this.redisService.flushAll();
       return {
         success: true,
-        message: 'All Redis data has been cleared'
+        message: 'All Redis data has been cleared',
       };
     } catch (error) {
       this.logger.error('Failed to flush Redis:', error);
       return {
         success: false,
-        error: error.message
+        error: error.message,
       };
     }
   }
 
-  @Post('redis/flush-binance')
-  async flushBinanceData() {
+  @Post('redis/flush')
+  async flushExchangeData(@Body() data: { exchange: string }) {
     try {
-      const keys = await this.redisService.getKeys('ticker-binance-*');
+      const keys = await this.redisService.getKeys(`ticker-${data.exchange}-*`);
       if (keys.length > 0) {
         await this.redisService.del(...keys);
       }
       return {
         success: true,
-        message: `Cleared ${keys.length} Binance ticker keys`
+        message: `Cleared ${keys.length} ${data.exchange} ticker keys`,
       };
     } catch (error) {
-      this.logger.error('Failed to flush Binance data:', error);
+      this.logger.error(`Failed to flush ${data.exchange} data:`, error);
       return {
         success: false,
-        error: error.message
-      };
-    }
-  }
-
-  @Post('redis/flush-upbit')
-  async flushUpbitData() {
-    try {
-      const keys = await this.redisService.getKeys('ticker-upbit-*');
-      if (keys.length > 0) {
-        await this.redisService.del(...keys);
-      }
-      return {
-        success: true,
-        message: `Cleared ${keys.length} Upbit ticker keys`
-      };
-    } catch (error) {
-      this.logger.error('Failed to flush Upbit data:', error);
-      return {
-        success: false,
-        error: error.message
+        error: error.message,
       };
     }
   }

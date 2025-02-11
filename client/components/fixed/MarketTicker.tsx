@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useExchangeRate, useUpbitMarketData } from "@/store/useMarketStore";
 import Link from "next/link";
 import { formatKRWWithUnit } from "@/lib/format";
+import { UPBIT_STATIC_IMAGE_URL } from "@/const";
 export default function MarketTicker() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const exchangeRate = useExchangeRate();
@@ -41,7 +42,7 @@ export default function MarketTicker() {
       symbol,
       price: data.upbit!.price,
       timestamp: data.upbit!.timestamp,
-      image: `https://static.upbit.com/logos/${symbol.split("-")[0]}.png`,
+      image: `${UPBIT_STATIC_IMAGE_URL}/${symbol.split("-")[0]}.png`,
       change24h: data.upbit!.change24h,
     }))
     .sort((a, b) => b.price - a.price); // 가격 기준 내림차순 정렬

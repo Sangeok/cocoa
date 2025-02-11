@@ -5,7 +5,7 @@ import { Listbox, Transition } from "@headlessui/react";
 import { ChevronUpDownIcon } from "@heroicons/react/24/outline";
 import { clsx } from "clsx";
 import Image from "next/image";
-
+import { UPBIT_STATIC_IMAGE_URL } from "@/const";
 interface SelectOption {
   value: string;
   label: string;
@@ -39,9 +39,13 @@ export default function Select({
     <div className="flex items-center gap-2 whitespace-nowrap">
       {option.image && (
         <Image
-          src={option.value === "KRW" || option.value === "USDT" || option.value === "BTC"
-            ? `https://static.upbit.com/logos/${option.value}.png`
-            : `/exchanges/${option.value}.svg`}
+          src={
+            option.value === "KRW" ||
+            option.value === "USDT" ||
+            option.value === "BTC"
+              ? `${UPBIT_STATIC_IMAGE_URL}/${option.value}.png`
+              : `/exchanges/${option.value}.svg`
+          }
           alt={option.label}
           width={20}
           height={20}
@@ -75,11 +79,9 @@ export default function Select({
               )}
             >
               <span className="block truncate text-gray-900 dark:text-white">
-                {selectedOption ? (
-                  renderOptionContent(selectedOption)
-                ) : (
-                  placeholder
-                )}
+                {selectedOption
+                  ? renderOptionContent(selectedOption)
+                  : placeholder}
               </span>
               <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                 <ChevronUpDownIcon

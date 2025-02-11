@@ -26,6 +26,7 @@ export class ExchangeService {
       const upbitKeys = await this.redisService.getKeys('ticker-upbit-*');
       const binanceKeys = await this.redisService.getKeys('ticker-binance-*');
       const bithumbKeys = await this.redisService.getKeys('ticker-bithumb-*');
+      const coinoneKeys = await this.redisService.getKeys('ticker-coinone-*');
 
       // Process Upbit data
       for (const key of upbitKeys) {
@@ -87,12 +88,35 @@ export class ExchangeService {
         };
       }
 
+      // Process Coinone data
+      for (const key of coinoneKeys) {
+        const data = await this.redisService.get(key);
+        if (!data) continue;
+
+        const tickerData = JSON.parse(data);
+        const symbol = tickerData.baseToken;
+
+        if (!premiumData[`${symbol}-${tickerData.quoteToken}`]) {
+          premiumData[`${symbol}-${tickerData.quoteToken}`] = {};
+        }
+
+        premiumData[`${symbol}-${tickerData.quoteToken}`].coinone = {
+          price: tickerData.price,
+          timestamp: tickerData.timestamp,
+          volume: tickerData.volume,
+          change24h: tickerData.change24h,
+        };
+      }
+
       // Cache the premium data
       await this.redisService.set(
         this.PREMIUM_CACHE_KEY,
         JSON.stringify(premiumData),
       );
 
+      this.logger.log(
+        `Premium data cached: Upbit: ${upbitKeys.length}, Binance: ${binanceKeys.length}, Bithumb: ${bithumbKeys.length}, Coinone: ${coinoneKeys.length}`,
+      );
       // Emit the consolidated data
       this.appGateway.emitCoinPremium(premiumData);
     } catch (error) {

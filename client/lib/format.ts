@@ -87,7 +87,7 @@ export function formatCurrency(value: number): string {
 type QuoteToken = "KRW" | "USDT" | "BTC";
 
 interface Market {
-  exchange: "upbit" | "bithumb" | "binance";
+  exchange: "upbit" | "bithumb" | "binance" | "coinone";
   symbol: string;
   price: number;
   volume: number;
@@ -95,9 +95,9 @@ interface Market {
 }
 
 export type ExchangePair = {
-  from: "upbit" | "bithumb" | "binance";
+  from: "upbit" | "bithumb" | "binance" | "coinone";
   fromBase: string;
-  to: "upbit" | "bithumb" | "binance";
+  to: "upbit" | "bithumb" | "binance" | "coinone";
   toBase: string;
 };
 
@@ -233,11 +233,12 @@ export function formatExchangePrice(
   // 가격 변환 로직
   if (quoteToken === "USDT") {
     displayPrice = price * (exchangeRate?.rate || 0);
-  } 
+  }
 
-
-  return new Intl.NumberFormat("ko-KR", {
-    maximumFractionDigits: quoteToken === "BTC" ? 8 : 0,
-    minimumFractionDigits: quoteToken === "BTC" ? 8 : 0,
-  }).format(displayPrice) + suffix;
+  return (
+    new Intl.NumberFormat("ko-KR", {
+      maximumFractionDigits: quoteToken === "BTC" ? 8 : 0,
+      minimumFractionDigits: quoteToken === "BTC" ? 8 : 0,
+    }).format(displayPrice) + suffix
+  );
 }

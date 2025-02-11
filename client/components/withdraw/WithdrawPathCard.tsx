@@ -4,7 +4,7 @@ import { WithdrawPathResult } from "@/dto/withdraw.dto";
 import { formatKRW, formatCrypto, formatUSD } from "@/lib/format";
 import { clsx } from "clsx";
 import Image from "next/image";
-
+import { UPBIT_STATIC_IMAGE_URL } from "@/const";
 interface WithdrawPathCardProps {
   path: WithdrawPathResult;
 }
@@ -20,7 +20,7 @@ export default function WithdrawPathCard({ path }: WithdrawPathCardProps) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Image
-            src={`https://static.upbit.com/logos/${path.coin}.png`}
+            src={`${UPBIT_STATIC_IMAGE_URL}/${path.coin}.png`}
             alt={path.coin}
             width={24}
             height={24}

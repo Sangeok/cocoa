@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect } from "react";
 import { calculatePriceGap } from "@/lib/format";
 import useMarketStore from "@/store/useMarketStore";
 import useMarketsStore from "@/store/useMarketsStore";
-import type { ExchangePair, SortState, SortField } from "@/types/exchange";
+import type { ExchangePair, SortState } from "@/types/exchange";
 
 export function useMarketData() {
   const { coins, exchangeRate } = useMarketStore();
@@ -37,7 +37,6 @@ export function useMarketData() {
 
   const filteredMarkets = useMemo(() => {
     if (!coins || !exchangeRate?.rate) return [];
-
     return Object.entries(coins)
       .filter(([marketSymbol, data]) => {
         const fromData = data[exchangePair.from];
@@ -132,4 +131,4 @@ export function useMarketData() {
     getKoreanName,
     getSortedMarkets,
   };
-} 
+}

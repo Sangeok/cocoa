@@ -9,6 +9,7 @@ import NewsDetailSkeleton from "@/components/news/NewsDetailSkeleton";
 import { clsx } from "clsx";
 import { formatKRWWithUnit } from "@/lib/format";
 import Image from "next/image";
+import { UPBIT_STATIC_IMAGE_URL } from "@/const";
 
 interface ApiResponse {
   success: boolean;
@@ -92,7 +93,7 @@ export default function NewsDetail({ id }: NewsDetailProps) {
         <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
           <div className="flex items-center gap-2">
             <Image
-              src={`https://static.upbit.com/logos/${news.symbol}.png`}
+              src={`${UPBIT_STATIC_IMAGE_URL}/${news.symbol}.png`}
               alt={news.symbol}
               width={20}
               height={20}

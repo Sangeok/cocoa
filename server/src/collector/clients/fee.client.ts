@@ -8,6 +8,7 @@ export class FeeClient {
   private readonly upbitFees: any;
   private readonly binanceFees: any;
   private readonly bithumbFees: any;
+  private readonly coinoneFees: any;
 
   constructor() {
     const upbitJsonPath = path.join(process.cwd(), 'config', 'upbit-fees.json');
@@ -17,10 +18,12 @@ export class FeeClient {
       'binance-fees.json',
     );
     const bithumbJsonPath = path.join(process.cwd(), 'config', 'bithumb-fees.json');
+    const coinoneJsonPath = path.join(process.cwd(), 'config', 'coinone-fees.json');
 
     this.upbitFees = JSON.parse(fs.readFileSync(upbitJsonPath, 'utf-8'));
     this.binanceFees = JSON.parse(fs.readFileSync(binanceJsonPath, 'utf-8'));
     this.bithumbFees = JSON.parse(fs.readFileSync(bithumbJsonPath, 'utf-8'));
+    this.coinoneFees = JSON.parse(fs.readFileSync(coinoneJsonPath, 'utf-8'));
   }
 
   async getUpbitFees(): Promise<{ symbol: string; withdrawalFee: string }[]> {
@@ -122,6 +125,47 @@ export class FeeClient {
       return fees;
     } catch (error) {
       this.logger.error('Failed to get Bithumb fees', error);
+      throw error;
+    }
+  }
+
+  async getCoinoneFees(): Promise<Array<{
+    symbol: string;
+    network: string;
+    withdrawalFee: string;
+    minimumWithdrawal: string;
+    depositFee: string;
+  }>> {
+    try {
+      const fees: any[] = [];
+
+      this.coinoneFees.currencies.forEach((currency: any) => {
+        if (currency.networks) {
+          // 여러 네트워크가 있는 경우
+          currency.networks.forEach((network: any) => {
+            fees.push({
+              symbol: currency.currency,
+              network: network.network,
+              withdrawalFee: network.withdrawalFee,
+              minimumWithdrawal: network.minimumWithdrawal,
+              depositFee: network.depositFee,
+            });
+          });
+        } else {
+          // 단일 네트워크
+          fees.push({
+            symbol: currency.currency,
+            network: currency.network,
+            withdrawalFee: currency.withdrawalFee,
+            minimumWithdrawal: currency.minimumWithdrawal,
+            depositFee: currency.depositFee,
+          });
+        }
+      });
+
+      return fees;
+    } catch (error) {
+      this.logger.error('Failed to get Coinone fees', error);
       throw error;
     }
   }

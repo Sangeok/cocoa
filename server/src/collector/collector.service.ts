@@ -37,45 +37,15 @@ export class CollectorService {
 
   @Cron(CronExpression.EVERY_HOUR)
   async collectMarkets() {
-    await Promise.all([
-      this.collectUpbitMarkets(),
-      this.collectBithumbMarkets(),
-    ]);
-  }
-
-  private async collectUpbitMarkets() {
     try {
-      this.logger.debug('Collecting Upbit markets...');
-      const markets = await this.upbitClient.getMarkets();
-
-      // Upsert markets data
-      await this.db.transaction(async (tx) => {
-        for (const market of markets) {
-          const payload = {
-            market: market.market,
-            koreanName: market.korean_name,
-            englishName: market.english_name,
-            marketWarning: market.market_warning,
-            updatedAt: new Date(),
-          };
-
-          await tx
-            .insert(upbitMarkets)
-            .values(payload)
-            .onConflictDoUpdate({
-              target: upbitMarkets.market,
-              set: {
-                koreanName: market.korean_name,
-                englishName: market.english_name,
-                marketWarning: market.market_warning,
-                updatedAt: new Date(),
-              },
-            });
-        }
-      });
-      this.logger.debug(`Updated ${markets.length} Upbit markets`);
+      await Promise.all([
+        this.collectUpbitMarkets(),
+        this.collectBithumbMarkets(),
+        this.collectCoinoneMarkets(),
+      ]);
     } catch (error) {
-      this.logger.error('Failed to collect Upbit markets', error);
+      this.logger.error('Failed to collect markets', error);
+      throw error;
     }
   }
 
@@ -116,6 +86,42 @@ export class CollectorService {
       this.logger.debug(`Stored USD-KRW rate history: ${rate}`);
     } catch (error) {
       this.logger.error('Failed to store exchange rate history', error);
+    }
+  }
+
+  private async collectUpbitMarkets() {
+    try {
+      this.logger.debug('Collecting Upbit markets...');
+      const markets = await this.upbitClient.getMarkets();
+
+      // Upsert markets data
+      await this.db.transaction(async (tx) => {
+        for (const market of markets) {
+          const payload = {
+            market: market.market,
+            koreanName: market.korean_name,
+            englishName: market.english_name,
+            marketWarning: market.market_warning,
+            updatedAt: new Date(),
+          };
+
+          await tx
+            .insert(upbitMarkets)
+            .values(payload)
+            .onConflictDoUpdate({
+              target: upbitMarkets.market,
+              set: {
+                koreanName: market.korean_name,
+                englishName: market.english_name,
+                marketWarning: market.market_warning,
+                updatedAt: new Date(),
+              },
+            });
+        }
+      });
+      this.logger.debug(`Updated ${markets.length} Upbit markets`);
+    } catch (error) {
+      this.logger.error('Failed to collect Upbit markets', error);
     }
   }
 
@@ -162,6 +168,50 @@ export class CollectorService {
       this.logger.debug(`Updated ${markets.length} Bithumb markets`);
     } catch (error) {
       this.logger.error('Failed to collect Bithumb markets', error);
+    }
+  }
+
+  private async collectCoinoneMarkets() {
+    try {
+      const { data } = await axios.get<{
+        result: string;
+        error_code: string;
+        server_time: number;
+        markets: Array<{
+          quote_currency: string;
+          target_currency: string;
+          price_unit: string;
+          qty_unit: string;
+          max_order_amount: string;
+          max_price: string;
+          max_qty: string;
+          min_order_amount: string;
+          min_price: string;
+          min_qty: string;
+          order_book_units: string[];
+          maintenance_status: number;
+          trade_status: number;
+          order_types: string[];
+        }>;
+      }>('https://api.coinone.co.kr/public/v2/markets/KRW');
+
+      if (data.result !== 'success') {
+        throw new Error(`Failed to fetch Coinone markets: ${data.error_code}`);
+      }
+
+      const markets = data.markets.map((market) => ({
+        market: `${market.target_currency}-${market.quote_currency}`,
+        korean_name: '', // Coinone API doesn't provide Korean names
+        english_name: market.target_currency,
+        market_warning: market.trade_status === 1 ? 'NONE' : 'CAUTION',
+      }));
+
+      await this.redisService.set('coinone-markets', JSON.stringify(markets));
+
+      this.logger.log('Coinone markets collected');
+    } catch (error) {
+      this.logger.error('Failed to collect Coinone markets', error);
+      throw error;
     }
   }
 }

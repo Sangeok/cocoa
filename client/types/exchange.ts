@@ -1,6 +1,6 @@
-import type { ExchangeValue, QuoteTokenValue } from '@/const/exchange';
+import type { QuoteTokenValue } from "@/const/exchange";
 
-export type Exchange = ExchangeValue;
+export type Exchange = "upbit" | "bithumb" | "binance" | "coinone";
 export type QuoteToken = QuoteTokenValue;
 
 export interface ExchangePair {
@@ -10,10 +10,16 @@ export interface ExchangePair {
   toBase: QuoteToken;
 }
 
-export type SortField = 'name' | 'fromPrice' | 'toPrice' | 'premium' | 'volume' | 'timestamp';
-export type SortDirection = 'asc' | 'desc' | null;
+export type SortField =
+  | "name"
+  | "fromPrice"
+  | "toPrice"
+  | "premium"
+  | "volume"
+  | "timestamp";
+export type SortDirection = "asc" | "desc" | null;
 
 export interface SortState {
   field: SortField;
   direction: SortDirection;
-} 
+}

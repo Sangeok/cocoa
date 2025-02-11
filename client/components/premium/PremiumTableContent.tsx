@@ -15,6 +15,7 @@ import type { SortField, SortState } from "@/types/exchange";
 import { useMarketData } from "@/hooks/useMarketData";
 import { Exchange, QuoteToken } from "@/types/exchange";
 import { useState } from "react";
+import { UPBIT_STATIC_IMAGE_URL } from "@/const";
 
 export default function PremiumTableContent() {
   const [sortState, setSortState] = useState<SortState>({
@@ -259,7 +260,7 @@ export default function PremiumTableContent() {
                   <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       <Image
-                        src={`https://static.upbit.com/logos/${
+                        src={`${UPBIT_STATIC_IMAGE_URL}/${
                           market.symbol.split("-")[0]
                         }.png`}
                         alt={market.symbol.split("-")[0]}

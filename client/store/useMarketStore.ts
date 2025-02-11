@@ -4,15 +4,16 @@ import { socket } from "@/lib/socket";
 
 interface MarketData {
   price: number;
-  timestamp: number;
   volume: number;
   change24h: number;
+  timestamp: number;
 }
 
 interface CoinData {
   upbit?: MarketData;
   binance?: MarketData;
   bithumb?: MarketData;
+  coinone?: MarketData;
 }
 
 interface MarketStore {
@@ -66,7 +67,25 @@ export const useMarketData = () => {
 
 export const useUpbitMarketData = () => {
   return useMarketStore((state) =>
-    Object.entries(state.coins).filter((coin) => coin[1].upbit),
+    Object.entries(state.coins).filter((coin) => coin[1].upbit)
+  );
+};
+
+export const useBinanceMarketData = () => {
+  return useMarketStore((state) =>
+    Object.entries(state.coins).filter((coin) => coin[1].binance)
+  );
+};
+
+export const useBithumbMarketData = () => {
+  return useMarketStore((state) =>
+    Object.entries(state.coins).filter((coin) => coin[1].bithumb)
+  );
+};
+
+export const useCoinoneMarketData = () => {
+  return useMarketStore((state) =>
+    Object.entries(state.coins).filter((coin) => coin[1].coinone)
   );
 };
 
