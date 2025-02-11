@@ -16,6 +16,7 @@ export class NewsRepository {
       timestamp: newsData.timestamp,
       marketData: newsData.marketData,
       newsData: newsData.newsData,
+      type: newsData.type,
     });
   }
 

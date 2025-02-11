@@ -8,4 +8,5 @@ export const news = pgTable('news', {
   timestamp: timestamp('timestamp').notNull(),
   marketData: jsonb('market_data').notNull(),
   newsData: jsonb('news_data'),
+  type: text('type').default('COIN'),
 });

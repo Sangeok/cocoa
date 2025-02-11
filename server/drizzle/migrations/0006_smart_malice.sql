@@ -1,0 +1,1 @@
+ALTER TABLE "news" ADD COLUMN "type" text DEFAULT 'COIN';

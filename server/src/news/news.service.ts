@@ -8,29 +8,53 @@ import { TwitterClient } from './clients/twitter.client';
 import { NewsRepository } from './news.repository';
 import { NewsQueryOptions } from './types/news.types';
 import { RedisService } from '../redis/redis.service';
+
 @Injectable()
 export class NewsService {
   private readonly logger = new Logger(NewsService.name);
 
-  // 3. 두번째 문단: 트위터 사용자들의 주요 의견과 시장 반응 분석
-  private readonly newsPrompt = `
+  private readonly dailyCoinNewsPrompt = `
 당신은 암호화폐 시장 분석가입니다. 제공된 정보를 바탕으로 전문적인 뉴스 기사를 작성해주세요.
 
 다음 구조로 기사를 작성해주세요:
 
-1. 제목: 코인의 현재 상황을 잘 반영한 흥미로운 제목 (80자 이내)
-2. 첫 문단: 거래량과 가격 변동에 대한 객관적 데이터 설명
-3. 두번째 문단: 관련 뉴스 기사들의 핵심 내용 요약
-4. 세번째 문단: 전반적인 시장 영향과 향후 전망
-
-응답 형식은 JSON으로 변형할 수 있도록 반드시 다음과 같이 출력해주세요:
-{
-  "title": \`뉴스 제목\`,
-  "content": \`뉴스 본문\`
-}
+코인의 현재 상황을 잘 반영한 흥미로운 제목 (80자 이내, 제목 뒤에 <DIVIDER>를 반드시 추가해주세요.)
+1. 첫 문단: 거래량과 가격 변동에 대한 객관적 데이터 설명
+2. 두번째 문단: 관련 뉴스 기사들의 핵심 내용 요약
+3. 세번째 문단: 전반적인 시장 영향과 향후 전망
 
 기사는 객관적이고 전문적인 톤을 유지하되, 이해하기 쉽게 작성해주세요.
 각 정보의 출처를 명확히 포함시켜주세요.
+`;
+
+  private readonly tradingStrategyPrompt = `
+당신은 암호화폐 트레이딩 전략가입니다. 제공된 시장 데이터와 뉴스를 바탕으로 상세한 투자 전략 리포트를 작성해주세요.
+
+다음 구조로 리포트를 작성해주세요:
+
+현재 시장 상황을 반영한 전략적 제목 (80자 이내, 제목 뒤에 <DIVIDER>를 반드시 추가해주세요.)
+
+1. 시장 개요 (2-3문단):
+   - 주요 암호화폐 시장 동향
+   - 글로벌 매크로 상황이 암호화폐 시장에 미치는 영향
+   - 주요 섹터별 퍼포먼스 분석
+
+2. 주목해야 할 코인 (3-4문단):
+   - 상승 가능성이 높은 3-5개 코인 분석
+   - 각 코인별 매수 진입 구간
+   - 투자 근거 및 리스크 요인
+   - 목표가 및 손절가 제시
+
+3. 주의해야 할 코인 (2-3문단):
+   - 위험 신호를 보이는 2-3개 코인
+   - 각 코인별 위험 요인 분석
+   - 보유자들을 위한 대응 전략
+
+시장 개요, 기간별 투자 전략, 주목해야 할 코인, 주의해야 할 코인, 리스크관리 전략, 추천 코인은 <h2>로 감싸주세요.
+
+리포트는 전문성과 객관성을 유지하되, 실제 투자자들이 실행할 수 있는 구체적인 전략을 제시해주세요.
+모든 분석과 제안에는 명확한 근거를 포함시켜주세요.
+투자 위험성에 대한 경고도 반드시 포함해주세요.
 `;
 
   constructor(
@@ -43,7 +67,7 @@ export class NewsService {
     private readonly redisService: RedisService,
   ) {}
 
-  @Cron('0 */24 * * *') // 3시간마다 실행
+  @Cron('0 0 6,18 * * *') // 매일 오전 6시, 오후 6시에 실행
   async generateNews() {
     try {
       this.logger.debug('Starting news generation process...');
@@ -51,16 +75,16 @@ export class NewsService {
       // 1. 업비트 상위 3개 거래량 코인 조회
       const topCoins = await this.upbitClient.getTopVolumeCoins(3);
 
-      // 코인별로 1분 간격으로 처리
+      // 코인별로 5분 간격으로 처리
       for (let i = 0; i < topCoins.length; i++) {
         const coin = topCoins[i];
 
-        // 1분 대기 (첫 번째 코인은 제외)
+        // 5분 대기 (첫 번째 코인은 제외)
         if (i > 0) {
           this.logger.debug(
-            `Waiting 1 minute before processing ${coin.symbol}...`,
+            `Waiting 5 minute before processing ${coin.symbol}...`,
           );
-          await new Promise((resolve) => setTimeout(resolve, 1 * 60 * 1000));
+          await new Promise((resolve) => setTimeout(resolve, 5 * 60 * 1000));
         }
 
         try {
@@ -81,7 +105,7 @@ export class NewsService {
             newsData,
           );
           const { title, content } = await this.openAIClient.generateArticle(
-            this.newsPrompt,
+            this.dailyCoinNewsPrompt,
             analysisPrompt,
           );
 
@@ -97,6 +121,7 @@ export class NewsService {
               currentPrice: coin.currentPrice,
             },
             newsData: newsData,
+            type: 'COIN',
           });
 
           this.logger.debug(`Generated news for ${coin.symbol}`);
@@ -114,6 +139,86 @@ export class NewsService {
     } catch (error) {
       this.logger.error('Failed to generate news', error);
     }
+  }
+
+  // @Cron('0 0 8 * * *') // 스크립트 테스트 중: 매일 오전 8시에 실행
+  async generateTradingStrategy() {
+    try {
+      this.logger.debug('Starting trading strategy generation...');
+
+      // 1. 상위 20개 거래량 코인 데이터 수집
+      const topCoins = await this.upbitClient.getTopVolumeCoins(20);
+
+      // 2. 전체 시장 관련 뉴스 수집
+      const marketNews = await this.webSearchClient.searchNews(
+        'cryptocurrency market',
+      );
+
+      // 3. 각 상위 코인별 뉴스 수집
+      const coinsNews = await Promise.all(
+        topCoins
+          .slice(0, 5)
+          .map((coin) => this.webSearchClient.searchNews(coin.symbol)),
+      );
+
+      // 4. 분석 프롬프트 생성
+      const analysisPrompt = this.createTradingStrategyPrompt(
+        topCoins,
+        marketNews,
+        coinsNews,
+      );
+
+      // 5. LLM을 통한 전략 리포트 생성
+      const { title, content } = await this.openAIClient.generateArticle(
+        this.tradingStrategyPrompt,
+        analysisPrompt,
+      );
+
+      // 6. 생성된 리포트 저장
+      await this.newsRepository.saveNews({
+        symbol: 'MARKET',
+        title,
+        content,
+        timestamp: new Date(),
+        marketData: {
+          volume: topCoins.reduce((sum, coin) => sum + coin.volume, 0),
+          priceChange: topCoins[0].priceChange,
+          currentPrice: 0,
+        },
+        newsData: marketNews,
+        type: 'STRATEGY',
+      });
+
+      this.logger.debug('Completed trading strategy generation');
+    } catch (error) {
+      this.logger.error('Failed to generate trading strategy', error);
+    }
+  }
+
+  private createTradingStrategyPrompt(
+    coins: any[],
+    marketNews: any[],
+    coinsNews: any[],
+  ): string {
+    return `
+시장 데이터:
+거래량 상위 20개 코인 정보:
+${JSON.stringify(coins, null, 2)}
+
+글로벌 시장 뉴스:
+${JSON.stringify(marketNews, null, 2)}
+
+주요 코인별 뉴스:
+${JSON.stringify(coinsNews, null, 2)}
+
+위 정보를 바탕으로 상세한 투자 전략 리포트를 작성해주세요.
+특히 다음 사항에 중점을 두어 작성해주세요:
+1. 현재 시장의 주요 트렌드와 방향성
+2. 단기/중기/장기 관점의 구체적인 투자 전략
+3. 추천 코인과 그 이유 (기술적/펀더멘털 분석 포함)
+4. 주의해야 할 코인과 위험 요인
+5. 리스크 관리 방안
+`;
   }
 
   async generateNewsForCoin(symbol: string) {
@@ -154,6 +259,7 @@ export class NewsService {
           currentPrice: coin.currentPrice,
         },
         newsData: newsData,
+        type: 'COIN',
       });
 
       return savedNews;
@@ -194,7 +300,7 @@ export class NewsService {
         newsData,
       );
       const { title, content } = await this.openAIClient.generateArticle(
-        this.newsPrompt,
+        this.dailyCoinNewsPrompt,
         analysisPrompt,
       );
 

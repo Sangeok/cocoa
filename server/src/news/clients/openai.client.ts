@@ -34,30 +34,24 @@ export class OpenAIClient {
         { role: 'user', content: userPrompt },
       ],
       temperature: 0.7,
-      max_tokens: 1000,
+      max_tokens: 3000,
     });
 
-    const content = response.choices[0].message.content || '';
-    
+    const report = response.choices[0].message.content || '';
+
     try {
-      // 1. 줄바꿈 문자를 \r\n으로 대체
-      const sanitizedContent = content.replace(/\n/g, '\r\n');
-      
-      // 2. 연속된 공백을 하나로 통일
-      const normalizedContent = sanitizedContent.replace(/\s+/g, ' ');
-      
-      // 3. 특수 문자 이스케이프 처리
-      const escapedContent = normalizedContent.replace(/[\u0000-\u001F\u007F-\u009F]/g, '');
-      
-      // 4. JSON 파싱 시도
-      const parsedContent = JSON.parse(escapedContent);
-      
+      // 4. 제목과 본문 분리
+      const [title, content] = report
+        .split('<DIVIDER>')
+        .map((part) => part.trim());
+
+      console.log(title, content);
       return {
-        title: parsedContent.title,
-        content: parsedContent.content.trim(),
+        title: title,
+        content: content,
       };
     } catch (error) {
-      console.error('Failed to parse OpenAI response:', content);
+      console.error('Failed to parse OpenAI response:', report);
       throw new Error('Failed to parse article content: ' + error.message);
     }
   }

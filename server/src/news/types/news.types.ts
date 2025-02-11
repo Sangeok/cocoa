@@ -14,6 +14,7 @@ export interface NewsData {
     source: string;
     publishedAt: Date;
   }[];
+  type: string;
 }
 
 export interface NewsQueryOptions {
@@ -30,7 +31,8 @@ export interface NewsQueryOptions {
       lte?: Date;
     };
   };
-} 
+  type?: string;
+}
 
 export interface NewsQueryParams {
   symbol?: string;

@@ -267,4 +267,43 @@ export class TestController {
       };
     }
   }
+
+  @Post('generate-strategy')
+  async generateTradingStrategy() {
+    try {
+      await this.newsService.generateTradingStrategy();
+      return {
+        success: true,
+        message: 'Trading strategy generated successfully',
+      };
+    } catch (error) {
+      this.logger.error('Failed to generate trading strategy:', error);
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+  }
+
+  @Get('strategy')
+  async getLatestStrategy() {
+    try {
+      const news = await this.newsService.getNews({
+        type: 'STRATEGY',
+        limit: 1,
+        offset: 0,
+      });
+      
+      return {
+        success: true,
+        data: news.data[0], // 가장 최근 전략 리포트 반환
+      };
+    } catch (error) {
+      this.logger.error('Failed to get latest strategy:', error);
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
+  }
 }

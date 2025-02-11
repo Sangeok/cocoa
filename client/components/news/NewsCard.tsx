@@ -42,7 +42,7 @@ export default function NewsCard({ news }: NewsCardProps) {
 
         {/* Content Preview */}
         <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">
-          {news.content}
+          {news.content.replace(/<h2>.*?<\/h2>/g, "")}
         </p>
 
         {/* Market Data */}

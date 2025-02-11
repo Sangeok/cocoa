@@ -43,6 +43,13 @@
       "when": 1739262460467,
       "tag": "0005_outgoing_mister_fear",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1739282019414,
+      "tag": "0006_smart_malice",
+      "breakpoints": true
     }
   ]
 }
