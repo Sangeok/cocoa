@@ -1,17 +1,25 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import KOLCard from "@/components/KOLCard";
 import KOLCardSkeleton from "@/components/KOLCardSkeleton";
+import KOLSortSelect from "@/components/KOLSortSelect";
+import KOLSocialFilter from "@/components/KOLSocialFilter";
 import { apiClient } from "@/lib/axios";
 import { API_ROUTES } from "@/const/api";
-import type { KOL } from "@/types/kol";
+import type {
+  KOL,
+  KOLSortOption,
+  KOLSocialFilter as KOLSocialFilterType,
+} from "@/types/kol";
 
 export default function KOLPage() {
   const [data, setData] = useState<KOL[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [sortOption, setSortOption] = useState<KOLSortOption>("followers-desc");
+  const [socialFilter, setSocialFilter] = useState<KOLSocialFilterType>([]);
 
   useEffect(() => {
     const fetchKOLs = async () => {
@@ -28,6 +36,35 @@ export default function KOLPage() {
 
     fetchKOLs();
   }, []);
+
+  const filteredAndSortedKOLs = useMemo(() => {
+    if (!data) return null;
+
+    let filtered = data;
+
+    // 소셜 필터 적용
+    if (socialFilter.length > 0) {
+      filtered = filtered.filter((kol) =>
+        socialFilter.every((social) => kol[social])
+      );
+    }
+
+    // 정렬 적용
+    return [...filtered].sort((a, b) => {
+      switch (sortOption) {
+        case "followers-desc":
+          return b.followers - a.followers;
+        case "followers-asc":
+          return a.followers - b.followers;
+        case "registered-desc":
+          return b.id.localeCompare(a.id);
+        case "registered-asc":
+          return a.id.localeCompare(b.id);
+        default:
+          return 0;
+      }
+    });
+  }, [data, sortOption, socialFilter]);
 
   if (error) {
     return (
@@ -63,17 +100,25 @@ export default function KOLPage() {
 
         <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
           <p className="text-sm text-blue-700 dark:text-blue-300 flex items-center gap-2">
-            <span role="img" aria-label="info">ℹ️</span>
-            KOL 소개글은 KOL이 직접 작성한 내용이며, 없는 경우 코코아 팀에서 직접 등록한 경우입니다.
+            <span role="img" aria-label="info">
+              ℹ️
+            </span>
+            KOL 소개글은 KOL이 직접 작성한 내용이며, 없는 경우 코코아 팀에서
+            직접 등록한 경우입니다.
           </p>
         </div>
 
+        <div className="flex flex-col sm:flex-row justify-between gap-4">
+          <KOLSortSelect value={sortOption} onChange={setSortOption} />
+          <KOLSocialFilter value={socialFilter} onChange={setSocialFilter} />
+        </div>
+
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {isLoading ? (
-            [...Array(9)].map((_, i) => <KOLCardSkeleton key={i} />)
-          ) : (
-            data?.map((kol) => <KOLCard key={kol.id} {...kol} />)
-          )}
+          {isLoading
+            ? [...Array(9)].map((_, i) => <KOLCardSkeleton key={i} />)
+            : filteredAndSortedKOLs?.map((kol) => (
+                <KOLCard key={kol.id} {...kol} />
+              ))}
         </div>
       </div>
     </div>

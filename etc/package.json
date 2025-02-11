@@ -3,14 +3,16 @@
   "version": "1.0.0",
   "description": "Coin image downloader",
   "scripts": {
-    "start": "ts-node imagedownloader.ts"
+    "start": "ts-node imagedownloader.ts",
+    "resize": "ts-node imageresizer.ts"
   },
   "dependencies": {
-    "axios": "^1.6.7"
+    "axios": "^1.6.7",
+    "sharp": "^0.33.5"
   },
   "devDependencies": {
     "@types/node": "^20.11.17",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   }
-} 
+}

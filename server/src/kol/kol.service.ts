@@ -35,6 +35,10 @@ export class KolService {
   async update(id: string, updateKolDto: UpdateKolDto): Promise<KOL> {
     const kol = await this.findOne(id);
 
+    if (!kol) {
+      throw new NotFoundException(`KOL with ID ${id} not found`);
+    }
+
     await this.kolRepository.update(id, {
       ...updateKolDto,
       updatedAt: new Date(),
@@ -47,4 +51,4 @@ export class KolService {
     await this.findOne(id);
     await this.kolRepository.delete(id);
   }
-} 
+}
