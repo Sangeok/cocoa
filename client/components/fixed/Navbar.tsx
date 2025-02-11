@@ -7,9 +7,9 @@ import { Menu } from "@headlessui/react";
 import { Bars3Icon } from "@heroicons/react/24/outline";
 import { SunIcon, MoonIcon, UserGroupIcon } from "@heroicons/react/24/outline";
 import { clsx } from "clsx";
-import Switch from "./Switch";
+import Switch from "../common/Switch";
 import { useTheme } from "@/providers/ThemeProvider";
-import Logo from "@/components/Logo";
+import Logo from "@/components/common/Logo";
 import useActiveUsersStore from "@/store/useActiveUsersStore";
 
 const navigation = [

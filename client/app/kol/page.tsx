@@ -1,10 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import KOLCard from "@/components/KOLCard";
-import KOLCardSkeleton from "@/components/KOLCardSkeleton";
-import KOLSortSelect from "@/components/KOLSortSelect";
-import KOLSocialFilter from "@/components/KOLSocialFilter";
+import KOLCard from "@/components/kol/KOLCard";
+import KOLCardSkeleton from "@/components/kol/KOLCardSkeleton";
+import KOLSortSelect from "@/components/kol/KOLSortSelect";
+import KOLSocialFilter from "@/components/kol/KOLSocialFilter";
 import { useKOLs } from "@/hooks/useKOLs";
 
 export default function KOLPage() {

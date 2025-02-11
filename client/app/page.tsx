@@ -3,9 +3,9 @@ import { useState, useEffect } from "react";
 import { apiClient } from "@/lib/axios";
 import { NewsListResponse, NewsListResponseSchema } from "@/dto/news.dto";
 import { API_ROUTES } from "@/const/api";
-import NewsCard from "@/components/NewsCard";
-import NewsCardSkeleton from "@/components/NewsCardSkeleton";
-import PremiumTable from "@/components/PremiumTable";
+import NewsCard from "@/components/news/NewsCard";
+import NewsCardSkeleton from "@/components/news/NewsCardSkeleton";
+import PremiumTable from "@/components/premium/PremiumTable";
 import Link from "next/link";
 
 export default function Home() {

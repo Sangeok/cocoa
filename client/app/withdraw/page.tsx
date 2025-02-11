@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Select from "@/components/Select";
-import Input from "@/components/Input";
+import Select from "@/components/common/Select";
+import Input from "@/components/common/Input";
 import {
   Exchange,
   WithdrawPathResult,
@@ -11,8 +11,8 @@ import {
 } from "@/dto/withdraw.dto";
 import { API_ROUTES } from "@/const/api";
 import { apiClient } from "@/lib/axios";
-import WithdrawPathCard from "@/components/WithdrawPathCard";
-import { sendGAEvent } from '@/lib/gtag';
+import WithdrawPathCard from "@/components/withdraw/WithdrawPathCard";
+import { sendGAEvent } from "@/lib/gtag";
 
 export default function WithdrawPage() {
   const [fromExchange, setFromExchange] = useState<string>("");
@@ -29,11 +29,11 @@ export default function WithdrawPage() {
     if (!fromExchange || !toExchange || !amount) return;
 
     // GA 이벤트 전송
-    sendGAEvent('calculate_withdraw_path', {
+    sendGAEvent("calculate_withdraw_path", {
       from_exchange: fromExchange,
       to_exchange: toExchange,
       amount: Number(amount),
-      currency: isFromKorea ? 'KRW' : 'USDT'
+      currency: isFromKorea ? "KRW" : "USDT",
     });
 
     setIsLoading(true);
@@ -49,7 +49,7 @@ export default function WithdrawPage() {
     } catch (error) {
       console.error("Failed to calculate withdraw path:", error);
       // 에러 이벤트도 전송
-      sendGAEvent('withdraw_path_error', {
+      sendGAEvent("withdraw_path_error", {
         error: (error as Error).message,
         from_exchange: fromExchange,
         to_exchange: toExchange,

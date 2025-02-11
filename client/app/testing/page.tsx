@@ -1,11 +1,11 @@
 'use client'
-import Dropdown from '@/components/Dropdown'
-import Dialog from '@/components/Dialog'
-import Popover from '@/components/Popover'
-import Input from '@/components/Input'
-import Select from '@/components/Select'
-import Switch from '@/components/Switch'
-import Button from '@/components/Button'
+import Dropdown from '@/components/common/Dropdown'
+import Dialog from '@/components/common/Dialog'
+import Popover from '@/components/common/Popover'
+import Input from '@/components/common/Input'
+import Select from '@/components/common/Select'
+import Switch from '@/components/common/Switch'
+import Button from '@/components/common/Button'
 import { useState } from 'react'
 
 export default function Testing() {

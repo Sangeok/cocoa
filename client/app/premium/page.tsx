@@ -1,6 +1,6 @@
 "use client";
 
-import PremiumTable from "@/components/PremiumTable";
+import PremiumTable from "@/components/premium/PremiumTable";
 
 export default function PremiumPage() {
   return (

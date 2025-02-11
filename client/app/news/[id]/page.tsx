@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
-import NewsDetail from '@/components/NewsDetail'
-import NewsDetailSkeleton from '@/components/NewsDetailSkeleton'
+import NewsDetail from '@/components/news/NewsDetail'
+import NewsDetailSkeleton from '@/components/news/NewsDetailSkeleton'
 
 interface NewsPageProps {
   params: {

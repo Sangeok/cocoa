@@ -3,9 +3,9 @@ import Script from "next/script";
 import localFont from "next/font/local";
 import "./globals.css";
 import { ThemeProvider } from "@/providers/ThemeProvider";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import MarketTicker from "@/components/MarketTicker";
+import Navbar from "@/components/fixed/Navbar";
+import Footer from "@/components/fixed/Footer";
+import MarketTicker from "@/components/fixed/MarketTicker";
 
 const font = localFont({
   src: [

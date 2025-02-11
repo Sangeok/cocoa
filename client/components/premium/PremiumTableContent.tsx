@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import clsx from "clsx";
-import Select from "@/components/Select";
+import Select from "@/components/common/Select";
 import SortIcon from "@/components/icons/SortIcon";
 import {
   formatExchangePrice,

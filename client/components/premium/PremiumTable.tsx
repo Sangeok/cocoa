@@ -1,9 +1,9 @@
 "use client";
 
 import { Suspense } from "react";
-import PremiumTableContent from "./PremiumTableContent";
-import PremiumTableSkeleton from "./PremiumTableSkeleton";
-import ErrorBoundary from "@/components/ErrorBoundary";
+import PremiumTableContent from "@/components/premium/PremiumTableContent";
+import PremiumTableSkeleton from "@/components/premium/PremiumTableSkeleton";
+import ErrorBoundary from "@/components/common/ErrorBoundary";
 
 export default function PremiumTable() {
   return (

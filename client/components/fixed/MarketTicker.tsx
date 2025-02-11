@@ -88,14 +88,6 @@ export default function MarketTicker() {
     return "w-[130px]"; // 10,000,000~
   };
 
-  const formatPrice = (price: number) => {
-    return (
-      new Intl.NumberFormat("ko-KR", {
-        maximumFractionDigits: 0,
-      }).format(price) + "원"
-    );
-  };
-
   const CoinItem = React.memo(
     ({ coin }: { coin: (typeof krwMarketPrices)[0] }) => (
       <span className="inline-flex items-center px-4 h-8 text-sm text-gray-600 dark:text-gray-400 font-medium mr-1">

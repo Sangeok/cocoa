@@ -5,7 +5,7 @@ import { apiClient } from "@/lib/axios";
 import { NewsResponse, NewsSchema } from "@/dto/news.dto";
 import { API_ROUTES } from "@/const/api";
 import { useRouter } from "next/navigation";
-import NewsDetailSkeleton from "@/components/NewsDetailSkeleton";
+import NewsDetailSkeleton from "@/components/news/NewsDetailSkeleton";
 import { clsx } from "clsx";
 import { formatKRWWithUnit } from "@/lib/format";
 import Image from "next/image";
