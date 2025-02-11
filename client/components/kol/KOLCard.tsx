@@ -51,11 +51,7 @@ export default function KOLCard({
         <div className="flex gap-2 justify-between items-center">
           <div className="flex items-center gap-3">
             {telegram && (
-              <Link
-                href={telegram}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <Link href={telegram} target="_blank" rel="noopener noreferrer">
                 <Image
                   src="/icons/telegram.svg"
                   alt="telegram"
@@ -65,11 +61,7 @@ export default function KOLCard({
               </Link>
             )}
             {youtube && (
-              <Link
-                href={youtube}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <Link href={youtube} target="_blank" rel="noopener noreferrer">
                 <Image
                   src="/icons/youtube.svg"
                   alt="youtube"
@@ -90,7 +82,7 @@ export default function KOLCard({
             )}
           </div>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            등록일: {registeredAt}
+            등록일: {new Date(registeredAt).toLocaleDateString()}
           </p>
         </div>
       </div>
