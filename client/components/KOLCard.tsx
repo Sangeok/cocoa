@@ -5,7 +5,9 @@ import { KOL } from "@/types/kol";
 
 export default function KOLCard({
   name,
-  link,
+  telegram,
+  youtube,
+  x,
   followers,
   image,
   keywords,
@@ -48,9 +50,9 @@ export default function KOLCard({
         </p>
         <div className="flex gap-2 justify-between items-center">
           <div className="flex items-center gap-3">
-            {link.telegram && (
+            {telegram && (
               <Link
-                href={link.telegram}
+                href={telegram}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -62,9 +64,9 @@ export default function KOLCard({
                 />
               </Link>
             )}
-            {link.youtube && (
+            {youtube && (
               <Link
-                href={link.youtube}
+                href={youtube}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -76,9 +78,9 @@ export default function KOLCard({
                 />
               </Link>
             )}
-            {link.x && (
+            {x && (
               <Link
-                href={link.x}
+                href={x}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-1"

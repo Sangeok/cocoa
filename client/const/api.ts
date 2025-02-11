@@ -25,4 +25,10 @@ export const API_ROUTES = {
       method: "GET",
     },
   },
+  KOL: {
+    GET: {
+      url: "/kols",
+      method: "GET",
+    },
+  },
 } as const;

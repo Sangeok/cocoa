@@ -8,6 +8,7 @@ import { WithdrawModule } from './withdraw/withdraw.module';
 import { NewsModule } from './news/news.module';
 import { CollectorModule } from './collector/collector.module';
 import { TestModule } from './test/test.module';
+import { KolModule } from './kol/kol.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { TestModule } from './test/test.module';
     NewsModule,
     CollectorModule,
     TestModule,
+    KolModule,
   ],
   controllers: [AppController],
   providers: [AppService],
