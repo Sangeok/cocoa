@@ -17,6 +17,7 @@ import { Exchange, QuoteToken } from "@/types/exchange";
 import { useState } from "react";
 import { UPBIT_STATIC_IMAGE_URL } from "@/const";
 import Link from "next/link";
+import PremiumTableSkeleton from "@/components/premium/PremiumTableSkeleton";
 
 export default function PremiumTableContent() {
   const [sortState, setSortState] = useState<SortState>({
@@ -49,6 +50,10 @@ export default function PremiumTableContent() {
   };
 
   const sortedMarkets = getSortedMarkets(sortState);
+
+  if (sortedMarkets.length === 0) {
+    return <PremiumTableSkeleton />;
+  }
 
   return (
     <div className="space-y-6">
