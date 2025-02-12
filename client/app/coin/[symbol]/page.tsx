@@ -7,15 +7,15 @@ import useMarketsStore from "@/store/useMarketsStore";
 import useMarketStore from "@/store/useMarketStore";
 import useChat from "@/store/useChat";
 import { socket } from "@/lib/socket";
-import { CoinTalkMessageData } from "@/types/chat";
+import { CoinTalkMessageData, GlobalChatMessageData } from "@/types/chat";
 import Image from "next/image";
 import { UPBIT_STATIC_IMAGE_URL } from "@/const";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
-import { PencilIcon } from "@heroicons/react/24/outline";
 import { apiClient } from "@/lib/axios";
 import { API_ROUTES } from "@/const/api";
 import { formatKRWWithUnit, formatPercent } from "@/lib/format";
+import ChatRoom from "@/components/chat/ChatRoom";
 
 export default function CoinPage() {
   const params = useParams();
@@ -23,11 +23,19 @@ export default function CoinPage() {
   const { markets, fetchMarkets, getKoreanName } = useMarketsStore();
   const { coins } = useMarketStore();
   const { nickname, setNickname, validateNickname } = useChat();
-  const [messages, setMessages] = useState<CoinTalkMessageData[]>([]);
+  const [globalMessages, setGlobalMessages] = useState<GlobalChatMessageData[]>(
+    []
+  );
+  const [coinMessages, setCoinMessages] = useState<CoinTalkMessageData[]>([]);
   const [inputMessage, setInputMessage] = useState("");
   const [isNicknameModalOpen, setIsNicknameModalOpen] = useState(false);
   const [newNickname, setNewNickname] = useState(nickname);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [selectedChat, setSelectedChat] = useState<"global" | "coin">("global");
+  const baseSymbol = symbol.split("-")[0]; // BTC-KRW -> BTC
+  const [pendingMessages, setPendingMessages] = useState<Set<number>>(
+    new Set()
+  );
 
   useEffect(() => {
     if (!markets) {
@@ -40,44 +48,63 @@ export default function CoinPage() {
     apiClient
       .get(API_ROUTES.CHAT.GET.url + `/${symbol}`)
       .then((res) => {
-        console.log(res);
-        const messages = res.data;
-        if (messages.length > 0) {
-          setMessages(messages);
-        }
+        console.log("Initial coin messages:", res.data);
+        setCoinMessages(res.data);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch coin messages:", error);
+      });
+
+    // 전체 채팅 메시지 로드
+    apiClient
+      .get(API_ROUTES.CHAT.GET_GLOBAL.url)
+      .then((res) => {
+        console.log("Initial global messages:", res.data);
+        setGlobalMessages(res.data);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch global messages:", error);
       });
 
     // 새 메시지 수신
     socket.on("coin-talk-message", (message: CoinTalkMessageData) => {
-      if (message.symbol === symbol) {
-        setMessages((prev) => [message, ...prev]);
+      if (message.symbol === symbol.split("-")[0]) {
+        setPendingMessages((prev) => {
+          const newPending = new Set(prev);
+          newPending.delete(message.timestamp);
+          return newPending;
+        });
+        setCoinMessages((prev) => {
+          const exists = prev.some(msg => msg.timestamp === message.timestamp);
+          if (exists) return prev;
+          return [message, ...prev];
+        });
       }
+    });
+
+    socket.on("global-chat-message", (message: GlobalChatMessageData) => {
+      setPendingMessages((prev) => {
+        const newPending = new Set(prev);
+        newPending.delete(message.timestamp);
+        return newPending;
+      });
+      setGlobalMessages((prev) => {
+        const exists = prev.some(msg => msg.timestamp === message.timestamp);
+        if (exists) return prev;
+        return [message, ...prev];
+      });
     });
 
     return () => {
       socket.off("coin-talk-message");
+      socket.off("global-chat-message");
     };
   }, [symbol]);
 
   // 새 메시지가 올 때마다 스크롤
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inputMessage.trim()) return;
-
-    const message: CoinTalkMessageData = {
-      message: inputMessage.trim(),
-      nickname,
-      symbol,
-      timestamp: Date.now(),
-    };
-
-    socket.emit("coin-talk-message", message);
-    setInputMessage("");
-  };
+  }, [coinMessages, globalMessages]);
 
   const handleNicknameChange = (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,6 +117,70 @@ export default function CoinPage() {
   const koreanName = getKoreanName(symbol);
   const formattedSymbol = symbol.replace("-", "");
 
+  const handleSendMessage = (message: string) => {
+    if (!message.trim() || !socket) return;
+
+    const timestamp = Date.now();
+    const baseMessageData = {
+      message: message.trim(),
+      timestamp,
+      nickname,
+    };
+
+    if (selectedChat === "global") {
+      const globalMessageData: GlobalChatMessageData = baseMessageData;
+      setGlobalMessages((prev) => [globalMessageData, ...prev]);
+      setPendingMessages((prev) => new Set(prev).add(timestamp));
+
+      console.log("Sending global message:", globalMessageData);
+      socket.emit("global-chat-message", globalMessageData);
+    } else {
+      const coinMessageData: CoinTalkMessageData = {
+        ...baseMessageData,
+        symbol: baseSymbol,
+      };
+      setCoinMessages((prev) => [coinMessageData, ...prev]);
+      setPendingMessages((prev) => new Set(prev).add(timestamp));
+
+      console.log("Sending coin message:", coinMessageData);
+      socket.emit("coin-talk-message", coinMessageData);
+    }
+  };
+
+  const renderMessage = (
+    msg: CoinTalkMessageData | GlobalChatMessageData,
+    i: number
+  ) => {
+    const isPending = pendingMessages.has(msg.timestamp);
+
+    return (
+      <div
+        key={msg.timestamp + i}
+        className={`flex ${
+          msg.nickname === nickname ? "justify-end" : "justify-start"
+        } mb-3`}
+      >
+        <div
+          className={`inline-block rounded-lg px-4 py-2 max-w-[80%] ${
+            msg.nickname === nickname
+              ? `${isPending ? "opacity-50" : ""} bg-blue-50 dark:bg-blue-900 
+                 text-blue-900 dark:text-blue-50 border border-blue-200 
+                 dark:border-blue-800`
+              : "bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-50 border border-gray-200 dark:border-gray-800"
+          }`}
+        >
+          <div className="text-xs opacity-75 mb-1 flex items-center gap-2">
+            {msg.nickname}
+            {isPending && (
+              <span className="text-xs text-gray-500">전송중...</span>
+            )}
+          </div>
+          <div className="break-words text-sm">{msg.message}</div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-6">
@@ -100,7 +191,7 @@ export default function CoinPage() {
             width={20}
             height={20}
           />
-          {koreanName} ({symbol})
+          {koreanName}({symbol.split("-")[0]})
         </h1>
       </div>
 
@@ -338,79 +429,20 @@ export default function CoinPage() {
             </div>
           </div>
           {/* 채팅 영역 */}
-          <div className="mt-4 flex-1 bg-white dark:bg-gray-950 rounded-xl shadow-xl border border-gray-200 dark:border-gray-800">
-            <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-800">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                실시간 채팅
-              </h2>
-            </div>
-            {/* 채팅 메시지 영역 - flex-col-reverse로 변경 */}
-            <div className="flex-1 overflow-y-auto p-2 flex flex-col-reverse h-64">
-              <div ref={messagesEndRef} />
-              {messages.map((msg, i) => (
-                <div
-                  key={msg.timestamp + i}
-                  className={`flex ${
-                    msg.nickname === nickname ? "justify-end" : "justify-start"
-                  } mb-3`}
-                >
-                  <div
-                    className={`inline-block rounded-lg px-4 py-2 max-w-[80%] ${
-                      msg.nickname === nickname
-                        ? "bg-blue-50 dark:bg-blue-900 text-blue-900 dark:text-blue-50 border border-blue-200 dark:border-blue-800"
-                        : "bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-50 border border-gray-200 dark:border-gray-800"
-                    }`}
-                  >
-                    <div className="text-xs opacity-75 mb-1">
-                      {msg.nickname}
-                    </div>
-                    <div className="break-words text-sm">{msg.message}</div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div>
-              {/* 닉네임 표시 및 수정 */}
-              <div className="px-4 py-2 border-t border-gray-200 dark:border-gray-800 flex items-center justify-between">
-                <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
-                  <span>닉네임: {nickname}</span>
-                  <button
-                    onClick={() => setIsNicknameModalOpen(true)}
-                    className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full"
-                  >
-                    <PencilIcon className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-
-              {/* 메시지 입력 영역 */}
-              <form
-                onSubmit={handleSubmit}
-                className="p-2 border-t border-gray-200 dark:border-gray-800"
-              >
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={inputMessage}
-                    onChange={(e) => setInputMessage(e.target.value)}
-                    placeholder="메시지를 입력하세요"
-                    className="flex-1 rounded-lg px-3 py-2 bg-gray-50 dark:bg-gray-950 
-                           border border-gray-300 dark:border-gray-800
-                           focus:outline-none focus:ring-2 focus:ring-green-500
-                           text-gray-900 dark:text-white text-sm"
-                    maxLength={200}
-                  />
-                  <button
-                    type="submit"
-                    className="px-4 py-2 bg-green-600 hover:bg-green-700 
-                           text-white rounded-lg text-sm font-medium
-                           transition-colors duration-200"
-                  >
-                    전송
-                  </button>
-                </div>
-              </form>
-            </div>
+          <div className="mt-8">
+            <ChatRoom
+              selectedChat={selectedChat}
+              setSelectedChat={setSelectedChat}
+              globalMessages={globalMessages}
+              coinMessages={coinMessages}
+              nickname={nickname}
+              symbolKoreanName={koreanName}
+              inputMessage={inputMessage}
+              setInputMessage={setInputMessage}
+              onSendMessage={handleSendMessage}
+              onEditNickname={() => setIsNicknameModalOpen(true)}
+              pendingMessages={pendingMessages}
+            />
           </div>
         </div>
       </div>

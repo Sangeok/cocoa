@@ -36,6 +36,10 @@ export const API_ROUTES = {
       url: "/chat",
       method: "GET",
     },
+    GET_GLOBAL: {
+      url: "/chat/global",
+      method: "GET",
+    },
   },
   USER: {
     PROFILE: {

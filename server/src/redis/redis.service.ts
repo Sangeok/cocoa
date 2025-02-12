@@ -8,7 +8,7 @@ export class RedisService implements OnModuleInit {
   private client: RedisClientType;
 
   constructor(private configService: ConfigService) {
-    const host = this.configService.get('NODE_ENV') === 'production' 
+    const host = this.configService.get('NODE_ENV') === 'production'
       ? this.configService.get('REDIS_HOST', 'redis')
       : 'localhost';
     
@@ -24,7 +24,6 @@ export class RedisService implements OnModuleInit {
       await this.client.connect();
     } catch (error) {
       console.error('Failed to connect to Redis:', error);
-      // 개발 환경에서는 Redis 연결 실패를 허용
       if (this.configService.get('NODE_ENV') === 'production') {
         throw error;
       }
@@ -40,7 +39,6 @@ export class RedisService implements OnModuleInit {
       }
     } catch (error) {
       console.error('Redis set error:', error);
-      // Redis 작업 실패를 조용히 처리
     }
   }
 
@@ -79,5 +77,31 @@ export class RedisService implements OnModuleInit {
 
   async del(...keys: string[]) {
     await this.client.del(keys);
+  }
+
+  async lpush(key: string, value: string) {
+    try {
+      return await this.client.lPush(key, value);
+    } catch (error) {
+      console.error('Redis lpush error:', error);
+      return 0;
+    }
+  }
+
+  async ltrim(key: string, start: number, stop: number) {
+    try {
+      return await this.client.lTrim(key, start, stop);
+    } catch (error) {
+      console.error('Redis ltrim error:', error);
+    }
+  }
+
+  async lrange(key: string, start: number, stop: number) {
+    try {
+      return await this.client.lRange(key, start, stop);
+    } catch (error) {
+      console.error('Redis lrange error:', error);
+      return [];
+    }
   }
 } 

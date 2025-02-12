@@ -11,6 +11,10 @@ import { config } from 'dotenv';
 import { CoinTalkMessageData, GlobalChatMessageData } from '../chat/chat.type';
 import { ChatService } from '../chat/chat.service';
 import { Logger } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { Socket } from 'socket.io';
+import cookie from 'cookie';
+import { MessageBody, ConnectedSocket } from '@nestjs/websockets';
 
 config();
 
@@ -35,17 +39,37 @@ interface ActiveUsersData {
   maxHttpBufferSize: 1e6,
 })
 export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
-  constructor(private readonly chatService: ChatService) {}
-
   @WebSocketServer()
   server: Server;
+
+  constructor(
+    private readonly chatService: ChatService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   private activeUsers = 0;
   private readonly logger = new Logger(AppGateway.name);
 
-  handleConnection() {
-    this.activeUsers++;
-    this.emitActiveUsers();
+  async handleConnection(client: Socket) {
+    try {
+      // 쿠키에서 JWT 토큰 추출
+      const cookies = cookie.parse(client.handshake.headers.cookie || '');
+      const token = cookies.access_token;
+      
+      if (token) {
+        try {
+          const payload = await this.jwtService.verifyAsync(token);
+          client.data.userId = payload.sub;  // 사용자 ID 저장
+        } catch (e) {
+          // 토큰이 유효하지 않은 경우 무시하고 비로그인 상태로 처리
+        }
+      }
+      
+      this.activeUsers++;
+      this.emitActiveUsers();
+    } catch (error) {
+      // ... 에러 처리
+    }
   }
 
   handleDisconnect() {
@@ -67,10 +91,22 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   @SubscribeMessage('coin-talk-message')
-  async handleCoinMessage(client: any, data: CoinTalkMessageData) {
+  async handleCoinMessage(client: Socket, data: CoinTalkMessageData) {
     try {
-      await this.chatService.sendMessage(data);
-      this.server.emit('coin-talk-message', data);
+      const baseSymbol = data.symbol.split('-')[0];
+      const messageData = {
+        ...data,
+        symbol: baseSymbol,
+        userId: client.data.userId,
+      };
+      
+      this.logger.debug(`Received coin message: ${JSON.stringify(messageData)}`);
+      await this.chatService.sendMessage(messageData);
+      this.logger.debug('Message saved to Redis');
+      
+      // room에 join하지 않았기 때문에 전체 클라이언트에게 broadcast
+      this.server.emit('coin-talk-message', messageData);
+      this.logger.debug('Message broadcasted to clients');
     } catch (error) {
       this.logger.error('Failed to handle coin message:', error);
     }
@@ -84,5 +120,27 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     } catch (error) {
       this.logger.error('Failed to handle global message:', error);
     }
+  }
+
+  @SubscribeMessage('sendMessage')
+  async handleMessage(
+    @MessageBody() data: { message: string; symbol?: string },
+    @ConnectedSocket() client: Socket,
+  ) {
+    const messageData = {
+      message: data.message,
+      timestamp: Date.now(),
+      nickname: client.data.nickname,
+      userId: client.data.userId,  // undefined 또는 사용자 ID
+      ...(data.symbol && { symbol: data.symbol }),
+    };
+
+    if (data.symbol) {
+      this.server.to(data.symbol).emit('newMessage', messageData);
+    } else {
+      this.server.emit('newMessage', messageData);
+    }
+
+    return messageData;
   }
 }

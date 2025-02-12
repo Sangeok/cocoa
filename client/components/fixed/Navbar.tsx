@@ -3,14 +3,13 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, Transition } from "@headlessui/react";
+import { Menu } from "@headlessui/react";
 import {
   Bars3Icon,
   SunIcon,
   MoonIcon,
   UserGroupIcon,
   UserCircleIcon,
-  ChevronDownIcon,
 } from "@heroicons/react/24/outline";
 import { clsx } from "clsx";
 import Switch from "../common/Switch";
@@ -62,7 +61,6 @@ export default function Navbar() {
               </Link>
             ))}
 
-            {/* Dark mode switch */}
             <div className="flex items-center pl-4 space-x-4">
               <Switch checked={theme === "dark"} onChange={toggleTheme}>
                 <span className="sr-only">Toggle dark mode</span>
@@ -73,55 +71,21 @@ export default function Navbar() {
                 )}
               </Switch>
 
-              {/* Active Users Counter */}
               <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                 <span>현재 접속자:</span>
                 <span>{activeUsers}</span>
               </div>
 
-              {/* User Menu or Login Button */}
               {isAuthenticated ? (
-                <Menu as="div" className="relative">
-                  <Menu.Button
-                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium 
-                                        text-gray-700 dark:text-gray-200 hover:bg-gray-100 
-                                        dark:hover:bg-gray-800 rounded-lg transition-colors"
-                  >
-                    <UserCircleIcon className="h-5 w-5" />
-                    <span>{user?.name}</span>
-                    <ChevronDownIcon className="h-4 w-4" />
-                  </Menu.Button>
-
-                  <Transition
-                    enter="transition ease-out duration-100"
-                    enterFrom="transform opacity-0 scale-95"
-                    enterTo="transform opacity-100 scale-100"
-                    leave="transition ease-in duration-75"
-                    leaveFrom="transform opacity-100 scale-100"
-                    leaveTo="transform opacity-0 scale-95"
-                  >
-                    <Menu.Items
-                      className="absolute right-0 mt-2 w-48 rounded-lg bg-white 
-                                         dark:bg-gray-950 shadow-lg border border-gray-200 
-                                         dark:border-gray-800 py-1"
-                    >
-                      <Menu.Item>
-                        {({ active }) => (
-                          <Link
-                            href="/profile"
-                            className={`block px-4 py-2 text-sm ${
-                              active
-                                ? "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
-                                : "text-gray-700 dark:text-gray-200"
-                            }`}
-                          >
-                            프로필
-                          </Link>
-                        )}
-                      </Menu.Item>
-                    </Menu.Items>
-                  </Transition>
-                </Menu>
+                <Link
+                  href="/profile"
+                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium 
+                           text-gray-700 dark:text-gray-200 hover:bg-gray-100 
+                           dark:hover:bg-gray-800 rounded-lg transition-colors"
+                >
+                  <UserCircleIcon className="h-5 w-5" />
+                  <span>{user?.name}</span>
+                </Link>
               ) : (
                 <Link
                   href="/signin"
@@ -138,13 +102,11 @@ export default function Navbar() {
           <div className="lg:hidden">
             <Menu as="div" className="relative inline-block text-left">
               <div className="flex items-center space-x-2">
-                {/* Active Users Counter for mobile */}
                 <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                   <UserGroupIcon className="h-4 w-4 mr-1" />
                   <span>{activeUsers}</span>
                 </div>
 
-                {/* Dark mode switch for mobile */}
                 <Switch checked={theme === "dark"} onChange={toggleTheme}>
                   <span className="sr-only">Toggle dark mode</span>
                   {theme === "dark" ? (
@@ -154,73 +116,22 @@ export default function Navbar() {
                   )}
                 </Switch>
 
-                {/* Login/Profile button for mobile */}
-                {isAuthenticated ? (
-                  <Menu as="div" className="relative">
-                    <Menu.Button
-                      className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 
-                                         dark:hover:bg-gray-800 rounded-lg"
-                    >
-                      <UserCircleIcon className="h-5 w-5" />
-                    </Menu.Button>
-                    <Transition
-                      enter="transition ease-out duration-100"
-                      enterFrom="transform opacity-0 scale-95"
-                      enterTo="transform opacity-100 scale-100"
-                      leave="transition ease-in duration-75"
-                      leaveFrom="transform opacity-100 scale-100"
-                      leaveTo="transform opacity-0 scale-95"
-                    >
-                      <Menu.Items
-                        className="absolute right-0 mt-2 w-48 rounded-lg bg-white 
-                                           dark:bg-gray-950 shadow-lg border border-gray-200 
-                                           dark:border-gray-800 py-1"
-                      >
-                        <Menu.Item>
-                          {({ active }) => (
-                            <Link
-                              href="/profile"
-                              className={`block px-4 py-2 text-sm ${
-                                active
-                                  ? "bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white"
-                                  : "text-gray-700 dark:text-gray-200"
-                              }`}
-                            >
-                              프로필
-                            </Link>
-                          )}
-                        </Menu.Item>
-                      </Menu.Items>
-                    </Transition>
-                  </Menu>
-                ) : (
-                  <Link
-                    href="/signin"
-                    className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 
-                             dark:hover:bg-gray-800 rounded-lg"
-                  >
-                    <UserCircleIcon className="h-5 w-5" />
-                  </Link>
-                )}
-
-                {/* Hamburger menu button */}
                 <Menu.Button
                   className="inline-flex items-center justify-center rounded-md p-2 
-                                      text-gray-600 dark:text-gray-400 hover:bg-gray-100 
-                                      dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white 
-                                      focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 
-                                      dark:focus:ring-white"
+                           text-gray-600 dark:text-gray-400 hover:bg-gray-100 
+                           dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white 
+                           focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-500 
+                           dark:focus:ring-white"
                 >
                   <span className="sr-only">Open main menu</span>
                   <Bars3Icon className="h-6 w-6" aria-hidden="true" />
                 </Menu.Button>
               </div>
 
-              {/* Mobile menu items */}
               <Menu.Items
                 className="absolute right-0 mt-2 w-48 origin-top-right rounded-md 
-                                   bg-white dark:bg-gray-950 py-1 shadow-lg ring-1 ring-black 
-                                   ring-opacity-5 focus:outline-none z-10"
+                         bg-white dark:bg-gray-950 py-1 shadow-lg ring-1 ring-black 
+                         ring-opacity-5 focus:outline-none z-10"
               >
                 {navigation.map((item) => (
                   <Menu.Item key={item.name}>
@@ -239,6 +150,42 @@ export default function Navbar() {
                     )}
                   </Menu.Item>
                 ))}
+
+                <div className="border-t border-gray-200 dark:border-gray-700 mt-1 pt-1">
+                  {isAuthenticated ? (
+                    <Menu.Item>
+                      {({ active }) => (
+                        <Link
+                          href="/profile"
+                          className={clsx(
+                            "block px-4 py-2 text-sm",
+                            active
+                              ? "bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white"
+                              : "text-gray-600 dark:text-gray-400"
+                          )}
+                        >
+                          프로필 ({user?.name})
+                        </Link>
+                      )}
+                    </Menu.Item>
+                  ) : (
+                    <Menu.Item>
+                      {({ active }) => (
+                        <Link
+                          href="/signin"
+                          className={clsx(
+                            "block px-4 py-2 text-sm",
+                            active
+                              ? "bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white"
+                              : "text-gray-600 dark:text-gray-400"
+                          )}
+                        >
+                          로그인
+                        </Link>
+                      )}
+                    </Menu.Item>
+                  )}
+                </div>
               </Menu.Items>
             </Menu>
           </div>
