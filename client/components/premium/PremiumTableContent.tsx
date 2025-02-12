@@ -51,10 +51,6 @@ export default function PremiumTableContent() {
 
   const sortedMarkets = getSortedMarkets(sortState);
 
-  if (sortedMarkets.length === 0) {
-    return <PremiumTableSkeleton />;
-  }
-
   return (
     <div className="space-y-6">
       <div className="bg-white dark:bg-gray-950 rounded-lg p-4 sm:p-6 border border-gray-200 dark:border-gray-900">

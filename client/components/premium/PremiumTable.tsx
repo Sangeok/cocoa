@@ -10,7 +10,9 @@ export default function PremiumTable() {
     <ErrorBoundary
       fallback={<div>프리미엄 정보를 불러오는데 실패했습니다.</div>}
     >
-      <PremiumTableContent />
+      <Suspense fallback={<PremiumTableSkeleton />}>
+        <PremiumTableContent />
+      </Suspense>
     </ErrorBoundary>
   );
 }
