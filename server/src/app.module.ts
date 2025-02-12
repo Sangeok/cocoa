@@ -9,17 +9,21 @@ import { NewsModule } from './news/news.module';
 import { CollectorModule } from './collector/collector.module';
 import { TestModule } from './test/test.module';
 import { KolModule } from './kol/kol.module';
+import { ChatModule } from './chat/chat.module';
+import { GatewayModule } from './gateway/gateway.module';
 
 @Module({
   imports: [
     ConfigModule,
     DatabaseModule,
+    GatewayModule,
     ExchangeModule,
     WithdrawModule,
     NewsModule,
     CollectorModule,
     TestModule,
     KolModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],

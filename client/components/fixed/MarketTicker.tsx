@@ -80,15 +80,6 @@ export default function MarketTicker() {
     );
   }
 
-  const getWidthClass = (price: number) => {
-    const digits = Math.floor(Math.log10(price)) + 1;
-    if (digits <= 4) return "w-[90px]"; // ~9,999
-    if (digits <= 5) return "w-[100px]"; // ~99,999
-    if (digits <= 6) return "w-[110px]"; // ~999,999
-    if (digits <= 7) return "w-[120px]"; // ~9,999,999
-    return "w-[130px]"; // 10,000,000~
-  };
-
   const CoinItem = React.memo(
     ({ coin }: { coin: (typeof krwMarketPrices)[0] }) => (
       <span className="inline-flex items-center px-4 h-8 text-sm text-gray-600 dark:text-gray-400 font-medium mr-1">
@@ -105,7 +96,7 @@ export default function MarketTicker() {
           </span>
         </div>
         <span
-          className={`ml-2 ${getWidthClass(coin.price)} text-right ${
+          className={`ml-2 text-right ${
             coin.change24h > 0 ? "text-green-500" : "text-red-500"
           }`}
         >

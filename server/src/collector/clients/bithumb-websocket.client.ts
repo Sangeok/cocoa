@@ -115,7 +115,7 @@ export class BithumbWebsocketClient implements OnModuleInit {
         quoteToken,
         price: parseFloat(data.content.closePrice),
         volume: parseFloat(data.content.volume),
-        change24h: parseFloat(data.content.chgRate) * 100,
+        change24h: parseFloat(data.content.chgRate),
         timestamp: parseInt(data.content.time),
       };
       await this.redisService.set(redisKey, JSON.stringify(tickerData));

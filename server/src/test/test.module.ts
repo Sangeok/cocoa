@@ -7,11 +7,13 @@ import { UpbitClient } from '../collector/clients/upbit.client';
 import { ExchangeRateClient } from '../collector/clients/exchange-rate.client';
 import { RedisService } from '../redis/redis.service';
 import { FeeClient } from '../collector/clients/fee.client';
-import { AppGateway } from '../gateway/app.gateway';
+import { GatewayModule } from '../gateway/gateway.module';
+
 @Module({
   imports: [
     CollectorModule,
     NewsModule,
+    GatewayModule,
   ],
   controllers: [TestController],
   providers: [
@@ -20,7 +22,6 @@ import { AppGateway } from '../gateway/app.gateway';
     ExchangeRateClient,
     RedisService,
     FeeClient,
-    AppGateway,
   ],
 })
 export class TestModule {} 

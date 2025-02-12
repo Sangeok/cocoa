@@ -7,13 +7,13 @@ import { ExchangeRateClient } from './clients/exchange-rate.client';
 import { RedisService } from '../redis/redis.service';
 import { UpbitWebsocketClient } from './clients/upbit-websocket.client';
 import { MarketCodesService } from './services/market-codes.service';
-import { AppGateway } from '../gateway/app.gateway';
+import { GatewayModule } from '../gateway/gateway.module';
 import { BinanceClient } from './clients/binance.client';
 import { FeeClient } from './clients/fee.client';
 import { BithumbWebsocketClient } from './clients/bithumb-websocket.client';
 
 @Module({
-  imports: [ScheduleModule.forRoot(), DatabaseModule],
+  imports: [ScheduleModule.forRoot(), DatabaseModule, GatewayModule],
   providers: [
     CollectorService,
     UpbitClient,
@@ -22,7 +22,6 @@ import { BithumbWebsocketClient } from './clients/bithumb-websocket.client';
     UpbitWebsocketClient,
     MarketCodesService,
     BinanceClient,
-    AppGateway,
     FeeClient,
     BithumbWebsocketClient,
   ],
