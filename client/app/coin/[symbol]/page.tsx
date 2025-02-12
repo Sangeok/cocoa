@@ -38,15 +38,12 @@ export default function CoinPage() {
   useEffect(() => {
     // 초기 메시지 로드
     apiClient
-      .get(API_ROUTES.CHAT.GET.url, {
-        params: {
-          symbol,
-        },
-      })
-      .then((res) => res.data)
-      .then((data) => {
-        if (data.length > 0) {
-          setMessages(data);
+      .get(API_ROUTES.CHAT.GET.url + `/${symbol}`)
+      .then((res) => {
+        console.log(res);
+        const messages = res.data;
+        if (messages.length > 0) {
+          setMessages(messages);
         }
       });
 

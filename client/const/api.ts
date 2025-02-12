@@ -33,7 +33,7 @@ export const API_ROUTES = {
   },
   CHAT: {
     GET: {
-      url: "/chat/:symbol",
+      url: "/chat",
       method: "GET",
     },
   },
