@@ -1,8 +1,8 @@
 export const EXCHANGE_OPTIONS = [
-  { value: "upbit", label: "업비트", image: true },
-  { value: "bithumb", label: "빗썸", image: true },
-  { value: "binance", label: "바이낸스", image: true },
-  { value: "coinone", label: "코인원", image: true },
+  { value: "upbit", label: "업비트", image: true, url: "https://upbit.com" },
+  { value: "bithumb", label: "빗썸", image: true, url: "https://bithumb.com" },
+  { value: "binance", label: "바이낸스", image: true, url: "https://binance.com" },
+  { value: "coinone", label: "코인원", image: true, url: "https://coinone.com" },
 ] as const;
 
 export const BASE_TOKEN_OPTIONS = {

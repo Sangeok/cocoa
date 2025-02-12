@@ -16,6 +16,7 @@ import { useMarketData } from "@/hooks/useMarketData";
 import { Exchange, QuoteToken } from "@/types/exchange";
 import { useState } from "react";
 import { UPBIT_STATIC_IMAGE_URL } from "@/const";
+import Link from "next/link";
 
 export default function PremiumTableContent() {
   const [sortState, setSortState] = useState<SortState>({
@@ -258,23 +259,28 @@ export default function PremiumTableContent() {
                   className="text-xs sm:text-sm hover:bg-gray-50 dark:hover:bg-gray-900"
                 >
                   <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <Image
-                        src={`${UPBIT_STATIC_IMAGE_URL}/${
-                          market.symbol.split("-")[0]
-                        }.png`}
-                        alt={market.symbol.split("-")[0]}
-                        width={20}
-                        height={20}
-                        className="mr-2 sm:w-6 sm:h-6"
-                      />
-                      <div className="text-gray-900 dark:text-white font-medium">
-                        <div>{getKoreanName(market.symbol)}</div>
-                        <div className="text-gray-500 dark:text-gray-400 text-xs">
-                          {market.symbol.split("-")[0]}
+                    <Link
+                      href={`/coin/${market.symbol}`}
+                      className="text-gray-900 dark:text-white hover:underline"
+                    >
+                      <div className="flex items-center">
+                        <Image
+                          src={`${UPBIT_STATIC_IMAGE_URL}/${
+                            market.symbol.split("-")[0]
+                          }.png`}
+                          alt={market.symbol.split("-")[0]}
+                          width={20}
+                          height={20}
+                          className="mr-2 sm:w-6 sm:h-6"
+                        />
+                        <div className="text-gray-900 dark:text-white font-medium">
+                          <div>{getKoreanName(market.symbol)}</div>
+                          <div className="text-gray-500 dark:text-gray-400 text-xs">
+                            {market.symbol.split("-")[0]}
+                          </div>
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   </td>
                   <td className="px-4 sm:px-6 py-4 text-right whitespace-nowrap">
                     <span
