@@ -3,9 +3,11 @@ import { ConfigModule as NestConfigModule } from '@nestjs/config';
 import { z } from 'zod';
 
 const envSchema = z.object({
-  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
+  NODE_ENV: z
+    .enum(['development', 'production', 'test'])
+    .default('development'),
   PORT: z.string().default('3000'),
-  
+
   // Database
   POSTGRES_HOST: z.string(),
   POSTGRES_PORT: z.string().default('5432'),
@@ -14,7 +16,7 @@ const envSchema = z.object({
   POSTGRES_DB: z.string(),
   POSTGRES_MAX_CONNECTIONS: z.string().default('100'),
   POSTGRES_IDLE_TIMEOUT: z.string().default('30000'),
-  
+
   // Redis
   REDIS_HOST: z.string(),
   REDIS_PORT: z.string().default('6379'),
@@ -32,7 +34,17 @@ const envSchema = z.object({
 
   // News API
   NEWS_API_KEY: z.string(),
-  
+
+  // Chat
+  CORS_ORIGIN: z.string(),
+
+  // Google
+  GOOGLE_CLIENT_ID: z.string(),
+  GOOGLE_CLIENT_SECRET: z.string(),
+
+  // Naver
+  NAVER_CLIENT_ID: z.string(),
+  NAVER_CLIENT_SECRET: z.string(),
 });
 
 @Global()
@@ -52,4 +64,4 @@ const envSchema = z.object({
     }),
   ],
 })
-export class ConfigModule {} 
+export class ConfigModule {}

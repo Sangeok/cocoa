@@ -10,7 +10,7 @@ export class NewsController {
   async getNews(@Query() query: NewsQueryParams) {
     const limit = Math.min(Number(query.limit) || 10, 20); // 기본값 10, 최대 20
     const page = Number(query.page) || 1;
-    const symbol = query.symbol;
+    const symbol = query.symbol || '';
 
     return this.newsService.getNews({
       limit,

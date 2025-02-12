@@ -335,16 +335,25 @@ ${JSON.stringify(newsData, null, 2)}
 
   async getNews(options: NewsQueryOptions) {
     try {
-      const cacheKey = `news:${options.symbol || 'all'}:${options.limit}:${options.offset}`;
+      const cacheKey = `news:${options.symbol === '' ? 'all' : options.symbol}:${options.limit}:${options.offset}`;
       const cachedData = await this.redisService.get(cacheKey);
       if (cachedData) {
         return JSON.parse(cachedData);
       }
 
-      const news = await this.newsRepository.findNews({
-        ...options,
-        orderBy: { timestamp: 'desc' },
-      });
+      let news;
+      if (options.symbol === '') {
+        news = await this.newsRepository.findNews({
+          limit: options.limit,
+          offset: options.offset,
+          orderBy: { timestamp: 'desc' },
+        });
+      } else {
+        news = await this.newsRepository.findNews({
+          ...options,
+          orderBy: { timestamp: 'desc' },
+        });
+      }
 
       const response = {
         success: true,
@@ -367,7 +376,7 @@ ${JSON.stringify(newsData, null, 2)}
   async getRecentNews(options: NewsQueryOptions) {
     try {
       // Create a cache key based on the options
-      const cacheKey = `recent-news:${options.symbol || 'all'}:${options.limit}:${options.offset}`;
+      const cacheKey = `recent-news:${options.symbol === '' ? 'all' : options.symbol}:${options.limit}:${options.offset}`;
 
       // Try to get cached data
       const cachedData = await this.redisService.get(cacheKey);
@@ -378,14 +387,22 @@ ${JSON.stringify(newsData, null, 2)}
       // If no cached data, fetch from database
       const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
-      const news = await this.newsRepository.findNews({
-        ...options,
-        orderBy: { timestamp: 'desc' },
-        where: {
-          timestamp: { gte: oneDayAgo },
-          ...(options.symbol ? { symbol: options.symbol } : {}),
-        },
-      });
+      let news;
+      if (options.symbol === '') {
+        news = await this.newsRepository.findNews({
+          limit: options.limit,
+          offset: options.offset,
+          orderBy: { timestamp: 'desc' },
+          where: {
+            timestamp: { gte: oneDayAgo },
+          },
+        });
+      } else {
+        news = await this.newsRepository.findNews({
+          ...options,
+          orderBy: { timestamp: 'desc' },
+        });
+      }
 
       const response = {
         success: true,
