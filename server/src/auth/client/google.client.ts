@@ -20,7 +20,7 @@ export class GoogleClient {
       code,
       client_id: this.configService.get('GOOGLE_CLIENT_ID'),
       client_secret: this.configService.get('GOOGLE_CLIENT_SECRET'),
-      redirect_uri: `${this.configService.get('CORS_ORIGIN')}/auth/google/callback`,
+      redirect_uri: `${this.configService.get('API_URL')}/auth/google/callback`,
       grant_type: 'authorization_code',
     });
 

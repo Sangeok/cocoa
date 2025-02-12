@@ -45,6 +45,9 @@ const envSchema = z.object({
   // Naver
   NAVER_CLIENT_ID: z.string(),
   NAVER_CLIENT_SECRET: z.string(),
+
+  // JWT
+  JWT_SECRET: z.string(),
 });
 
 @Global()

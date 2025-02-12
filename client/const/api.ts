@@ -37,4 +37,14 @@ export const API_ROUTES = {
       method: "GET",
     },
   },
+  USER: {
+    PROFILE: {
+      url: "/user/profile",
+      method: "GET",
+    },
+    UPDATE: {
+      url: "/user/profile",
+      method: "PUT",
+    },
+  },
 } as const;

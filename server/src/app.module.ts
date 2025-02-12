@@ -11,6 +11,8 @@ import { TestModule } from './test/test.module';
 import { KolModule } from './kol/kol.module';
 import { ChatModule } from './chat/chat.module';
 import { GatewayModule } from './gateway/gateway.module';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { GatewayModule } from './gateway/gateway.module';
     TestModule,
     KolModule,
     ChatModule,
+    UserModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
