@@ -4,7 +4,7 @@ import { RedisService } from '../redis/redis.service';
 import { AppGateway } from '../gateway/app.gateway';
 import { CoinPremiumData } from '../collector/types/common.types';
 import { DrizzleClient } from '../database/database.module';
-import { upbitMarkets, bithumbMarkets } from '../database/schema/market';
+import { upbitMarkets, bithumbMarkets, binanceMarkets } from '../database/schema/market';
 
 @Injectable()
 export class ExchangeService {
@@ -126,14 +126,16 @@ export class ExchangeService {
 
   async getMarkets() {
     try {
-      const [upbitData, bithumbData] = await Promise.all([
+      const [upbitData, bithumbData, binanceData] = await Promise.all([
         this.db.select().from(upbitMarkets),
         this.db.select().from(bithumbMarkets),
+        this.db.select().from(binanceMarkets),
       ]);
 
       return {
         upbit: upbitData,
         bithumb: bithumbData,
+        binance: binanceData,
       };
     } catch (error) {
       this.logger.error('Failed to get markets:', error);

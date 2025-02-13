@@ -24,7 +24,7 @@
 - 백엔드: Main API server Nest.js + 추가적으로 데이터를 수집 생성 서버
 - 데이터베이스: PostgreSQL
 - 프론트 호스팅: Vercel
-- 백엔드 호스팅: GCP(Docker 환경에서 운영)
+- 백엔드 호스팅: AWS(Docker 환경에서 운영)
 - ORM: Drizzle
 
 ## DTO
@@ -66,3 +66,4 @@ docker volume prune -f
 # 전체 시스템 정리 (네트워크 포함)
 docker system prune -a -f --volumes
 ```
+

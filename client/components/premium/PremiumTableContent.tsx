@@ -17,14 +17,31 @@ import { Exchange, QuoteToken } from "@/types/exchange";
 import { useState } from "react";
 import { UPBIT_STATIC_IMAGE_URL } from "@/const";
 import Link from "next/link";
-import PremiumTableSkeleton from "@/components/premium/PremiumTableSkeleton";
+
+function ImageWithFallback({ symbol }: { symbol: string }) {
+  const [showImage, setShowImage] = useState(true);
+
+  if (!showImage) {
+    return (
+      <div className="w-5 h-5 sm:w-6 sm:h-6 mr-2 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-xs">
+        {symbol.charAt(0)}
+      </div>
+    );
+  }
+
+  return (
+    <Image
+      src={`${UPBIT_STATIC_IMAGE_URL}/${symbol.split("-")[0]}.png`}
+      alt={symbol.split("-")[0]}
+      width={20}
+      height={20}
+      className="mr-2 sm:w-6 sm:h-6"
+      onError={() => setShowImage(false)}
+    />
+  );
+}
 
 export default function PremiumTableContent() {
-  const [sortState, setSortState] = useState<SortState>({
-    field: "premium",
-    direction: "desc",
-  });
-
   const {
     exchangeRate,
     exchangePair,
@@ -33,7 +50,17 @@ export default function PremiumTableContent() {
     setSearchTerm,
     getKoreanName,
     getSortedMarkets,
+    filteredMarkets,
   } = useMarketData();
+
+  const [sortState, setSortState] = useState<SortState>({
+    field: "premium",
+    direction: "desc",
+  });
+
+  if (!exchangeRate || !filteredMarkets) {
+    return null;
+  }
 
   const handleSort = (field: SortField) => {
     setSortState((prev) => ({
@@ -236,21 +263,6 @@ export default function PremiumTableContent() {
                     />
                   </button>
                 </th>
-                <th className="px-4 sm:px-6 py-3 text-right">
-                  <button
-                    onClick={() => handleSort("timestamp")}
-                    className="flex items-center justify-end gap-1 whitespace-nowrap w-full"
-                  >
-                    최근 업데이트
-                    <SortIcon
-                      direction={
-                        sortState.field === "timestamp"
-                          ? sortState.direction
-                          : null
-                      }
-                    />
-                  </button>
-                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 dark:divide-gray-900">
@@ -259,21 +271,13 @@ export default function PremiumTableContent() {
                   key={market.symbol}
                   className="text-xs sm:text-sm hover:bg-gray-50 dark:hover:bg-gray-900"
                 >
-                  <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                  <td className="px-2 sm:px-4 py-2 sm:py-4 whitespace-nowrap">
                     <Link
                       href={`/coin/${market.symbol}`}
                       className="text-gray-900 dark:text-white hover:underline"
                     >
                       <div className="flex items-center">
-                        <Image
-                          src={`${UPBIT_STATIC_IMAGE_URL}/${
-                            market.symbol.split("-")[0]
-                          }.png`}
-                          alt={market.symbol.split("-")[0]}
-                          width={20}
-                          height={20}
-                          className="mr-2 sm:w-6 sm:h-6"
-                        />
+                        <ImageWithFallback symbol={market.symbol} />
                         <div className="text-gray-900 dark:text-white font-medium">
                           <div>{getKoreanName(market.symbol)}</div>
                           <div className="text-gray-500 dark:text-gray-400 text-xs">
@@ -283,7 +287,7 @@ export default function PremiumTableContent() {
                       </div>
                     </Link>
                   </td>
-                  <td className="px-4 sm:px-6 py-4 text-right whitespace-nowrap">
+                  <td className="px-2 sm:px-4 py-2 sm:py-4 text-right whitespace-nowrap">
                     <span
                       className={clsx(
                         "font-medium",
@@ -297,7 +301,7 @@ export default function PremiumTableContent() {
                       {formatPercent(market.priceGapPercent)}
                     </span>
                   </td>
-                  <td className="px-4 sm:px-6 py-4 text-right font-medium whitespace-nowrap text-gray-700 dark:text-gray-300">
+                  <td className="px-2 sm:px-4 py-2 sm:py-4 text-right font-medium whitespace-nowrap text-gray-700 dark:text-gray-300">
                     {(exchangePair.fromBase === "KRW" ||
                       exchangePair.fromBase === "USDT") &&
                       "₩"}
@@ -321,7 +325,7 @@ export default function PremiumTableContent() {
                       </div>
                     }
                   </td>
-                  <td className="px-4 sm:px-6 py-4 text-right font-medium whitespace-nowrap text-gray-700 dark:text-gray-300">
+                  <td className="px-2 sm:px-4 py-2 sm:py-4 text-right font-medium whitespace-nowrap text-gray-700 dark:text-gray-300">
                     {(exchangePair.toBase === "KRW" ||
                       exchangePair.toBase === "USDT") &&
                       "₩"}
@@ -345,8 +349,7 @@ export default function PremiumTableContent() {
                       </div>
                     }
                   </td>
-
-                  <td className="px-4 sm:px-6 py-4 text-right text-gray-500 dark:text-gray-400">
+                  <td className="px-2 sm:px-4 py-2 sm:py-4 text-right text-gray-500 dark:text-gray-400">
                     {exchangePair.fromBase === "KRW"
                       ? formatKRWWithUnit(market.volume)
                       : formatCryptoToKRWWithUnit(
@@ -354,9 +357,6 @@ export default function PremiumTableContent() {
                           market.fromPrice,
                           exchangeRate?.rate || 0
                         )}
-                  </td>
-                  <td className="px-4 sm:px-6 py-4 text-right text-gray-500 dark:text-gray-400">
-                    {new Date(market.timestamp).toLocaleTimeString()}
                   </td>
                 </tr>
               ))}

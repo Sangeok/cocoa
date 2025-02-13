@@ -135,38 +135,28 @@ export class WithdrawService {
         if (fromPrice <= 0) continue;
 
         const coinAmount = amount / fromPrice;
-        this.logger.debug(
-          `${coin}: Amount = ${amount}, Price = ${fromPrice}, Coins = ${coinAmount}`,
-        );
-
+        
         // 2. 출금 수수료 계산
         const withdrawFee = await this.getWithdrawalFee(coin, from);
         const estimatedReceiveAmount = coinAmount - withdrawFee;
 
-        if (estimatedReceiveAmount <= 0) {
-          this.logger.debug(`${coin}: Skipping due to negative receive amount`);
-          continue;
-        }
+        if (estimatedReceiveAmount <= 0) continue;
 
         // 3. 도착 거래소에서의 가치 계산 (USDT)
         const toPrice = await this.getCurrentPrice(coin, to);
         if (toPrice <= 0) continue;
 
         const finalValueInUSD = estimatedReceiveAmount * toPrice;
-        this.logger.debug(`${coin}: Final value in USD = ${finalValueInUSD}`);
-
+        
         // 4. 수수료의 원화 가치 계산
         const feeInKRW = withdrawFee * fromPrice;
+        const feeRate = (feeInKRW / amount) * 100; // 수수료율 계산
 
         // 5. 최종 원화 가치 계산
         const finalValueInKRW = finalValueInUSD * exchangeRate;
 
-        // 6. 수익률 계산 ((도착지 가치 - 출발지 가치) / 출발지 가치 * 100)
+        // 6. 수익률 계산 수정 (최종 금액과 초기 금액만으로 계산)
         const profitRate = ((finalValueInKRW - amount) / amount) * 100;
-
-        this.logger.debug(
-          `${coin}: Initial KRW = ${amount}, Final KRW = ${finalValueInKRW}, Profit Rate = ${profitRate}%`,
-        );
 
         paths.push({
           coin,
@@ -178,27 +168,24 @@ export class WithdrawService {
           feeInKRW,
           exchangeRate,
           profitRate,
-          sourceAmountInKRW: amount,
+          sourceAmountInKRW: amount,  // 초기 투자 금액
           targetAmountInKRW: finalValueInKRW,
           fromPrice,
           toPrice,
           steps: [
             `원화로 ${coin} 구매 (${this.formatKRW(fromPrice)}/개)`,
-            `${to}로 ${coin} 송금`,
-            '필요한 경우 다른 코인으로 변환',
+            `${to}로 ${coin} 송금 (수수료: ${withdrawFee} ${coin}, ${feeRate.toFixed(2)}%)`,
+            `${coin}을 USDT로 환전`,
           ],
         });
       } catch (error) {
-        this.logger.warn(
-          `Failed to calculate path for ${coin}: ${error.message}`,
-        );
+        this.logger.warn(`Failed to calculate path for ${coin}: ${error.message}`);
         continue;
       }
     }
 
-    // 수익률 기준으로 정렬하고 필터링
     return paths
-      .filter((path) => !isNaN(path.profitRate) && path.profitRate > -100) // 비정상적인 수익률 제외
+      .filter((path) => !isNaN(path.profitRate) && path.profitRate > -100)
       .sort((a, b) => b.profitRate - a.profitRate)
       .slice(0, 10);
   }

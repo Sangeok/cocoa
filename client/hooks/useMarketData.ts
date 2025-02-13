@@ -1,12 +1,12 @@
 import { useState, useMemo, useEffect } from "react";
 import { calculatePriceGap } from "@/lib/format";
 import useMarketStore from "@/store/useMarketStore";
-import useMarketsStore from "@/store/useMarketsStore";
+import useMarketsStore, { KoreanMarket } from "@/store/useMarketsStore";
 import type { ExchangePair, SortState } from "@/types/exchange";
 
 export function useMarketData() {
   const { coins, exchangeRate } = useMarketStore();
-  const { fetchMarkets, getKoreanName } = useMarketsStore();
+  const { markets, fetchMarkets, getKoreanName } = useMarketsStore();
   const [exchangePair, setExchangePair] = useState<ExchangePair>({
     from: "upbit",
     to: "binance",
@@ -16,111 +16,179 @@ export function useMarketData() {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    const fetchPromise = fetchMarkets();
-    if (!coins || !exchangeRate) {
-      throw fetchPromise;
+    if (!markets) {
+      fetchMarkets().catch((error) => {
+        console.error("Failed to fetch markets:", error);
+      });
     }
-  }, [fetchMarkets]);
-
-  // 데이터가 없으면 에러를 throw하여 Suspense가 처리하도록 함
-  if (!coins || !exchangeRate) {
-    throw new Promise((resolve) => {
-      // 데이터 로딩이 완료되면 resolve
-      const interval = setInterval(() => {
-        if (coins && exchangeRate) {
-          clearInterval(interval);
-          resolve(true);
-        }
-      }, 100);
-    });
-  }
+  }, [markets, fetchMarkets]);
 
   const filteredMarkets = useMemo(() => {
-    if (!coins || !exchangeRate?.rate) return [];
-    return Object.entries(coins)
-      .filter(([marketSymbol, data]) => {
-        const fromData = data[exchangePair.from];
-        if (!fromData?.price) return false;
+    if (!coins || !exchangeRate?.rate || !markets) return [];
 
-        const [baseToken, quoteToken] = marketSymbol.split("-");
-        if (quoteToken !== exchangePair.fromBase) return false;
-
+    if (exchangePair.from === "binance") {
+      const list = markets?.binance.map((market) => {
+        const { baseToken, quoteToken } = market;
+        const fromMarketSymbol = `${baseToken}-${exchangePair.fromBase}`;
         const toMarketSymbol = `${baseToken}-${exchangePair.toBase}`;
-        if (!coins[toMarketSymbol]?.[exchangePair.to]?.price) return false;
-
-        if (searchTerm) {
-          const koreanName = getKoreanName(marketSymbol).toLowerCase();
-          const englishName = baseToken.toLowerCase();
-          const search = searchTerm.toLowerCase();
-          return koreanName.includes(search) || englishName.includes(search);
-        }
-
-        return true;
-      })
-      .map(([marketSymbol, data]) => {
-        const [baseToken] = marketSymbol.split("-");
-        const fromPrice = data[exchangePair.from]?.price || 0;
-        const toMarketSymbol = `${baseToken}-${exchangePair.toBase}`;
+        const fromPrice =
+          coins[fromMarketSymbol]?.[exchangePair.from]?.price || 0;
         const toPrice = coins[toMarketSymbol]?.[exchangePair.to]?.price || 0;
 
+        const volume =
+          coins[fromMarketSymbol]?.[exchangePair.from]?.volume || 0;
+
+        const priceGapPercent = calculatePriceGap(
+          coins,
+          {
+            exchange: exchangePair.from,
+            symbol: fromMarketSymbol,
+            price: fromPrice,
+            volume,
+            timestamp:
+              coins[fromMarketSymbol]?.[exchangePair.from]?.timestamp ||
+              Date.now(),
+          },
+          exchangePair,
+          {
+            USDT: { KRW: exchangeRate?.rate || 0 },
+            BTC: {
+              KRW: coins["BTC-KRW"]?.[exchangePair.from]?.price || 0,
+              USDT: coins["BTC-USDT"]?.[exchangePair.to]?.price || 0,
+            },
+          }
+        );
+
         return {
-          symbol: marketSymbol,
+          symbol: `${baseToken}-${quoteToken}`,
           exchange: exchangePair.from,
           fromPrice,
           toPrice,
-          volume: data[exchangePair.from]?.volume || 0,
-          timestamp: data[exchangePair.from]?.timestamp || Date.now(),
-          fromPriceChange24h: data[exchangePair.from]?.change24h || 0,
+          volume,
+          timestamp:
+            coins[fromMarketSymbol]?.[exchangePair.from]?.timestamp ||
+            Date.now(),
+          fromPriceChange24h:
+            coins[fromMarketSymbol]?.[exchangePair.from]?.change24h || 0,
           toPriceChange24h:
             coins[toMarketSymbol]?.[exchangePair.to]?.change24h || 0,
-          priceGapPercent: calculatePriceGap(
-            coins,
-            {
-              exchange: exchangePair.from,
-              symbol: marketSymbol,
-              price: fromPrice,
-              volume: data[exchangePair.from]?.volume || 0,
-              timestamp: data[exchangePair.from]?.timestamp || Date.now(),
-            },
-            exchangePair,
-            {
-              USDT: { KRW: exchangeRate?.rate || 0 },
-              BTC: {
-                KRW: coins["BTC-KRW"]?.[exchangePair.from]?.price || 0,
-                USDT: coins["BTC-USDT"]?.[exchangePair.to]?.price || 0,
-              },
-            }
-          ),
+          priceGapPercent,
         };
       });
-  }, [coins, exchangePair, exchangeRate?.rate, searchTerm, getKoreanName]);
 
-  const getSortedMarkets = (sortState: SortState) => {
-    if (!filteredMarkets) return [];
-
-    return [...filteredMarkets].sort((a, b) => {
-      if (sortState.direction === null) return 0;
-
-      const modifier = sortState.direction === "asc" ? 1 : -1;
-
-      switch (sortState.field) {
-        case "name":
-          return modifier * a.symbol.localeCompare(b.symbol);
-        case "fromPrice":
-          return modifier * (a.fromPrice - b.fromPrice);
-        case "toPrice":
-          return modifier * (a.toPrice - b.toPrice);
-        case "premium":
-          return modifier * (a.priceGapPercent - b.priceGapPercent);
-        case "volume":
-          return modifier * (a.volume * a.fromPrice - b.volume * b.fromPrice);
-        case "timestamp":
-          return modifier * (a.timestamp - b.timestamp);
-        default:
-          return 0;
+      if (searchTerm) {
+        return list.filter((item) => {
+          const { symbol } = item;
+          return symbol.includes(searchTerm);
+        });
       }
+
+      return list;
+    }
+
+    const list = markets?.[exchangePair.from as keyof typeof markets]
+      .filter((item) => {
+        const { market } = item as KoreanMarket;
+        return market.split("-")[0] === exchangePair.fromBase;
+      })
+      .map((item) => {
+        const { market } = item as KoreanMarket;
+        const [quoteToken, baseToken] = market.split("-");
+        const fromMarketSymbol = `${baseToken}-${exchangePair.fromBase}`;
+        const toMarketSymbol = `${baseToken}-${exchangePair.toBase}`;
+        const fromPrice =
+          coins[fromMarketSymbol]?.[exchangePair.from]?.price || 0;
+        const toPrice = coins[toMarketSymbol]?.[exchangePair.to]?.price || 0;
+
+        const volume =
+          coins[fromMarketSymbol]?.[exchangePair.from]?.volume || 0;
+
+        const priceGapPercent = calculatePriceGap(
+          coins,
+          {
+            exchange: exchangePair.from,
+            symbol: fromMarketSymbol,
+            price: fromPrice,
+            volume,
+            timestamp:
+              coins[fromMarketSymbol]?.[exchangePair.from]?.timestamp ||
+              Date.now(),
+          },
+          exchangePair,
+          {
+            USDT: { KRW: exchangeRate?.rate || 0 },
+            BTC: {
+              KRW: coins["BTC-KRW"]?.[exchangePair.from]?.price || 0,
+              USDT: coins["BTC-USDT"]?.[exchangePair.to]?.price || 0,
+            },
+          }
+        );
+
+        return {
+          symbol: `${baseToken}-${quoteToken}`,
+          exchange: exchangePair.from,
+          fromPrice,
+          toPrice,
+          volume,
+          timestamp:
+            coins[fromMarketSymbol]?.[exchangePair.from]?.timestamp || 0,
+          fromPriceChange24h:
+            coins[fromMarketSymbol]?.[exchangePair.from]?.change24h || 0,
+          toPriceChange24h:
+            coins[toMarketSymbol]?.[exchangePair.to]?.change24h || 0,
+          priceGapPercent,
+        };
+      });
+
+    if (searchTerm) {
+      return list.filter((item) => {
+        const { symbol } = item;
+
+        if (getKoreanName(symbol)) {
+          return getKoreanName(symbol).includes(searchTerm);
+        }
+
+        return symbol.includes(searchTerm.toUpperCase());
+      });
+    }
+
+    return list;
+  }, [coins, exchangePair, exchangeRate?.rate, markets, searchTerm]);
+
+  const getSortedMarkets = useMemo(() => {
+    return (sortState: SortState) => {
+      if (!filteredMarkets) return [];
+
+      return [...filteredMarkets].sort((a, b) => {
+        if (sortState.direction === null) return 0;
+        const modifier = sortState.direction === "asc" ? 1 : -1;
+
+        switch (sortState.field) {
+          case "name":
+            return modifier * a.symbol.localeCompare(b.symbol);
+          case "fromPrice":
+            return modifier * (a.fromPrice - b.fromPrice);
+          case "toPrice":
+            return modifier * (a.toPrice - b.toPrice);
+          case "premium":
+            return modifier * (a.priceGapPercent - b.priceGapPercent);
+          case "volume":
+            return modifier * (a.volume * a.fromPrice - b.volume * b.fromPrice);
+          case "timestamp":
+            return modifier * (a.timestamp - b.timestamp);
+          default:
+            return 0;
+        }
+      });
+    };
+  }, [filteredMarkets]);
+
+  const isLoading = !markets || !coins || !exchangeRate;
+  if (isLoading) {
+    throw new Promise((resolve) => {
+      setTimeout(resolve, 100);
     });
-  };
+  }
 
   return {
     exchangeRate,
@@ -130,5 +198,6 @@ export function useMarketData() {
     setSearchTerm,
     getKoreanName,
     getSortedMarkets,
+    filteredMarkets,
   };
 }

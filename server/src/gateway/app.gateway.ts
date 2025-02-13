@@ -47,8 +47,8 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     private readonly jwtService: JwtService,
   ) {}
 
-  private activeUsers = 0;
   private readonly logger = new Logger(AppGateway.name);
+  private connectedClients: Set<string> = new Set();
 
   async handleConnection(client: Socket) {
     try {
@@ -59,26 +59,30 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
       if (token) {
         try {
           const payload = await this.jwtService.verifyAsync(token);
-          client.data.userId = payload.sub;  // 사용자 ID 저장
+          client.data.userId = payload.sub;
         } catch (e) {
-          // 토큰이 유효하지 않은 경우 무시하고 비로그인 상태로 처리
+          this.logger.warn('Invalid token received');
         }
       }
       
-      this.activeUsers++;
+      // 클라이언트 ID를 Set에 추가
+      this.connectedClients.add(client.id);
       this.emitActiveUsers();
+      this.logger.log(`Client connected: ${client.id}. Total connections: ${this.connectedClients.size}`);
     } catch (error) {
-      // ... 에러 처리
+      this.logger.error('Connection handling failed:', error);
     }
   }
 
-  handleDisconnect() {
-    this.activeUsers--;
+  handleDisconnect(client: Socket) {
+    // 클라이언트 ID를 Set에서 제거
+    this.connectedClients.delete(client.id);
     this.emitActiveUsers();
+    this.logger.log(`Client disconnected: ${client.id}. Total connections: ${this.connectedClients.size}`);
   }
 
   private emitActiveUsers() {
-    const data: ActiveUsersData = { count: this.activeUsers };
+    const data: ActiveUsersData = { count: this.connectedClients.size };
     this.server.emit('active-users', data);
   }
 
