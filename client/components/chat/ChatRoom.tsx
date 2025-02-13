@@ -3,34 +3,27 @@ import ChatMessageList from "./ChatMessageList";
 import ChatInput from "./ChatInput";
 import { CoinTalkMessageData, GlobalChatMessageData } from "@/types/chat";
 import clsx from "clsx";
+import { useChatRoom } from "@/hooks/useChat";
 
 interface ChatRoomProps {
-  selectedChat: "global" | "coin";
-  setSelectedChat: (chat: "global" | "coin") => void;
-  globalMessages: GlobalChatMessageData[];
-  coinMessages: CoinTalkMessageData[];
-  nickname: string;
+  symbol: string;
   symbolKoreanName: string;
-  inputMessage: string;
-  setInputMessage: (message: string) => void;
-  onSendMessage: (message: string) => void;
-  onEditNickname: () => void;
-  pendingMessages: Set<number>;
 }
 
-export default function ChatRoom({
-  selectedChat,
-  setSelectedChat,
-  globalMessages,
-  coinMessages,
-  nickname,
-  symbolKoreanName,
-  inputMessage,
-  setInputMessage,
-  onSendMessage,
-  onEditNickname,
-  pendingMessages,
-}: ChatRoomProps) {
+export default function ChatRoom({ symbol, symbolKoreanName }: ChatRoomProps) {
+  const {
+    globalMessages,
+    coinMessages,
+    pendingMessages,
+    inputMessage,
+    selectedChat,
+    nickname,
+    setInputMessage,
+    setSelectedChat,
+    handleSendMessage,
+    setIsNicknameModalOpen,
+  } = useChatRoom(symbol);
+
   return (
     <div className="bg-white dark:bg-gray-950 rounded-lg shadow">
       <Tab.Group
@@ -81,9 +74,9 @@ export default function ChatRoom({
               <ChatInput
                 inputMessage={inputMessage}
                 setInputMessage={setInputMessage}
-                onSendMessage={onSendMessage}
+                onSendMessage={handleSendMessage}
                 nickname={nickname}
-                onEditNickname={onEditNickname}
+                onEditNickname={() => setIsNicknameModalOpen(true)}
               />
             </div>
           </Tab.Panel>
@@ -102,9 +95,9 @@ export default function ChatRoom({
               <ChatInput
                 inputMessage={inputMessage}
                 setInputMessage={setInputMessage}
-                onSendMessage={onSendMessage}
+                onSendMessage={handleSendMessage}
                 nickname={nickname}
-                onEditNickname={onEditNickname}
+                onEditNickname={() => setIsNicknameModalOpen(true)}
               />
             </div>
           </Tab.Panel>

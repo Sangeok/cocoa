@@ -11,7 +11,7 @@ interface MarketData {
   timestamp: number;
 }
 
-interface CoinData {
+export interface CoinData {
   upbit?: MarketData;
   binance?: MarketData;
   bithumb?: MarketData;
@@ -116,5 +116,3 @@ export const useExchangeRate = () => {
 };
 
 export default useMarketStore;
-
-export type { CoinData };
