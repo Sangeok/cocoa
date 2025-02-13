@@ -113,10 +113,7 @@ export class ExchangeService {
         this.PREMIUM_CACHE_KEY,
         JSON.stringify(premiumData),
       );
-
-      this.logger.log(
-        `Premium data cached: Upbit: ${upbitKeys.length}, Binance: ${binanceKeys.length}, Bithumb: ${bithumbKeys.length}, Coinone: ${coinoneKeys.length}`,
-      );
+      
       // Emit the consolidated data
       this.appGateway.emitCoinPremium(premiumData);
     } catch (error) {
