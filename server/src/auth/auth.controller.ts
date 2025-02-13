@@ -10,6 +10,12 @@ export class AuthController {
     private readonly configService: ConfigService,
   ) {}
 
+  private getCookieDomain(): string | undefined {
+    const isProduction = this.configService.get('NODE_ENV') === 'production';
+    // 프로덕션 환경에서는 '.coincoin.kr'을 반환
+    return isProduction ? '.coincoin.kr' : undefined;
+  }
+
   @Get('google/callback')
   async googleCallback(@Query('code') code: string, @Res() res: Response) {
     const access_token = await this.authService.googleLogin(code);
@@ -20,7 +26,7 @@ export class AuthController {
       secure: isProduction,
       sameSite: isProduction ? 'none' : 'lax',
       path: '/',
-      domain: isProduction ? this.configService.get('CORS_ORIGIN') : undefined,
+      domain: this.getCookieDomain(),
     });
     
     res.redirect(
@@ -42,7 +48,7 @@ export class AuthController {
       secure: isProduction,
       sameSite: isProduction ? 'none' : 'lax',
       path: '/',
-      domain: isProduction ? this.configService.get('CORS_ORIGIN') : undefined,
+      domain: this.getCookieDomain(),
     });
     
     res.redirect(
