@@ -32,5 +32,21 @@ export const ServerAPICall = axios.create({
     "Content-Type": "application/json",
   },
   withCredentials: true,
-  credentials: 'include'
+});
+
+ServerAPICall.interceptors.request.use((config) => {
+  config.withCredentials = true;
+  
+  const token = typeof document !== 'undefined' 
+    ? document.cookie
+        .split("; ")
+        .find((row) => row.startsWith("access_token="))
+        ?.split("=")[1]
+    : null;
+
+  if (token) {
+    config.headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  return config;
 });

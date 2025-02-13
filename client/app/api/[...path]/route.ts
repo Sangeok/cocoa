@@ -30,14 +30,14 @@ export async function POST(
     const pathString = path.join("/");
     const body = await request.json();
     
-    // 요청의 쿠키를 가져옵니다
     const cookies = request.cookies;
     const accessToken = cookies.get('access_token');
     
     const response = await ServerAPICall.post(`/${pathString}`, body, {
       withCredentials: true,
       headers: {
-        Cookie: `access_token=${accessToken?.value || ''}`
+        Cookie: `access_token=${accessToken?.value || ''}`,
+        Authorization: accessToken?.value ? `Bearer ${accessToken.value}` : '',
       }
     });
     return NextResponse.json(response.data);
@@ -97,14 +97,14 @@ export async function PATCH(
     const pathString = path.join("/");
     const body = await request.json();
     
-    // 요청의 쿠키를 가져옵니다
     const cookies = request.cookies;
     const accessToken = cookies.get('access_token');
     
     const response = await ServerAPICall.patch(`/${pathString}`, body, {
       withCredentials: true,
       headers: {
-        Cookie: `access_token=${accessToken?.value || ''}`
+        Cookie: `access_token=${accessToken?.value || ''}`,
+        Authorization: accessToken?.value ? `Bearer ${accessToken.value}` : '',
       }
     });
     return NextResponse.json(response.data);
