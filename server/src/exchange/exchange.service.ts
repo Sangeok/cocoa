@@ -113,12 +113,17 @@ export class ExchangeService {
         this.PREMIUM_CACHE_KEY,
         JSON.stringify(premiumData),
       );
-      
+
       // Emit the consolidated data
       this.appGateway.emitCoinPremium(premiumData);
     } catch (error) {
       this.logger.error('Error processing market data:', error);
     }
+  }
+
+  async getUSDPrice() {
+    const price = await this.redisService.get('krw-usd-rate');
+    return price;
   }
 
   async getMarkets() {

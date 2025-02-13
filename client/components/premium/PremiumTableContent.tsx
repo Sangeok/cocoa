@@ -14,9 +14,10 @@ import { EXCHANGE_OPTIONS, BASE_TOKEN_OPTIONS } from "@/const/exchange";
 import type { SortField, SortState } from "@/types/exchange";
 import { useMarketData } from "@/hooks/useMarketData";
 import { Exchange, QuoteToken } from "@/types/exchange";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { UPBIT_STATIC_IMAGE_URL } from "@/const";
 import Link from "next/link";
+import useMarketsStore from "@/store/useMarketsStore";
 
 function ImageWithFallback({ symbol }: { symbol: string }) {
   const [showImage, setShowImage] = useState(true);
@@ -50,7 +51,6 @@ export default function PremiumTableContent() {
     setSearchTerm,
     getKoreanName,
     getSortedMarkets,
-    filteredMarkets,
   } = useMarketData();
 
   const [sortState, setSortState] = useState<SortState>({
@@ -58,7 +58,7 @@ export default function PremiumTableContent() {
     direction: "desc",
   });
 
-  if (!exchangeRate || !filteredMarkets) {
+  if (!exchangeRate) {
     return null;
   }
 

@@ -1,6 +1,8 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { socket } from "@/lib/socket";
+import { apiClient } from "@/lib/axios";
+import { API_ROUTES } from "@/const/api";
 
 interface MarketData {
   price: number;
@@ -22,6 +24,7 @@ interface MarketStore {
   lastUpdate: number;
   updateMarketData: (data: Record<string, CoinData>) => void;
   updateExchangeRate: (data: { rate: number }) => void;
+  fetchExchangeRate: () => Promise<number>;
 }
 
 const useMarketStore = create<MarketStore>()(
@@ -44,6 +47,24 @@ const useMarketStore = create<MarketStore>()(
           exchangeRate: data,
           lastUpdate: Date.now(),
         })),
+
+      fetchExchangeRate: async (): Promise<number> => {
+        try {
+          const { data } = await apiClient.get(
+            API_ROUTES.EXCHANGE.USD_PRICE.url
+          );
+          set((state) => ({
+            ...state,
+            exchangeRate: { rate: data },
+            lastUpdate: Date.now(),
+          }));
+
+          return data.rate;
+        } catch (error) {
+          console.error("Failed to fetch exchange rate:", error);
+          return 0;
+        }
+      },
     }),
     {
       name: "market-store",
@@ -57,6 +78,7 @@ socket.on("coin-premium", (data: Record<string, CoinData>) => {
   useMarketStore.getState().updateMarketData(data);
 });
 
+// 60초마다 환율 업데이트 (웹소켓)
 socket.on("exchange-rate", (data: { rate: number }) => {
   useMarketStore.getState().updateExchangeRate(data);
 });

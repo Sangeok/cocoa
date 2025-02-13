@@ -9,4 +9,9 @@ export class ExchangeController {
   async getMarkets() {
     return this.exchangeService.getMarkets();
   }
-} 
+
+  @Get('usd-price')
+  async getUSDPrice() {
+    return this.exchangeService.getUSDPrice();
+  }
+}

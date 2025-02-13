@@ -6,8 +6,7 @@ import type { ExchangePair, SortState } from "@/types/exchange";
 
 export function useMarketData() {
   const { coins, exchangeRate } = useMarketStore();
-  const { markets, fetchMarkets, getKoreanName } = useMarketsStore();
-  const [isInitialFetchDone, setIsInitialFetchDone] = useState(false);
+  const { markets, getKoreanName } = useMarketsStore();
   const [exchangePair, setExchangePair] = useState<ExchangePair>({
     from: "upbit",
     to: "binance",
@@ -16,21 +15,19 @@ export function useMarketData() {
   });
   const [searchTerm, setSearchTerm] = useState("");
 
-  useEffect(() => {
-    const initializeMarkets = async () => {
-      try {
-        if (!markets && !isInitialFetchDone) {
-          await fetchMarkets();
-          setIsInitialFetchDone(true);
+  // 나머지 데이터 체크
+  if (!coins) {
+    throw new Promise((resolve) => {
+      const checkData = () => {
+        if (!!coins) {
+          resolve(true);
+        } else {
+          setTimeout(checkData, 300);
         }
-      } catch (error) {
-        console.error("Failed to fetch markets:", error);
-        setIsInitialFetchDone(true);
-      }
-    };
-
-    initializeMarkets();
-  }, [markets, fetchMarkets, isInitialFetchDone]);
+      };
+      checkData();
+    });
+  }
 
   const filteredMarkets = useMemo(() => {
     if (!coins || !exchangeRate?.rate || !markets) return [];
@@ -191,28 +188,6 @@ export function useMarketData() {
       });
     };
   }, [filteredMarkets]);
-
-  const isLoading = !markets || !coins || !exchangeRate || !isInitialFetchDone;
-  
-  if (isLoading) {
-    console.log('Loading state:', {
-      hasMarkets: !!markets,
-      hasCoins: !!coins,
-      hasExchangeRate: !!exchangeRate,
-      isInitialFetchDone
-    });
-    
-    throw new Promise((resolve) => {
-      const checkData = () => {
-        if (markets && coins && exchangeRate && isInitialFetchDone) {
-          resolve(true);
-        } else {
-          setTimeout(checkData, 300);
-        }
-      };
-      checkData();
-    });
-  }
 
   return {
     exchangeRate,

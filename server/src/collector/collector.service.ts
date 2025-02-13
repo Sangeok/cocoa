@@ -49,11 +49,11 @@ export class CollectorService {
     }
   }
 
-  @Cron('*/15 * * * * *') // Every 15 seconds
+  @Cron('*/60 * * * * *') // Every 60 seconds
   async collectExchangeRate() {
     try {
       const rate = await this.exchangeRateClient.getUsdKrwRate();
-      await this.redisService.set('krw-usd-rate', rate.toString(), 60); // 60초 TTL
+      await this.redisService.set('krw-usd-rate', rate.toString(), 300); // 60초 TTL
       this.logger.debug(`Updated USD-KRW rate: ${rate}`);
 
       this.appGateway.emitExchangeRate({
@@ -63,16 +63,6 @@ export class CollectorService {
     } catch (error) {
       this.logger.error('Failed to collect exchange rate', error);
     }
-  }
-
-  // 매 초마다 저장된 환율을 조회하여 웹소켓으로 전송
-  @Cron('*/1 * * * * *')
-  async emitExchangeRate() {
-    const rate = await this.redisService.get('krw-usd-rate');
-    this.appGateway.emitExchangeRate({
-      rate: Number(rate),
-      timestamp: Date.now(),
-    });
   }
 
   @Cron(CronExpression.EVERY_HOUR)

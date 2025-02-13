@@ -17,7 +17,7 @@ import { useTheme } from "@/providers/ThemeProvider";
 import Logo from "@/components/common/Logo";
 import useActiveUsersStore from "@/store/useActiveUsersStore";
 import useAuthStore from "@/store/useAuthStore";
-
+import useMarketStore from "@/store/useMarketStore";
 const navigation = [
   { name: "실시간 김프", href: "/premium" },
   { name: "코코아 뉴스", href: "/news" },
@@ -30,10 +30,11 @@ export default function Navbar() {
   const { theme, toggleTheme } = useTheme();
   const { count: activeUsers, initializeSocket } = useActiveUsersStore();
   const { user, isAuthenticated } = useAuthStore();
-
+  const { fetchExchangeRate } = useMarketStore();
   useEffect(() => {
     initializeSocket();
-  }, [initializeSocket]);
+    fetchExchangeRate();
+  }, [initializeSocket, fetchExchangeRate]);
 
   return (
     <nav className="bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-900 relative z-30">

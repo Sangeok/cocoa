@@ -18,6 +18,10 @@ export const API_ROUTES = {
       url: "/exchange/markets",
       method: "GET",
     },
+    USD_PRICE: {
+      url: "/exchange/usd-price",
+      method: "GET",
+    },
   },
   WITHDRAW: {
     PATH: {

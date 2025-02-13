@@ -52,25 +52,17 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   async handleConnection(client: Socket) {
     try {
-      // 쿠키에서 JWT 토큰 추출
-      const cookies = cookie.parse(client.handshake.headers.cookie || '');
-      const token = cookies.access_token;
-      
-      if (token) {
-        try {
-          const payload = await this.jwtService.verifyAsync(token);
-          client.data.userId = payload.sub;
-        } catch (e) {
-          this.logger.warn('Invalid token received');
-        }
-      }
-      
       // 클라이언트 ID를 Set에 추가
       this.connectedClients.add(client.id);
       this.emitActiveUsers();
-      this.logger.log(`Client connected: ${client.id}. Total connections: ${this.connectedClients.size}`);
+      this.logger.log(
+        `Client connected: ${client.id}, Total connections: ${this.connectedClients.size}`,
+      );
     } catch (error) {
       this.logger.error('Connection handling failed:', error);
+      // 에러가 발생해도 연결은 유지
+      this.connectedClients.add(client.id);
+      this.emitActiveUsers();
     }
   }
 
@@ -78,7 +70,9 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     // 클라이언트 ID를 Set에서 제거
     this.connectedClients.delete(client.id);
     this.emitActiveUsers();
-    this.logger.log(`Client disconnected: ${client.id}. Total connections: ${this.connectedClients.size}`);
+    this.logger.log(
+      `Client disconnected: ${client.id}. Total connections: ${this.connectedClients.size}`,
+    );
   }
 
   private emitActiveUsers() {
@@ -103,11 +97,13 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
         symbol: baseSymbol,
         userId: client.data.userId,
       };
-      
-      this.logger.debug(`Received coin message: ${JSON.stringify(messageData)}`);
+
+      this.logger.debug(
+        `Received coin message: ${JSON.stringify(messageData)}`,
+      );
       await this.chatService.sendMessage(messageData);
       this.logger.debug('Message saved to Redis');
-      
+
       // room에 join하지 않았기 때문에 전체 클라이언트에게 broadcast
       this.server.emit('coin-talk-message', messageData);
       this.logger.debug('Message broadcasted to clients');
@@ -135,7 +131,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
       message: data.message,
       timestamp: Date.now(),
       nickname: client.data.nickname,
-      userId: client.data.userId,  // undefined 또는 사용자 ID
+      userId: client.data.userId, // undefined 또는 사용자 ID
       ...(data.symbol && { symbol: data.symbol }),
     };
 
