@@ -13,9 +13,7 @@ export default function AuthCallbackPage() {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const { data } = await ClientAPICall.get(API_ROUTES.USER.PROFILE.url, {
-          withCredentials: true,
-        });
+        const { data } = await ClientAPICall.get(API_ROUTES.USER.PROFILE.url);
         setUser(data.data);
         router.push("/");
       } catch (error) {

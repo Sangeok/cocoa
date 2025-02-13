@@ -13,10 +13,16 @@ export class AuthController {
   @Get('google/callback')
   async googleCallback(@Query('code') code: string, @Res() res: Response) {
     const access_token = await this.authService.googleLogin(code);
+    const isProduction = this.configService.get('NODE_ENV') === 'production';
+    
     res.cookie('access_token', access_token, {
       httpOnly: true,
-      secure: this.configService.get('NODE_ENV') === 'production',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
+      path: '/',
+      domain: isProduction ? this.configService.get('CORS_ORIGIN') : undefined,
     });
+    
     res.redirect(
       `${this.configService.get('CORS_ORIGIN')}/auth/google/callback`,
     );
@@ -29,10 +35,16 @@ export class AuthController {
     @Res() res: Response,
   ) {
     const access_token = await this.authService.naverLogin(code, state);
+    const isProduction = this.configService.get('NODE_ENV') === 'production';
+    
     res.cookie('access_token', access_token, {
       httpOnly: true,
-      secure: this.configService.get('NODE_ENV') === 'production',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
+      path: '/',
+      domain: isProduction ? this.configService.get('CORS_ORIGIN') : undefined,
     });
+    
     res.redirect(
       `${this.configService.get('CORS_ORIGIN')}/auth/naver/callback`,
     );
