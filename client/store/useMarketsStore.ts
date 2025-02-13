@@ -33,26 +33,35 @@ const useMarketsStore = create<MarketsStore>()((set, get) => ({
   error: null,
 
   fetchMarkets: async () => {
-    try {
-      // 이미 데이터가 있으면 바로 반환
-      if (get().markets) {
-        return;
-      }
+    // 이미 로딩 중이면 중복 요청 방지
+    if (get().isLoading) {
+      return;
+    }
 
+    try {
       set({ isLoading: true, error: null });
       const { data } = await apiClient.get(API_ROUTES.EXCHANGE.MARKETS.url);
       
-      // 데이터 유효성 검증
+      // 데이터 유효성 검증 강화
       if (!data || !data.upbit || !data.bithumb || !data.binance) {
+        console.error('Invalid markets data:', data);
         throw new Error('Invalid markets data received');
       }
 
-      set({ markets: data, isLoading: false });
-      return data; // 데이터 반환 추가
+      set({ 
+        markets: data, 
+        isLoading: false,
+        error: null 
+      });
+      
+      return data;
     } catch (error) {
       console.error('Failed to fetch markets:', error);
-      set({ error: 'Failed to fetch markets', isLoading: false });
-      throw error; // 에러를 다시 throw
+      set({ 
+        error: 'Failed to fetch markets', 
+        isLoading: false 
+      });
+      throw error;
     }
   },
 

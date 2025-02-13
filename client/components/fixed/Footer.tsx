@@ -25,7 +25,7 @@ export default function Footer() {
             {/* Links */}
             <div className="flex space-x-4">
               <Link
-                href="/terms"
+                href="/tos"
                 className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
               >
                 이용약관

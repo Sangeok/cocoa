@@ -7,6 +7,7 @@ import type { ExchangePair, SortState } from "@/types/exchange";
 export function useMarketData() {
   const { coins, exchangeRate } = useMarketStore();
   const { markets, fetchMarkets, getKoreanName } = useMarketsStore();
+  const [isInitialFetchDone, setIsInitialFetchDone] = useState(false);
   const [exchangePair, setExchangePair] = useState<ExchangePair>({
     from: "upbit",
     to: "binance",
@@ -16,12 +17,20 @@ export function useMarketData() {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    if (!markets) {
-      fetchMarkets().catch((error) => {
+    const initializeMarkets = async () => {
+      try {
+        if (!markets && !isInitialFetchDone) {
+          await fetchMarkets();
+          setIsInitialFetchDone(true);
+        }
+      } catch (error) {
         console.error("Failed to fetch markets:", error);
-      });
-    }
-  }, [markets, fetchMarkets]);
+        setIsInitialFetchDone(true);
+      }
+    };
+
+    initializeMarkets();
+  }, [markets, fetchMarkets, isInitialFetchDone]);
 
   const filteredMarkets = useMemo(() => {
     if (!coins || !exchangeRate?.rate || !markets) return [];
@@ -183,10 +192,25 @@ export function useMarketData() {
     };
   }, [filteredMarkets]);
 
-  const isLoading = !markets || !coins || !exchangeRate;
+  const isLoading = !markets || !coins || !exchangeRate || !isInitialFetchDone;
+  
   if (isLoading) {
+    console.log('Loading state:', {
+      hasMarkets: !!markets,
+      hasCoins: !!coins,
+      hasExchangeRate: !!exchangeRate,
+      isInitialFetchDone
+    });
+    
     throw new Promise((resolve) => {
-      setTimeout(resolve, 100);
+      const checkData = () => {
+        if (markets && coins && exchangeRate && isInitialFetchDone) {
+          resolve(true);
+        } else {
+          setTimeout(checkData, 300);
+        }
+      };
+      checkData();
     });
   }
 
