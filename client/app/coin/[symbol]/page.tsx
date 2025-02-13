@@ -105,7 +105,7 @@ export default function CoinPage() {
   }
 
   // 유효하지 않은 심볼인 경우 에러 UI 표시
-  if (!markets[symbol as keyof typeof markets]) {
+  if (!coins[symbol]) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-red-500">존재하지 않는 마켓입니다.</div>
