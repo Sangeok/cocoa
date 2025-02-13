@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { serverClient } from '@/lib/axios'
+import { ClientAPICall } from '@/lib/axios'
 import { NewsListResponse, NewsListResponseSchema } from '@/dto/news.dto'
 import { API_ROUTES } from '@/const/api'
 
@@ -20,7 +20,7 @@ export function useNews() {
 
   if (!newsCache) {
     if (!fetchPromise) {
-      fetchPromise = serverClient
+      fetchPromise = ClientAPICall
         .get<ApiResponse<NewsListResponse>>(API_ROUTES.NEWS.GET.url, {
           params: {
             limit: 20,

@@ -12,7 +12,7 @@ import Image from "next/image";
 import { UPBIT_STATIC_IMAGE_URL } from "@/const";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
-import { serverClient } from "@/lib/axios";
+import { ClientAPICall } from "@/lib/axios";
 import { API_ROUTES } from "@/const/api";
 import { formatKRWWithUnit, formatPercent, formatKRW } from "@/lib/format";
 import ChatRoom from "@/components/chat/ChatRoom";
@@ -67,7 +67,7 @@ export default function CoinPage() {
 
   useEffect(() => {
     // 초기 메시지 로드
-    serverClient
+    ClientAPICall
       .get(API_ROUTES.CHAT.GET.url + `/${symbol}`)
       .then((res) => {
         setCoinMessages(res.data);
@@ -77,7 +77,7 @@ export default function CoinPage() {
       });
 
     // 전체 채팅 메시지 로드
-    serverClient
+    ClientAPICall
       .get(API_ROUTES.CHAT.GET_GLOBAL.url)
       .then((res) => {
         setGlobalMessages(res.data);

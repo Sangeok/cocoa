@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { serverClient } from "@/lib/axios";
+import { ClientAPICall } from "@/lib/axios";
 import useAuthStore from "@/store/useAuthStore";
 import { API_ROUTES } from "@/const/api";
 
@@ -13,7 +13,7 @@ export default function AuthCallbackPage() {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const { data } = await serverClient.get(API_ROUTES.USER.PROFILE.url, {
+        const { data } = await ClientAPICall.get(API_ROUTES.USER.PROFILE.url, {
           withCredentials: true,
         });
         setUser(data.data);

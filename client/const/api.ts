@@ -59,4 +59,22 @@ export const API_ROUTES = {
       method: "PUT",
     },
   },
+  PREDICT: {
+    GET: {
+      url: "/predict",
+      method: "GET",
+    },
+    POST: {
+      url: "/predict",
+      method: "POST",
+    },
+    RANKINGS: {
+      url: "/predict/rankings",
+      method: "GET",
+    },
+    STATS: {
+      url: "/predict/stats",
+      method: "GET",
+    },
+  },
 } as const;

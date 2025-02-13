@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { devtools } from "zustand/middleware";
 import { socket } from "@/lib/socket";
-import { serverClient } from "@/lib/axios";
+import { ClientAPICall } from "@/lib/axios";
 import { API_ROUTES } from "@/const/api";
 
 interface MarketData {
@@ -50,7 +50,7 @@ const useMarketStore = create<MarketStore>()(
 
       fetchExchangeRate: async (): Promise<number> => {
         try {
-          const { data } = await serverClient.get(
+          const { data } = await ClientAPICall.get(
             API_ROUTES.EXCHANGE.USD_PRICE.url
           );
           set((state) => ({

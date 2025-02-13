@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import useAuthStore from "@/store/useAuthStore";
 import { useState } from "react";
-import { serverClient } from "@/lib/axios";
+import { ClientAPICall } from "@/lib/axios";
 import toast from "react-hot-toast";
 import { API_ROUTES } from "@/const/api";
 export default function ProfilePage() {
@@ -26,7 +26,7 @@ export default function ProfilePage() {
 
     try {
       setIsUpdating(true);
-      const response = await serverClient.patch(
+      const response = await ClientAPICall.patch(
         API_ROUTES.USER.UPDATE_NAME.url,
         {
           name: newName,

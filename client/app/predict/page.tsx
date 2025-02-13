@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { serverClient } from "@/lib/axios";
+import { ClientAPICall } from "@/lib/axios";
 import useMarketStore from "@/store/useMarketStore";
 import Link from "next/link";
 import Image from "next/image";
 import { UPBIT_STATIC_IMAGE_URL } from "@/const";
 import useMarketsStore from "@/store/useMarketsStore";
-
+import { API_ROUTES } from "@/const/api";
 interface Ranking {
   userId: number;
   name: string;
@@ -36,7 +36,9 @@ export default function PredictPage() {
   useEffect(() => {
     const fetchRankings = async () => {
       try {
-        const response = await serverClient.get("/predict/rankings");
+        const response = await ClientAPICall.get(
+          API_ROUTES.PREDICT.RANKINGS.url
+        );
         if (response.data.success) {
           setRankings(response.data.data);
         }

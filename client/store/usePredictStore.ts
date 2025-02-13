@@ -1,10 +1,10 @@
 import { create } from "zustand";
-import { serverClient } from "@/lib/axios";
+import { ClientAPICall } from "@/lib/axios";
 import socket from "@/lib/socket";
 import { PredictData, PredictResult } from "@/types/predict";
 import useAuthStore from "./useAuthStore";
 import { showPredictResultToast } from "@/lib/toast";
-
+import { API_ROUTES } from "@/const/api";
 interface PredictStats {
   wins: number;
   losses: number;
@@ -41,7 +41,7 @@ const usePredictStore = create<PredictStore>((set, get) => ({
     try {
       set({ isLoading: true, error: null });
 
-      const response = await serverClient.post("/predict", {
+      const response = await ClientAPICall.post(API_ROUTES.PREDICT.POST.url, {
         market,
         exchange,
         position,
@@ -67,11 +67,11 @@ const usePredictStore = create<PredictStore>((set, get) => ({
 
   fetchStats: async () => {
     try {
-      const response = await serverClient.get("/predict/stats");
+      const response = await ClientAPICall.get(API_ROUTES.PREDICT.STATS.url);
       if (response.data.success) {
         set({ stats: response.data.data });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to fetch predict stats:", error);
     }
   },

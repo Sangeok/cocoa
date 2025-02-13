@@ -43,7 +43,6 @@ export class AuthService {
       email: user.email,
       name: user.name,
     };
-    console.log('payload', payload);
     return this.jwtService.sign(payload);
   }
 }

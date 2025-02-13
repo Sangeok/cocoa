@@ -53,13 +53,13 @@ export class UserController {
       });
 
       // 새 토큰 발급 전에 기존 토큰이 만료되지 않도록 즉시 새 토큰 설정
-      // const token = this.authService.generateToken(user);
-      // response.cookie('access_token', token, {
-      //   httpOnly: true,
-      //   secure: this.configService.get('NODE_ENV') === 'production',
-      //   sameSite: 'lax',
-      //   path: '/',
-      // });
+      const token = this.authService.generateToken(user);
+      response.cookie('access_token', token, {
+        httpOnly: true,
+        secure: this.configService.get('NODE_ENV') === 'production',
+        sameSite: 'lax',
+        path: '/',
+      });
 
       return {
         success: true,

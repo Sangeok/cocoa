@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { serverClient } from "@/lib/axios";
+import { ClientAPICall } from "@/lib/axios";
 import { NewsListResponse, NewsListResponseSchema } from "@/dto/news.dto";
 import { API_ROUTES } from "@/const/api";
 import NewsCard from "@/components/news/NewsCard";
@@ -15,7 +15,7 @@ export default function Home() {
   useEffect(() => {
     async function fetchRecentNews() {
       try {
-        const response = await serverClient.get(API_ROUTES.NEWS.GET.url, {
+        const response = await ClientAPICall.get(API_ROUTES.NEWS.GET.url, {
           params: {
             limit: 3,
             page: 1,
