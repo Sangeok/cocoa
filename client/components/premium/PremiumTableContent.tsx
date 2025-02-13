@@ -162,7 +162,7 @@ export default function PremiumTableContent() {
             <thead>
               <tr className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm">
                 <th
-                  className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer"
+                  className="px-2 sm:px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer"
                   onClick={() => handleSort("name")}
                 >
                   <div className="flex items-center gap-1">
@@ -174,7 +174,7 @@ export default function PremiumTableContent() {
                     />
                   </div>
                 </th>
-                <th className="px-4 sm:px-6 py-3 text-right">
+                <th className="px-2 sm:px-4 py-2 text-right">
                   <button
                     onClick={() => handleSort("premium")}
                     className="flex items-center justify-end gap-1 whitespace-nowrap w-full"
@@ -189,7 +189,7 @@ export default function PremiumTableContent() {
                     />
                   </button>
                 </th>
-                <th className="px-4 sm:px-6 py-3 text-right">
+                <th className="px-2 sm:px-4 py-2 text-right">
                   <button
                     onClick={() => handleSort("fromPrice")}
                     className="flex items-center justify-end gap-1 whitespace-nowrap w-full"
@@ -216,7 +216,7 @@ export default function PremiumTableContent() {
                     />
                   </button>
                 </th>
-                <th className="px-4 sm:px-6 py-3 text-right">
+                <th className="px-2 sm:px-4 py-2 text-right">
                   <button
                     onClick={() => handleSort("toPrice")}
                     className="flex items-center justify-end gap-1 whitespace-nowrap w-full"
@@ -243,7 +243,7 @@ export default function PremiumTableContent() {
                     />
                   </button>
                 </th>
-                <th className="px-4 sm:px-6 py-3 text-right">
+                <th className="px-2 sm:px-4 py-2 text-right">
                   <button
                     onClick={() => handleSort("volume")}
                     className="flex items-center justify-end gap-1 whitespace-nowrap w-full"
