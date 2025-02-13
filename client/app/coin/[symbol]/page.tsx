@@ -58,6 +58,10 @@ export default function CoinPage() {
   } = usePredict();
   const [selectedDuration, setSelectedDuration] = useState<30 | 180>(30);
 
+  // 데이터 로딩 상태 추가
+  const [isMarketLoading, setIsMarketLoading] = useState(true);
+  const [isInitialized, setIsInitialized] = useState(false);
+
   const marketType = getMarketType(symbol);
   const priorityExchanges = getPriorityExchanges(marketType);
 
@@ -81,15 +85,13 @@ export default function CoinPage() {
     return { price: 0, exchange: priorityExchanges[0] };
   };
 
-  // 데이터 로딩 상태 추가
-  const [isMarketLoading, setIsMarketLoading] = useState(true);
-
   useEffect(() => {
     const initializeData = async () => {
       try {
         if (!markets) {
           await fetchMarkets();
         }
+        setIsInitialized(true);
         setIsMarketLoading(false);
       } catch (error) {
         console.error("Failed to initialize data:", error);
@@ -99,36 +101,6 @@ export default function CoinPage() {
 
     initializeData();
   }, [markets, fetchMarkets]);
-
-  // 로딩 중이거나 필수 데이터가 없는 경우 스켈레톤 UI 표시
-  if (isMarketLoading || !markets || !symbol || !coins) {
-    return <CoinPageSkeleton />;
-  }
-
-  // 유효하지 않은 심볼인 경우 에러 UI 표시
-  if (!coins[symbol]) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <div className="text-center space-y-2">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-            죄송합니다
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400">
-            요청하신 마켓을 찾을 수 없습니다
-          </p>
-        </div>
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 
-                     bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg 
-                     hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-        >
-          <ArrowLeftIcon className="w-4 h-4" />
-          메인으로 돌아가기
-        </Link>
-      </div>
-    );
-  }
 
   const { price: currentPrice, exchange: currentExchange } = getCurrentPrice();
 
@@ -254,6 +226,43 @@ export default function CoinPage() {
       socket.emit("coin-talk-message", coinMessageData);
     }
   };
+
+  // 초기화가 완료되기 전까지는 스켈레톤 UI 표시
+  if (
+    !isInitialized ||
+    isMarketLoading ||
+    !markets ||
+    !symbol ||
+    !coins ||
+    !coins[symbol]
+  ) {
+    return <CoinPageSkeleton />;
+  }
+
+  // 마켓 데이터가 있는지 확인
+  if (isInitialized && !isMarketLoading && !coins[symbol]) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-4">
+        <div className="text-center space-y-2">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+            죄송합니다
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400">
+            요청하신 마켓을 찾을 수 없습니다
+          </p>
+        </div>
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 
+                   bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg 
+                   hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+        >
+          <ArrowLeftIcon className="w-4 h-4" />
+          메인으로 돌아가기
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
