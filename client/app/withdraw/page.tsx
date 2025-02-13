@@ -10,7 +10,7 @@ import {
   GLOBAL_EXCHANGES,
 } from "@/dto/withdraw.dto";
 import { API_ROUTES } from "@/const/api";
-import { apiClient } from "@/lib/axios";
+import { serverClient } from "@/lib/axios";
 import WithdrawPathCard from "@/components/withdraw/WithdrawPathCard";
 import { sendGAEvent } from "@/lib/gtag";
 
@@ -38,7 +38,7 @@ export default function WithdrawPage() {
 
     setIsLoading(true);
     try {
-      const response = await apiClient.get(API_ROUTES.WITHDRAW.PATH.url, {
+      const response = await serverClient.get(API_ROUTES.WITHDRAW.PATH.url, {
         params: {
           amount: Number(amount),
           from: fromExchange as Exchange,

@@ -50,6 +50,10 @@ export const API_ROUTES = {
       url: "/user/profile",
       method: "GET",
     },
+    UPDATE_NAME: {
+      url: "/user/name",
+      method: "PATCH",
+    },
     UPDATE: {
       url: "/user/profile",
       method: "PUT",

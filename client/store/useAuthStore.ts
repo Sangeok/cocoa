@@ -1,11 +1,12 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 interface User {
   id: number;
   email: string;
   name: string;
   provider: string;
+  createdAt: string;
 }
 
 interface AuthStore {
@@ -20,13 +21,21 @@ const useAuthStore = create<AuthStore>()(
     (set) => ({
       user: null,
       isAuthenticated: false,
-      setUser: (user) => set({ user, isAuthenticated: !!user }),
-      logout: () => set({ user: null, isAuthenticated: false }),
+      setUser: (user) => {
+        set({ 
+          user, 
+          isAuthenticated: !!user 
+        });
+      },
+      logout: () => set({ 
+        user: null, 
+        isAuthenticated: false 
+      }),
     }),
     {
-      name: 'auth-storage',
+      name: "auth-storage",
     }
   )
 );
 
-export default useAuthStore; 
+export default useAuthStore;

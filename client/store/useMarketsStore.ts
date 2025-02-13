@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { apiClient } from "@/lib/axios";
+import { serverClient } from "@/lib/axios";
 import { API_ROUTES } from "@/const/api";
 
 export interface KoreanMarket {
@@ -41,7 +41,7 @@ const useMarketsStore = create<MarketsStore>()((set, get) => ({
 
     try {
       set({ isLoading: true, error: null });
-      const { data } = await apiClient.get(API_ROUTES.EXCHANGE.MARKETS.url);
+      const { data } = await serverClient.get(API_ROUTES.EXCHANGE.MARKETS.url);
 
       // 데이터 유효성 검증 강화
       if (!data || !data.upbit || !data.bithumb || !data.binance) {

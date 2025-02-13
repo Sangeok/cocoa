@@ -1,9 +1,10 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { serverClient } from '@/lib/axios';
-import useAuthStore from '@/store/useAuthStore';
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { serverClient } from "@/lib/axios";
+import useAuthStore from "@/store/useAuthStore";
+import { API_ROUTES } from "@/const/api";
 
 export default function AuthCallbackPage() {
   const router = useRouter();
@@ -12,14 +13,14 @@ export default function AuthCallbackPage() {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const { data } = await serverClient.get('/user/profile', {
+        const { data } = await serverClient.get(API_ROUTES.USER.PROFILE.url, {
           withCredentials: true,
         });
-        setUser(data);
-        router.push('/');
+        setUser(data.data);
+        router.push("/");
       } catch (error) {
-        console.error('Failed to fetch user profile:', error);
-        router.push('/signin');
+        console.error("Failed to fetch user profile:", error);
+        router.push("/signin");
       }
     };
 
@@ -31,4 +32,4 @@ export default function AuthCallbackPage() {
       <div className="text-gray-600 dark:text-gray-400">로그인 처리중...</div>
     </div>
   );
-} 
+}

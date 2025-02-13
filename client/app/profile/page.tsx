@@ -1,58 +1,58 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import useAuthStore from "@/store/useAuthStore";
-import { apiClient } from "@/lib/axios";
+import { useState } from "react";
+import { serverClient } from "@/lib/axios";
+import toast from "react-hot-toast";
 import { API_ROUTES } from "@/const/api";
-
-interface ProfileData {
-  id: number;
-  email: string;
-  name: string;
-  provider: string;
-  createdAt: string;
-}
-
 export default function ProfilePage() {
   const router = useRouter();
-  const { user, isAuthenticated, logout } = useAuthStore();
-  const [profile, setProfile] = useState<ProfileData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const { data } = await apiClient.get('/user/profile');
-        setProfile(data);
-      } catch (error) {
-        console.error("Failed to fetch profile:", error);
-        logout();
-        router.push('/signin');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (!isAuthenticated) {
-      router.push('/signin');
-      return;
-    }
-
-    fetchProfile();
-  }, [isAuthenticated, router, logout]);
+  const { user, isAuthenticated, logout, setUser } = useAuthStore();
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [newName, setNewName] = useState(user?.name || "");
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const handleLogout = () => {
     logout();
     router.push("/");
   };
 
-  if (isLoading) {
-    return (
-      <div className="min-h-[80vh] flex items-center justify-center">
-        <div className="text-gray-600 dark:text-gray-400">Loading...</div>
-      </div>
-    );
+  const handleUpdateName = async () => {
+    if (!newName.trim() || newName === user?.name) {
+      setIsEditingName(false);
+      return;
+    }
+
+    try {
+      setIsUpdating(true);
+      const response = await serverClient.patch(
+        API_ROUTES.USER.UPDATE_NAME.url,
+        {
+          name: newName,
+        },
+        { withCredentials: true }
+      );
+
+      if (response.data.success) {
+        setUser(response.data.data);
+        toast.success("이름이 변경되었습니다.");
+        setIsEditingName(false);
+      } else {
+        toast.error("이름 변경에 실패했습니다.");
+        setNewName(user?.name || "");
+      }
+    } catch (error) {
+      toast.error("이름 변경에 실패했습니다.");
+      setNewName(user?.name || "");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  if (!isAuthenticated || !user) {
+    router.push("/signin");
+    return null;
   }
 
   return (
@@ -63,14 +63,57 @@ export default function ProfilePage() {
             <h3 className="text-lg font-medium leading-6 text-gray-900 dark:text-white mb-8">
               프로필 정보
             </h3>
-            
+
             <div className="space-y-6">
               <div>
                 <label className="text-sm font-medium text-gray-500 dark:text-gray-400">
                   이름
                 </label>
-                <div className="mt-1 text-gray-900 dark:text-white">
-                  {profile?.name}
+                <div className="mt-1">
+                  {isEditingName ? (
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={newName}
+                        onChange={(e) => setNewName(e.target.value)}
+                        className="flex-1 rounded-lg border border-gray-300 dark:border-gray-700 
+                          bg-white dark:bg-gray-900 px-3 py-2 text-gray-900 dark:text-white 
+                          focus:outline-none focus:ring-2 focus:ring-green-500"
+                        disabled={isUpdating}
+                      />
+                      <button
+                        onClick={handleUpdateName}
+                        disabled={isUpdating}
+                        className="px-4 py-2 bg-green-500 hover:bg-green-600 
+                          text-white rounded-lg transition-colors disabled:opacity-50"
+                      >
+                        저장
+                      </button>
+                      <button
+                        onClick={() => {
+                          setIsEditingName(false);
+                          setNewName(user?.name || "");
+                        }}
+                        disabled={isUpdating}
+                        className="px-4 py-2 bg-gray-500 hover:bg-gray-600 
+                          text-white rounded-lg transition-colors disabled:opacity-50"
+                      >
+                        취소
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <span className="text-gray-900 dark:text-white">
+                        {user?.name}
+                      </span>
+                      <button
+                        onClick={() => setIsEditingName(true)}
+                        className="text-sm text-green-500 hover:text-green-600"
+                      >
+                        변경
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -79,7 +122,7 @@ export default function ProfilePage() {
                   이메일
                 </label>
                 <div className="mt-1 text-gray-900 dark:text-white">
-                  {profile?.email}
+                  {user?.email}
                 </div>
               </div>
 
@@ -88,7 +131,7 @@ export default function ProfilePage() {
                   로그인 방식
                 </label>
                 <div className="mt-1 text-gray-900 dark:text-white capitalize">
-                  {profile?.provider}
+                  {user?.provider}
                 </div>
               </div>
 
@@ -97,7 +140,7 @@ export default function ProfilePage() {
                   가입일
                 </label>
                 <div className="mt-1 text-gray-900 dark:text-white">
-                  {new Date(profile?.createdAt || "").toLocaleDateString()}
+                  {new Date(user?.createdAt || "").toLocaleDateString()}
                 </div>
               </div>
             </div>
@@ -106,7 +149,7 @@ export default function ProfilePage() {
               <button
                 onClick={handleLogout}
                 className="px-4 py-2 text-sm font-medium text-white bg-red-600 
-                         hover:bg-red-700 rounded-lg transition-colors"
+                  hover:bg-red-700 rounded-lg transition-colors"
               >
                 로그아웃
               </button>

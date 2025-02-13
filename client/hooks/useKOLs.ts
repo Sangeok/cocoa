@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { apiClient } from "@/lib/axios";
+import { serverClient } from "@/lib/axios";
 import { API_ROUTES } from "@/const/api";
 import { KOL, KOLSortOption, KOLSocialFilter } from "@/types/kol";
 import { sortKOLs, filterKOLsBySocial } from "@/lib/kol";
@@ -14,7 +14,7 @@ export function useKOLs() {
   useEffect(() => {
     const fetchKOLs = async () => {
       try {
-        const response = await apiClient.get(API_ROUTES.KOL.GET.url);
+        const response = await serverClient.get(API_ROUTES.KOL.GET.url);
         setData(response.data);
       } catch (err) {
         console.error("Failed to fetch KOLs:", err);

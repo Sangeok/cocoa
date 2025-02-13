@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { apiClient } from "@/lib/axios";
+import { serverClient } from "@/lib/axios";
 import { NewsResponse, NewsSchema } from "@/dto/news.dto";
 import { API_ROUTES } from "@/const/api";
 import { useRouter } from "next/navigation";
@@ -48,7 +48,7 @@ export default function NewsDetail({ id }: NewsDetailProps) {
     async function fetchNews() {
       try {
         const url = API_ROUTES.NEWS.READ.url.replace(":id", id);
-        const response = await apiClient.get<ApiResponse>(url);
+        const response = await serverClient.get<ApiResponse>(url);
         const newsData = response.data.data[0];
         const data = NewsSchema.parse(newsData);
         setNews(data);

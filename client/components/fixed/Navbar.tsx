@@ -19,6 +19,7 @@ import useActiveUsersStore from "@/store/useActiveUsersStore";
 import useAuthStore from "@/store/useAuthStore";
 import useMarketStore from "@/store/useMarketStore";
 const navigation = [
+  { name: "🔥 가격 예측", href: "/predict" },
   { name: "실시간 김프", href: "/premium" },
   { name: "코코아 뉴스", href: "/news" },
   { name: "송금 계산기", href: "/withdraw" },
@@ -80,12 +81,10 @@ export default function Navbar() {
               {isAuthenticated ? (
                 <Link
                   href="/profile"
-                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium 
-                           text-gray-700 dark:text-gray-200 hover:bg-gray-100 
+                  className="p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 
                            dark:hover:bg-gray-800 rounded-lg transition-colors"
                 >
-                  <UserCircleIcon className="h-5 w-5" />
-                  <span>{user?.name}</span>
+                  <UserCircleIcon className="h-6 w-6" />
                 </Link>
               ) : (
                 <Link
@@ -165,7 +164,7 @@ export default function Navbar() {
                               : "text-gray-600 dark:text-gray-400"
                           )}
                         >
-                          프로필 ({user?.name})
+                          프로필
                         </Link>
                       )}
                     </Menu.Item>

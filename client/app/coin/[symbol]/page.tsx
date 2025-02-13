@@ -12,10 +12,19 @@ import Image from "next/image";
 import { UPBIT_STATIC_IMAGE_URL } from "@/const";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
-import { apiClient } from "@/lib/axios";
+import { serverClient } from "@/lib/axios";
 import { API_ROUTES } from "@/const/api";
-import { formatKRWWithUnit, formatPercent } from "@/lib/format";
+import { formatKRWWithUnit, formatPercent, formatKRW } from "@/lib/format";
 import ChatRoom from "@/components/chat/ChatRoom";
+import { usePredict } from "@/hooks/usePredict";
+import clsx from "clsx";
+import Link from "next/link";
+import useAuthStore from "@/store/useAuthStore";
+import {
+  getMarketType,
+  getPriorityExchanges,
+  formatPriceByMarket,
+} from "@/lib/market";
 
 export default function CoinPage() {
   const params = useParams();
@@ -30,12 +39,25 @@ export default function CoinPage() {
   const [inputMessage, setInputMessage] = useState("");
   const [isNicknameModalOpen, setIsNicknameModalOpen] = useState(false);
   const [newNickname, setNewNickname] = useState(nickname);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const [selectedChat, setSelectedChat] = useState<"global" | "coin">("global");
   const baseSymbol = symbol.split("-")[0]; // BTC-KRW -> BTC
   const [pendingMessages, setPendingMessages] = useState<Set<number>>(
     new Set()
   );
+  const {
+    activePredict,
+    isLoading,
+    error,
+    canPredict,
+    startPredict,
+    remainingTime,
+    stats,
+    fetchStats,
+  } = usePredict();
+  const [selectedDuration, setSelectedDuration] = useState<30 | 180>(30);
+
+  const marketType = getMarketType(symbol);
+  const priorityExchanges = getPriorityExchanges(marketType);
 
   useEffect(() => {
     if (!markets) {
@@ -45,10 +67,9 @@ export default function CoinPage() {
 
   useEffect(() => {
     // 초기 메시지 로드
-    apiClient
+    serverClient
       .get(API_ROUTES.CHAT.GET.url + `/${symbol}`)
       .then((res) => {
-        console.log("Initial coin messages:", res.data);
         setCoinMessages(res.data);
       })
       .catch((error) => {
@@ -56,10 +77,9 @@ export default function CoinPage() {
       });
 
     // 전체 채팅 메시지 로드
-    apiClient
+    serverClient
       .get(API_ROUTES.CHAT.GET_GLOBAL.url)
       .then((res) => {
-        console.log("Initial global messages:", res.data);
         setGlobalMessages(res.data);
       })
       .catch((error) => {
@@ -75,7 +95,9 @@ export default function CoinPage() {
           return newPending;
         });
         setCoinMessages((prev) => {
-          const exists = prev.some(msg => msg.timestamp === message.timestamp);
+          const exists = prev.some(
+            (msg) => msg.timestamp === message.timestamp
+          );
           if (exists) return prev;
           return [message, ...prev];
         });
@@ -89,7 +111,7 @@ export default function CoinPage() {
         return newPending;
       });
       setGlobalMessages((prev) => {
-        const exists = prev.some(msg => msg.timestamp === message.timestamp);
+        const exists = prev.some((msg) => msg.timestamp === message.timestamp);
         if (exists) return prev;
         return [message, ...prev];
       });
@@ -100,11 +122,6 @@ export default function CoinPage() {
       socket.off("global-chat-message");
     };
   }, [symbol]);
-
-  // 새 메시지가 올 때마다 스크롤
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [coinMessages, globalMessages]);
 
   const handleNicknameChange = (e: React.FormEvent) => {
     e.preventDefault();
@@ -147,42 +164,50 @@ export default function CoinPage() {
     }
   };
 
-  const renderMessage = (
-    msg: CoinTalkMessageData | GlobalChatMessageData,
-    i: number
-  ) => {
-    const isPending = pendingMessages.has(msg.timestamp);
-
-    return (
-      <div
-        key={msg.timestamp + i}
-        className={`flex ${
-          msg.nickname === nickname ? "justify-end" : "justify-start"
-        } mb-3`}
-      >
-        <div
-          className={`inline-block rounded-lg px-4 py-2 max-w-[80%] ${
-            msg.nickname === nickname
-              ? `${isPending ? "opacity-50" : ""} bg-blue-50 dark:bg-blue-900 
-                 text-blue-900 dark:text-blue-50 border border-blue-200 
-                 dark:border-blue-800`
-              : "bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-50 border border-gray-200 dark:border-gray-800"
-          }`}
-        >
-          <div className="text-xs opacity-75 mb-1 flex items-center gap-2">
-            {msg.nickname}
-            {isPending && (
-              <span className="text-xs text-gray-500">전송중...</span>
-            )}
-          </div>
-          <div className="break-words text-sm">{msg.message}</div>
-        </div>
-      </div>
-    );
+  // Get current price from priority exchanges
+  const getCurrentPrice = (): { price: number; exchange: string } => {
+    for (const exchange of priorityExchanges) {
+      const price =
+        coins?.[symbol]?.[exchange as keyof (typeof coins)[typeof symbol]]
+          ?.price;
+      if (price) {
+        return { price, exchange };
+      }
+    }
+    return { price: 0, exchange: priorityExchanges[0] };
   };
+
+  const { price: currentPrice, exchange: currentExchange } = getCurrentPrice();
+
+  // Calculate price change percentage
+  const getPriceChangePercent = (currentPrice: number, entryPrice: number) => {
+    if (!entryPrice) return 0;
+    return ((currentPrice - entryPrice) / entryPrice) * 100;
+  };
+
+  const handlePredict = async (position: "L" | "S", duration: 30 | 180) => {
+    try {
+      await startPredict(symbol, currentExchange, position, duration);
+    } catch (error) {
+      console.error("Failed to start prediction:", error);
+    }
+  };
+
+  // Fetch stats when component mounts
+  useEffect(() => {
+    if (useAuthStore.getState().isAuthenticated) {
+      fetchStats();
+    }
+  }, [fetchStats]);
+
+  // Calculate win rate
+  const winRate = stats
+    ? (stats.wins / (stats.wins + stats.losses + stats.draws)) * 100
+    : 0;
 
   return (
     <div className="container mx-auto px-4 py-8">
+      {/* Header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <Image
@@ -195,16 +220,16 @@ export default function CoinPage() {
         </h1>
       </div>
 
-      {/* 데스크탑: 수평 정렬, 모바일: 수직 정렬 */}
-      <div className="flex flex-col lg:flex-row gap-4">
-        {/* TradingView */}
-        <div className="flex-1 bg-black rounded-lg shadow-lg overflow-hidden">
-          <TradingViewWidget symbol={formattedSymbol} />
-        </div>
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Left Column (2/3) */}
+        <div className="lg:col-span-2 space-y-4">
+          {/* TradingView */}
+          <div className="bg-black rounded-lg shadow-lg overflow-hidden">
+            <TradingViewWidget symbol={formattedSymbol} />
+          </div>
 
-        {/* 채팅 & 시장 데이터 */}
-        <div className="lg:w-96">
-          {/* 시장 데이터 */}
+          {/* Market Data */}
           <div className="bg-white dark:bg-gray-950 rounded-xl shadow-xl border border-gray-200 dark:border-gray-800">
             <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-800">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -428,8 +453,156 @@ export default function CoinPage() {
               </div>
             </div>
           </div>
-          {/* 채팅 영역 */}
-          <div className="mt-8">
+        </div>
+
+        {/* Right Column (1/3) */}
+        <div className="space-y-4">
+          {/* Price Prediction */}
+          <div className="relative bg-white dark:bg-gray-950 rounded-xl shadow-xl border border-gray-200 dark:border-gray-800">
+            {/* Login Overlay */}
+            {!useAuthStore.getState().isAuthenticated && (
+              <div className="absolute inset-0 bg-black/50 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                <Link
+                  href="/signin"
+                  className="px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg transition-colors"
+                >
+                  로그인하고 가격 예측하기
+                </Link>
+              </div>
+            )}
+            <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-800">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                가격 예측
+              </h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                가격이 오를지 내릴지 예측하고 승률을 높여보세요
+              </p>
+            </div>
+            <div className="p-4">
+              {error && (
+                <div className="mb-4 text-sm text-red-500">{error}</div>
+              )}
+
+              {/* Stats Display */}
+              {stats && (
+                <div className="mb-4 flex items-center justify-between text-sm">
+                  <div className="flex gap-2">
+                    <span className="text-green-500">{stats.wins}승</span>
+                    <span className="text-red-500">{stats.losses}패</span>
+                    <span className="text-gray-500">{stats.draws}무</span>
+                  </div>
+                  <div className="text-gray-500">
+                    승률: {isNaN(winRate) ? 0 : winRate.toFixed(1)}%
+                  </div>
+                </div>
+              )}
+
+              {/* Duration Tabs */}
+              <div className="border-b border-gray-200 dark:border-gray-800">
+                <nav className="flex gap-4" aria-label="Tabs">
+                  <button
+                    onClick={() => setSelectedDuration(30)}
+                    className={clsx(
+                      "px-1 py-2 text-sm font-medium border-b-2 transition-colors",
+                      selectedDuration === 30
+                        ? "border-green-500 text-green-500"
+                        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                    )}
+                  >
+                    30초 예측
+                  </button>
+                  <button
+                    onClick={() => setSelectedDuration(180)}
+                    className={clsx(
+                      "px-1 py-2 text-sm font-medium border-b-2 transition-colors",
+                      selectedDuration === 180
+                        ? "border-green-500 text-green-500"
+                        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                    )}
+                  >
+                    3분 예측
+                  </button>
+                </nav>
+              </div>
+
+              {/* Current Price Display */}
+              <div className="my-6">
+                <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                  현재 가격 ({currentExchange.toUpperCase()})
+                </div>
+                <div className="text-2xl font-bold">
+                  {formatPriceByMarket(currentPrice, marketType)}
+                </div>
+                {activePredict && (
+                  <div className="space-y-2 mt-4 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                    <div className="text-sm text-gray-500 dark:text-gray-400">
+                      진입 가격:{" "}
+                      {formatPriceByMarket(activePredict.price, marketType)}
+                    </div>
+                    <div
+                      className={clsx(
+                        "text-sm font-semibold",
+                        currentPrice > activePredict.price
+                          ? "text-green-500"
+                          : "text-red-500"
+                      )}
+                    >
+                      {formatPercent(
+                        getPriceChangePercent(
+                          currentPrice,
+                          activePredict.price
+                        ),
+                        5
+                      )}
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <div className="text-sm text-gray-500">
+                        {activePredict.position === "L"
+                          ? "롱 포지션"
+                          : "숏 포지션"}
+                      </div>
+                      <div className="text-sm font-medium">
+                        {Math.ceil(remainingTime / 1000)}초 남음
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Position Buttons */}
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  onClick={() => handlePredict("L", selectedDuration)}
+                  disabled={!canPredict || isLoading}
+                  className={clsx(
+                    "px-4 py-3 rounded-lg font-semibold text-white transition-colors",
+                    "bg-green-500",
+                    canPredict
+                      ? "hover:bg-green-600"
+                      : "opacity-50 cursor-not-allowed"
+                  )}
+                >
+                  롱 (Long)
+                </button>
+                <button
+                  onClick={() => handlePredict("S", selectedDuration)}
+                  disabled={!canPredict || isLoading}
+                  className={clsx(
+                    "px-4 py-3 rounded-lg font-semibold text-white transition-colors",
+                    "bg-red-500",
+                    canPredict
+                      ? "hover:bg-red-600"
+                      : "opacity-50 cursor-not-allowed"
+                  )}
+                >
+                  숏 (Short)
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Chat */}
+          <div className="bg-white dark:bg-gray-950 rounded-xl shadow-xl border border-gray-200 dark:border-gray-800">
             <ChatRoom
               selectedChat={selectedChat}
               setSelectedChat={setSelectedChat}

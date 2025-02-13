@@ -12,7 +12,7 @@ export class AuthController {
 
   @Get('google/callback')
   async googleCallback(@Query('code') code: string, @Res() res: Response) {
-    const { access_token } = await this.authService.googleLogin(code);
+    const access_token = await this.authService.googleLogin(code);
     res.cookie('access_token', access_token, {
       httpOnly: true,
       secure: this.configService.get('NODE_ENV') === 'production',
@@ -28,7 +28,7 @@ export class AuthController {
     @Query('state') state: string,
     @Res() res: Response,
   ) {
-    const { access_token } = await this.authService.naverLogin(code, state);
+    const access_token = await this.authService.naverLogin(code, state);
     res.cookie('access_token', access_token, {
       httpOnly: true,
       secure: this.configService.get('NODE_ENV') === 'production',

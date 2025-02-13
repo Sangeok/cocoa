@@ -54,7 +54,7 @@ export default function PremiumTableContent() {
   } = useMarketData();
 
   const [sortState, setSortState] = useState<SortState>({
-    field: "premium",
+    field: "fromPrice",
     direction: "desc",
   });
 

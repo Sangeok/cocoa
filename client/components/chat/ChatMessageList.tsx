@@ -1,6 +1,5 @@
 import { CoinTalkMessageData, GlobalChatMessageData } from "@/types/chat";
 import ChatMessage from "./ChatMessage";
-import { useRef, useEffect } from "react";
 
 interface ChatMessageListProps {
   messages: (CoinTalkMessageData | GlobalChatMessageData)[];
@@ -8,16 +7,13 @@ interface ChatMessageListProps {
   pendingMessages: Set<number>;
 }
 
-export default function ChatMessageList({ messages, nickname, pendingMessages }: ChatMessageListProps) {
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
-
+export default function ChatMessageList({
+  messages,
+  nickname,
+  pendingMessages,
+}: ChatMessageListProps) {
   return (
-    <div className="flex-1 overflow-y-auto p-2 flex flex-col-reverse h-64">
-      <div ref={messagesEndRef} />
+    <div className="flex-1 overflow-y-auto p-2 flex flex-col-reverse h-[500px]">
       {messages.map((msg, i) => (
         <ChatMessage
           key={msg.timestamp + i}
@@ -31,4 +27,4 @@ export default function ChatMessageList({ messages, nickname, pendingMessages }:
       ))}
     </div>
   );
-} 
+}

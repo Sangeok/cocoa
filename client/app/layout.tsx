@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/providers/ThemeProvider";
 import Navbar from "@/components/fixed/Navbar";
 import Footer from "@/components/fixed/Footer";
 import MarketTicker from "@/components/fixed/MarketTicker";
+import { Toaster } from 'react-hot-toast';
 
 const font = localFont({
   src: [
@@ -101,6 +102,7 @@ export default function RootLayout({
           <main className="flex-1">{children}</main>
           <Footer />
         </ThemeProvider>
+        <Toaster />
       </body>
     </html>
   );

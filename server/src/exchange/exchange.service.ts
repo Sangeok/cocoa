@@ -5,6 +5,7 @@ import { AppGateway } from '../gateway/app.gateway';
 import { CoinPremiumData } from '../collector/types/common.types';
 import { DrizzleClient } from '../database/database.module';
 import { upbitMarkets, bithumbMarkets, binanceMarkets } from '../database/schema/market';
+import { PredictService } from '../predict/predict.service';
 
 @Injectable()
 export class ExchangeService {
@@ -15,6 +16,7 @@ export class ExchangeService {
     private readonly redisService: RedisService,
     private readonly appGateway: AppGateway,
     @Inject('DATABASE') private readonly db: typeof DrizzleClient,
+    private readonly predictService: PredictService,
   ) {}
 
   @Interval(1000)
@@ -113,6 +115,9 @@ export class ExchangeService {
         this.PREMIUM_CACHE_KEY,
         JSON.stringify(premiumData),
       );
+
+      // Close predictions
+      await this.predictService.closePredict(premiumData);
 
       // Emit the consolidated data
       this.appGateway.emitCoinPremium(premiumData);
