@@ -12,12 +12,12 @@ interface CreatePredictDto {
 }
 
 @Controller('predict')
-@UseGuards(JwtAuthGuard)
 export class PredictController {
   private readonly logger = new Logger(PredictController.name);
 
   constructor(private readonly predictService: PredictService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   async startPredict(
     @Body() createPredictDto: CreatePredictDto,
@@ -56,6 +56,7 @@ export class PredictController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('stats')
   async getPredictStats(@Req() req: Request & { user: { id: number } }) {
     try {
