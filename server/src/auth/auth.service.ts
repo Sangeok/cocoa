@@ -51,7 +51,7 @@ export class AuthService {
 
   setTokenCookie(response: Response, token: string) {
     const isProduction = this.configService.get('NODE_ENV') === 'production';
-    const domain = this.configService.get('COOKIE_DOMAIN'); // 예: .yourdomain.com
+    const domain = this.configService.get('CORS_ORIGIN'); // 예: .yourdomain.com
     
     response.cookie('access_token', token, {
       httpOnly: true,
