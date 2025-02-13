@@ -25,6 +25,7 @@ import {
   getPriorityExchanges,
   formatPriceByMarket,
 } from "@/lib/market";
+import CoinPageSkeleton from "@/components/skeleton/CoinPageSkeleton";
 
 export default function CoinPage() {
   const params = useParams();
@@ -59,16 +60,90 @@ export default function CoinPage() {
   const marketType = getMarketType(symbol);
   const priorityExchanges = getPriorityExchanges(marketType);
 
-  useEffect(() => {
-    if (!markets) {
-      fetchMarkets();
+  // Get current price from priority exchanges
+  const getCurrentPrice = (): { price: number; exchange: string } => {
+    if (!coins || !symbol) {
+      return { price: 0, exchange: priorityExchanges[0] };
     }
+
+    for (const exchange of priorityExchanges) {
+      const coinData = coins[symbol];
+      if (!coinData) {
+        return { price: 0, exchange: priorityExchanges[0] };
+      }
+
+      const exchangeData = coinData[exchange as keyof typeof coinData];
+      if (exchangeData?.price) {
+        return { price: exchangeData.price, exchange };
+      }
+    }
+    return { price: 0, exchange: priorityExchanges[0] };
+  };
+
+  // 데이터 로딩 상태 추가
+  const [isMarketLoading, setIsMarketLoading] = useState(true);
+
+  useEffect(() => {
+    const initializeData = async () => {
+      try {
+        if (!markets) {
+          await fetchMarkets();
+        }
+        setIsMarketLoading(false);
+      } catch (error) {
+        console.error("Failed to initialize data:", error);
+        setIsMarketLoading(false);
+      }
+    };
+
+    initializeData();
   }, [markets, fetchMarkets]);
+
+  // 로딩 중이거나 필수 데이터가 없는 경우 스켈레톤 UI 표시
+  if (isMarketLoading || !markets || !symbol) {
+    return <CoinPageSkeleton />;
+  }
+
+  // 유효하지 않은 심볼인 경우 에러 UI 표시
+  if (!markets[symbol as keyof typeof markets]) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-red-500">존재하지 않는 마켓입니다.</div>
+      </div>
+    );
+  }
+
+  const { price: currentPrice, exchange: currentExchange } = getCurrentPrice();
+
+  // Calculate price change percentage
+  const getPriceChangePercent = (currentPrice: number, entryPrice: number) => {
+    if (!entryPrice) return 0;
+    return ((currentPrice - entryPrice) / entryPrice) * 100;
+  };
+
+  const handlePredict = async (position: "L" | "S", duration: 30 | 180) => {
+    try {
+      await startPredict(symbol, currentExchange, position, duration);
+    } catch (error) {
+      console.error("Failed to start prediction:", error);
+    }
+  };
+
+  // Fetch stats when component mounts
+  useEffect(() => {
+    if (useAuthStore.getState().isAuthenticated) {
+      fetchStats();
+    }
+  }, [fetchStats]);
+
+  // Calculate win rate
+  const winRate = stats
+    ? (stats.wins / (stats.wins + stats.losses + stats.draws)) * 100
+    : 0;
 
   useEffect(() => {
     // 초기 메시지 로드
-    ClientAPICall
-      .get(API_ROUTES.CHAT.GET.url + `/${symbol}`)
+    ClientAPICall.get(API_ROUTES.CHAT.GET.url + `/${symbol}`)
       .then((res) => {
         setCoinMessages(res.data);
       })
@@ -77,8 +152,7 @@ export default function CoinPage() {
       });
 
     // 전체 채팅 메시지 로드
-    ClientAPICall
-      .get(API_ROUTES.CHAT.GET_GLOBAL.url)
+    ClientAPICall.get(API_ROUTES.CHAT.GET_GLOBAL.url)
       .then((res) => {
         setGlobalMessages(res.data);
       })
@@ -163,47 +237,6 @@ export default function CoinPage() {
       socket.emit("coin-talk-message", coinMessageData);
     }
   };
-
-  // Get current price from priority exchanges
-  const getCurrentPrice = (): { price: number; exchange: string } => {
-    for (const exchange of priorityExchanges) {
-      const price =
-        coins?.[symbol]?.[exchange as keyof (typeof coins)[typeof symbol]]
-          ?.price;
-      if (price) {
-        return { price, exchange };
-      }
-    }
-    return { price: 0, exchange: priorityExchanges[0] };
-  };
-
-  const { price: currentPrice, exchange: currentExchange } = getCurrentPrice();
-
-  // Calculate price change percentage
-  const getPriceChangePercent = (currentPrice: number, entryPrice: number) => {
-    if (!entryPrice) return 0;
-    return ((currentPrice - entryPrice) / entryPrice) * 100;
-  };
-
-  const handlePredict = async (position: "L" | "S", duration: 30 | 180) => {
-    try {
-      await startPredict(symbol, currentExchange, position, duration);
-    } catch (error) {
-      console.error("Failed to start prediction:", error);
-    }
-  };
-
-  // Fetch stats when component mounts
-  useEffect(() => {
-    if (useAuthStore.getState().isAuthenticated) {
-      fetchStats();
-    }
-  }, [fetchStats]);
-
-  // Calculate win rate
-  const winRate = stats
-    ? (stats.wins / (stats.wins + stats.losses + stats.draws)) * 100
-    : 0;
 
   return (
     <div className="container mx-auto px-4 py-8">
