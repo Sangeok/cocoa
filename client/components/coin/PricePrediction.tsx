@@ -273,7 +273,7 @@ export default function PricePrediction({
         {/* Trading Options */}
         <div className="mb-4 space-y-4">
           <Input
-            label="투자 금액"
+            label="투자 금액($)"
             type="number"
             value={deposit}
             onChange={setDeposit}
@@ -514,6 +514,11 @@ export default function PricePrediction({
             <span className="text-gray-500">
               현재 자산:{" "}
               {formatPriceByMarket(Number(user?.predict?.vault), "USDT")}
+              {exchangeRate &&
+                `(${formatPriceByMarket(
+                  Number(user?.predict?.vault) * (exchangeRate || 0),
+                  "KRW"
+                )})`}
             </span>
           </div>
         </div>
