@@ -39,7 +39,14 @@ const usePredictStore = create<PredictStore>((set, get) => ({
   error: null,
   stats: null,
 
-  startPredict: async (market, exchange, position, duration) => {
+  startPredict: async (
+    market,
+    exchange,
+    position,
+    duration,
+    leverage,
+    deposit
+  ) => {
     try {
       set({ isLoading: true, error: null });
 
@@ -48,6 +55,8 @@ const usePredictStore = create<PredictStore>((set, get) => ({
         exchange,
         position,
         duration,
+        leverage,
+        deposit,
       });
 
       if (response.data.success) {

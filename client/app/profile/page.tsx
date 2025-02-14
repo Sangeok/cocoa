@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import { API_ROUTES } from "@/const/api";
 import useMarketStore from "@/store/useMarketStore";
 import clsx from "clsx";
+import { formatNumber } from "@/lib/format";
 
 interface PredictLog {
   id: number;
@@ -145,14 +146,14 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchLatestUserData = async () => {
       if (!isAuthenticated) return;
-      
+
       try {
         const response = await ClientAPICall.get(API_ROUTES.USER.PROFILE.url);
         if (response.data.success) {
           setUser(response.data.data);
         }
       } catch (error) {
-        console.error('Failed to fetch latest user data:', error);
+        console.error("Failed to fetch latest user data:", error);
       }
     };
 
@@ -204,7 +205,7 @@ export default function ProfilePage() {
                 </h3>
                 <div className="mt-4 space-y-1">
                   <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                    $ {user?.predict.vault.toLocaleString()}
+                    $ {formatNumber(user?.predict.vault)}
                   </div>
                   <div className="text-sm text-gray-500">
                     ≈{" "}

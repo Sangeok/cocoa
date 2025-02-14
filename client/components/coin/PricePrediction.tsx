@@ -71,14 +71,7 @@ export default function PricePrediction({
   const exchangeRate = useMarketStore((state) => state.exchangeRate?.rate);
 
   const [remainingTimeDisplay, setRemainingTimeDisplay] = useState(0);
-  const [deposit, setDeposit] = useState<string>(
-    (
-      (marketType === "USDT"
-        ? Number(user?.predict?.vault)
-        : Number(user?.predict?.vault) * (exchangeRate || 0)) *
-      (10 / 100)
-    ).toFixed(0)
-  );
+  const [deposit, setDeposit] = useState<string>("");
   const [leverage, setLeverage] = useState<number>(20);
   const [depositRatio, setDepositRatio] = useState<number>(10);
   const leverageOptions = [10, 20, 50, 100];
