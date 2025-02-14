@@ -452,14 +452,14 @@ export default function ProfilePage() {
                         $
                         {formatNumber(
                           log.position === "S"
-                            ? pnl * log.deposit
-                            : pnl * log.deposit * -1
+                            ? -1 * pnl * log.deposit
+                            : pnl * log.deposit
                         )}
                         (
                         {(log.position === "L" && isProfit) ||
                         (log.position === "S" && !isProfit)
-                          ? `+${pnl.toFixed(2)}%`
-                          : `${(-1 * pnl).toFixed(2)}%`}
+                          ? `+${(-1 * pnl).toFixed(2)}%`
+                          : `${pnl.toFixed(2)}%`}
                         )
                       </div>
                       <div className="text-sm text-gray-500">
