@@ -446,7 +446,10 @@ export default function ProfilePage() {
                             : "text-red-500"
                         }`}
                       >
-                        {pnl.toFixed(2)}%
+                        {(log.position === "L" && isProfit) ||
+                        (log.position === "S" && !isProfit)
+                          ? `+${pnl.toFixed(2)}%`
+                          : `${pnl.toFixed(2)}%`}
                       </span>
                       <div className="text-sm text-gray-500">
                         {log.leverage}x · {log.deposit.toLocaleString()}원
