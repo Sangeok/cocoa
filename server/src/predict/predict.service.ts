@@ -327,12 +327,11 @@ export class PredictService {
     const koreaTime = new Date(now.getTime() + (9 * 60 * 60 * 1000)); // UTC+9
     
     // 한국 시간 기준으로 오늘 자정 계산
-    const startOfDay = new Date(
+    const koreaStartOfDay = new Date(
       koreaTime.getFullYear(),
       koreaTime.getMonth(),
       koreaTime.getDate()
     );
-    startOfDay.setTime(startOfDay.getTime() - (9 * 60 * 60 * 1000)); // UTC로 변환
 
     // 사용자의 마지막 출석 체크 정보 조회
     const userPredict = await this.db
@@ -349,8 +348,15 @@ export class PredictService {
 
     // 오늘 이미 출석 체크했는지 확인 (한국 시간 기준)
     if (lastCheckIn) {
+      // DB에 저장된 UTC 시간을 한국 시간으로 변환
       const lastCheckInKorea = new Date(lastCheckIn.getTime() + (9 * 60 * 60 * 1000));
-      if (lastCheckInKorea >= startOfDay) {
+      const lastCheckInDate = new Date(
+        lastCheckInKorea.getFullYear(),
+        lastCheckInKorea.getMonth(),
+        lastCheckInKorea.getDate()
+      );
+      
+      if (lastCheckInDate.getTime() === koreaStartOfDay.getTime()) {
         throw new Error('이미 오늘 출석체크를 완료했습니다');
       }
     }
@@ -358,12 +364,12 @@ export class PredictService {
     // 출석 체크 보상 지급 (1000 vault)
     const reward = 1000;
 
-    // vault 업데이트 및 마지막 출석 시간 기록 (UTC로 저장)
+    // vault 업데이트 및 마지막 출석 시간 기록
     await this.db
       .update(predicts)
       .set({
         vault: sql`${predicts.vault} + ${reward}`,
-        lastCheckInAt: now, // UTC 시간으로 저장
+        lastCheckInAt: now,  // UTC 시간으로 저장
       })
       .where(eq(predicts.userId, userId));
 
