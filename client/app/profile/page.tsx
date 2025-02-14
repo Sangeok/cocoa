@@ -403,7 +403,7 @@ export default function ProfilePage() {
             </h3>
 
             <div className="space-y-4">
-              {predictLogs.length === 0 && (
+              {!hasMore && predictLogs.length === 0 && (
                 <div className="text-gray-500 dark:text-gray-400">
                   예측 기록이 없습니다.
                 </div>
@@ -434,11 +434,14 @@ export default function ProfilePage() {
                       </div>
                       <div className="text-sm text-gray-500">
                         {new Date(log.entryAt).toLocaleString()} →{" "}
-                        {new Date(log.exitAt).toLocaleString()}
+                        {(new Date(log.exitAt).getTime() -
+                          new Date(log.entryAt).getTime()) /
+                          1000}
+                        초
                       </div>
                     </div>
                     <div className="flex flex-col items-end gap-1">
-                      <span
+                      <div
                         className={`font-medium ${
                           (log.position === "L" && isProfit) ||
                           (log.position === "S" && !isProfit)
@@ -450,9 +453,19 @@ export default function ProfilePage() {
                         (log.position === "S" && !isProfit)
                           ? `+${pnl.toFixed(2)}%`
                           : `${pnl.toFixed(2)}%`}
-                      </span>
+                      </div>
+                      <div
+                        className={`text-sm ${
+                          (log.position === "L" && isProfit) ||
+                          (log.position === "S" && !isProfit)
+                            ? "text-green-500"
+                            : "text-red-500"
+                        }`}
+                      >
+                        ${formatNumber(pnl * log.deposit)}
+                      </div>
                       <div className="text-sm text-gray-500">
-                        {log.leverage}x · {log.deposit.toLocaleString()}원
+                        {log.leverage}x · ${formatNumber(log.deposit)}
                       </div>
                     </div>
                   </div>
