@@ -451,9 +451,9 @@ export default function ProfilePage() {
                       >
                         $
                         {formatNumber(
-                          log.position === "S"
+                          (log.position === "S"
                             ? -1 * pnl * log.deposit
-                            : pnl * log.deposit
+                            : pnl * log.deposit) / 100
                         )}
                         (
                         {(log.position === "L" && isProfit) ||
