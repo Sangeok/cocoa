@@ -422,15 +422,15 @@ export default function ProfilePage() {
                   >
                     <div className="flex flex-col gap-1">
                       <div className="flex items-center gap-2">
+                        <div className="px-2 py-1 rounded-lg bg-gray-200 dark:bg-gray-800 text-sm">
+                          {log.position === "L" ? "LONG" : "SHORT"}
+                        </div>
                         <span className="text-gray-900 dark:text-white font-medium">
                           {log.market}
                         </span>
                         <span className="text-sm text-gray-500">
                           {log.exchange}
                         </span>
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {log.position === "L" ? "롱" : "숏"}
                       </div>
                       <div className="text-sm text-gray-500">
                         {new Date(log.entryAt).toLocaleString()} →{" "}
@@ -440,7 +440,10 @@ export default function ProfilePage() {
                     <div className="flex flex-col items-end gap-1">
                       <span
                         className={`font-medium ${
-                          isProfit ? "text-green-500" : "text-red-500"
+                          (log.position === "L" && isProfit) ||
+                          (log.position === "S" && !isProfit)
+                            ? "text-green-500"
+                            : "text-red-500"
                         }`}
                       >
                         {pnl.toFixed(2)}%
