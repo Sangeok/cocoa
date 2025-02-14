@@ -71,9 +71,11 @@ export default function PricePrediction({
   const exchangeRate = useMarketStore((state) => state.exchangeRate?.rate);
 
   const [remainingTimeDisplay, setRemainingTimeDisplay] = useState(0);
-  const [deposit, setDeposit] = useState<string>("");
-  const [leverage, setLeverage] = useState<number>(20);
   const [depositRatio, setDepositRatio] = useState<number>(10);
+  const [deposit, setDeposit] = useState<string>(
+    (Number(user?.predict?.vault) / 10).toFixed(0)
+  );
+  const [leverage, setLeverage] = useState<number>(20);
   const leverageOptions = [10, 20, 50, 100];
 
   // 0.1초 단위로 남은 시간 업데이트
