@@ -406,8 +406,12 @@ export default function PricePrediction({
                       getPriceChangePercentDisplay === 0
                         ? "text-gray-500"
                         : getPriceChangePercentDisplay > 0
-                        ? "text-green-500"
-                        : "text-red-500"
+                        ? activePredict?.position === "L"
+                          ? "text-green-500"
+                          : "text-red-500"
+                        : activePredict?.position === "L"
+                        ? "text-red-500"
+                        : "text-green-500"
                     )}
                   >
                     가상 손익:{" "}
@@ -422,11 +426,21 @@ export default function PricePrediction({
                       getPriceChangePercentDisplay === 0
                         ? "text-gray-500"
                         : getPriceChangePercentDisplay > 0
-                        ? "text-green-500"
-                        : "text-red-500"
+                        ? activePredict?.position === "L"
+                          ? "text-green-500"
+                          : "text-red-500"
+                        : activePredict?.position === "L"
+                        ? "text-red-500"
+                        : "text-green-500"
                     )}
                   >
-                    수익률: {formatPercent(getPriceChangePercentDisplay, 2)}
+                    수익률:{" "}
+                    {formatPercent(
+                      activePredict?.position === "L"
+                        ? getPriceChangePercentDisplay
+                        : -getPriceChangePercentDisplay,
+                      2
+                    )}
                   </div>
                   <div className="flex justify-between items-center">
                     <div className="text-sm font-medium">

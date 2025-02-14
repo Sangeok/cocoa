@@ -24,8 +24,8 @@ interface PredictStore {
     exchange: string,
     position: "L" | "S",
     duration: 15 | 30 | 60 | 180,
-    leverage: number,
-    deposit: number
+    deposit: number,
+    leverage: number
   ) => Promise<void>;
   clearError: () => void;
   reset: () => void;
@@ -44,8 +44,8 @@ const usePredictStore = create<PredictStore>((set, get) => ({
     exchange,
     position,
     duration,
-    leverage,
-    deposit
+    deposit,
+    leverage
   ) => {
     try {
       set({ isLoading: true, error: null });
