@@ -449,23 +449,21 @@ export default function ProfilePage() {
                             : "text-red-500"
                         }`}
                       >
+                        $
+                        {formatNumber(
+                          log.position === "S"
+                            ? pnl * log.deposit
+                            : pnl * log.deposit * -1
+                        )}
+                        (
                         {(log.position === "L" && isProfit) ||
                         (log.position === "S" && !isProfit)
                           ? `+${pnl.toFixed(2)}%`
-                          : `${pnl.toFixed(2)}%`}
-                      </div>
-                      <div
-                        className={`text-sm ${
-                          (log.position === "L" && isProfit) ||
-                          (log.position === "S" && !isProfit)
-                            ? "text-green-500"
-                            : "text-red-500"
-                        }`}
-                      >
-                        ${formatNumber(pnl * log.deposit)}
+                          : `${(-1 * pnl).toFixed(2)}%`}
+                        )
                       </div>
                       <div className="text-sm text-gray-500">
-                        {log.leverage}x · ${formatNumber(log.deposit)}
+                        {log.leverage}배 · ${formatNumber(log.deposit)}
                       </div>
                     </div>
                   </div>
