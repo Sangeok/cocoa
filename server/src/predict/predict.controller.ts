@@ -1,4 +1,12 @@
-import { Controller, Post, Body, UseGuards, Req, Get } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  Req,
+  Get,
+  Query,
+} from '@nestjs/common';
 import { PredictService } from './predict.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Request } from 'express';
@@ -8,7 +16,9 @@ interface CreatePredictDto {
   market: string;
   exchange: 'upbit' | 'bithumb' | 'binance' | 'coinone';
   position: 'L' | 'S';
-  duration: 30 | 180;
+  duration: 15 | 30 | 60 | 180;
+  leverage: 10 | 20 | 50 | 100;
+  deposit: number;
 }
 
 @Controller('predict')
@@ -24,7 +34,8 @@ export class PredictController {
     @Req() req: Request & { user: { id: number } },
   ) {
     try {
-      const { market, exchange, position, duration } = createPredictDto;
+      const { market, exchange, position, duration, leverage, deposit } =
+        createPredictDto;
       const userId = req.user?.id;
 
       if (!userId) {
@@ -41,6 +52,8 @@ export class PredictController {
         exchange,
         position,
         duration,
+        leverage,
+        deposit,
       );
 
       return {
@@ -76,7 +89,8 @@ export class PredictController {
   @Get('rankings')
   async getRankings() {
     try {
-      const [mostWins, bestWinRate] = await Promise.all([
+      const [mostVault, mostWins, bestWinRate] = await Promise.all([
+        this.predictService.getMostVaultRanking(),
         this.predictService.getMostWinsRanking(),
         this.predictService.getBestWinRateRanking(),
       ]);
@@ -84,8 +98,57 @@ export class PredictController {
       return {
         success: true,
         data: {
+          mostVault,
           mostWins,
           bestWinRate,
+        },
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message,
+      };
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('logs')
+  async getPredictLogs(
+    @Req() req: Request & { user: { id: number } },
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '20',
+  ) {
+    try {
+      const logs = await this.predictService.getPredictLogs(
+        req.user.id,
+        parseInt(page),
+        parseInt(limit),
+      );
+
+      return {
+        success: true,
+        data: logs,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message,
+      };
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('check-in')
+  async checkIn(@Req() req: Request & { user: { id: number } }) {
+    try {
+      const result = await this.predictService.checkIn(req.user.id);
+
+      return {
+        success: true,
+        data: {
+          message: '출석 체크 완료! 보상이 지급되었습니다.',
+          reward: result.reward,
+          newBalance: result.newBalance,
         },
       };
     } catch (error) {

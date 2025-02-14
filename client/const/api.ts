@@ -58,6 +58,10 @@ export const API_ROUTES = {
       url: "/user/profile",
       method: "PUT",
     },
+    UPDATE_PHONE: {
+      url: "/user/phone",
+      method: "PATCH",
+    },
   },
   PREDICT: {
     GET: {
@@ -75,6 +79,14 @@ export const API_ROUTES = {
     STATS: {
       url: "/predict/stats",
       method: "GET",
+    },
+    LOGS: {
+      url: "/predict/logs",
+      method: "GET",
+    },
+    CHECK_IN: {
+      url: "/predict/check-in",
+      method: "POST",
     },
   },
 } as const;

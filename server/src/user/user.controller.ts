@@ -5,8 +5,13 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { AuthService } from '../auth/auth.service';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
+
 interface UpdateNameDto {
   name: string;
+}
+
+interface UpdatePhoneDto {
+  phoneNumber: string;
 }
 
 @Controller('user')
@@ -59,6 +64,30 @@ export class UserController {
         secure: this.configService.get('NODE_ENV') === 'production',
         sameSite: 'lax',
         path: '/',
+      });
+
+      return {
+        success: true,
+        data: user,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message,
+      };
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('phone')
+  async updatePhone(
+    @CurrentUser() userId: number,
+    @Body() data: UpdatePhoneDto,
+  ) {
+    try {
+      const user = await this.userService.update(userId, {
+        phoneNumber: data.phoneNumber.trim(),
+        updatedAt: new Date(),
       });
 
       return {

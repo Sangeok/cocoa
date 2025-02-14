@@ -3,12 +3,12 @@ import { ClientAPICall } from "@/lib/axios";
 import socket from "@/lib/socket";
 import { PredictData, PredictResult } from "@/types/predict";
 import useAuthStore from "./useAuthStore";
-import { showPredictResultToast } from "@/lib/toast";
 import { API_ROUTES } from "@/const/api";
 interface PredictStats {
   wins: number;
   losses: number;
   draws: number;
+  vault: number;
 }
 
 interface PredictStore {
@@ -23,7 +23,9 @@ interface PredictStore {
     market: string,
     exchange: string,
     position: "L" | "S",
-    duration: 30 | 180
+    duration: 15 | 30 | 60 | 180,
+    leverage: number,
+    deposit: number
   ) => Promise<void>;
   clearError: () => void;
   reset: () => void;
@@ -100,12 +102,10 @@ const setupPredictSocket = () => {
             wins: state.stats.wins + (result.isWin ? 1 : 0),
             losses: state.stats.losses + (result.isWin ? 0 : 1),
             draws: state.stats.draws + (result.isDraw ? 1 : 0),
+            vault: state.stats.vault,
           }
         : null,
     }));
-
-    // 토스트 메시지 표시
-    showPredictResultToast(result);
 
     // 결과에 따라 stats API 호출
     if (!result.isDraw) {

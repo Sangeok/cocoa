@@ -1,6 +1,6 @@
-export type Exchange = 'upbit' | 'bithumb' | 'binance' | 'coinone';
-export type Position = 'L' | 'S';
-export type Duration = 30 | 180;
+export type Exchange = "upbit" | "bithumb" | "binance" | "coinone";
+export type Position = "L" | "S";
+export type Duration = 15 | 30 | 60 | 180;
 
 export interface PredictData {
   market: string;
@@ -9,6 +9,8 @@ export interface PredictData {
   price: number;
   position: Position;
   finishedAt: number;
+  leverage: number;
+  deposit: number;
 }
 
 export interface PredictResult {
@@ -18,4 +20,8 @@ export interface PredictResult {
   entryPrice: number;
   closePrice: number;
   position: Position;
-} 
+  leverage: number;
+  deposit: number;
+  vault: number;
+  isLiquidated: boolean;
+}
