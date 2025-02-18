@@ -166,7 +166,7 @@ export default function PredictPage() {
             <div className="p-4">
               {rankings ? (
                 <div className="space-y-2">
-                  {rankingComponents[currentRankingIndex]?.slice(0, 5).map((rank, index) => (
+                  {rankingComponents[currentRankingIndex]?.map((rank, index) => (
                     <div
                       key={rank.userId}
                       className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg"
