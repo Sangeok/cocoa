@@ -30,7 +30,7 @@ interface Rankings {
 
 const RankingSkeleton = () => (
   <div className="space-y-2">
-    {[...Array(5)].map((_, i) => (
+    {[...Array(10)].map((_, i) => (
       <div
         key={i}
         className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg animate-pulse"
