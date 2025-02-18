@@ -1,17 +1,29 @@
 "use client";
 
-import React, { useRef, useState, MouseEvent } from "react";
+import React, { useRef, useState, MouseEvent, useEffect } from "react";
 import Image from "next/image";
 import { useExchangeRate, useUpbitMarketData } from "@/store/useMarketStore";
 import Link from "next/link";
 import { formatKRWWithUnit } from "@/lib/format";
 import { UPBIT_STATIC_IMAGE_URL } from "@/const";
+import { useHangangTemp } from "@/hooks/useHangangTemp";
+
 export default function MarketTicker() {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const exchangeRate = useExchangeRate();
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
+  const hangangTemp = useHangangTemp();
+  const [showExchangeRate, setShowExchangeRate] = useState(true);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setShowExchangeRate((prev) => !prev);
+    }, 2000); // 2초마다 토글
+
+    return () => clearInterval(interval);
+  }, []);
 
   // 마우스 이벤트 핸들러
   const handleMouseDown = (e: MouseEvent) => {
@@ -46,6 +58,15 @@ export default function MarketTicker() {
       change24h: data.upbit!.change24h,
     }))
     .sort((a, b) => b.price - a.price); // 가격 기준 내림차순 정렬
+
+  // 온도에 따른 색상을 결정하는 함수를 추가
+  const getTemperatureColor = (temp: number | null) => {
+    if (temp === null) return "text-gray-600 dark:text-gray-400";
+    if (temp <= 5) return "text-blue-500";
+    if (temp <= 15) return "text-green-500";
+    if (temp <= 25) return "text-yellow-500";
+    return "text-red-500";
+  };
 
   // 로딩 상태 표시
   if (!exchangeRate || krwMarketPrices.length === 0) {
@@ -110,17 +131,30 @@ export default function MarketTicker() {
   return (
     <div className="relative bg-gray-50 dark:bg-gray-950 border-b border-gray-200 dark:border-gray-900">
       <div className="flex items-stretch">
-        {/* 고정된 환율 표시 */}
-        <Link
-          href="https://www.google.com/finance/quote/USD-KRW"
-          target="_blank"
-          className="flex-shrink-0 px-4 py-2 border-r border-gray-200 dark:border-gray-900 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors"
-        >
-          <span className="text-sm text-gray-600 dark:text-gray-400">
-            실시간 환율:{" "}
-            {new Intl.NumberFormat("ko-KR").format(exchangeRate.rate)}원
-          </span>
-        </Link>
+        {/* 환율과 한강 수온 */}
+        <div className="flex flex-col flex-shrink-0 border-r border-gray-200 dark:border-gray-900">
+          <Link
+            href="https://www.google.com/finance/quote/USD-KRW"
+            target="_blank"
+            className="px-4 py-1 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors border-b border-gray-200 dark:border-gray-900"
+          >
+            <span className="text-sm text-gray-600 dark:text-gray-400">
+              💹 환율:{" "}
+              {new Intl.NumberFormat("ko-KR").format(exchangeRate.rate)}원
+            </span>
+          </Link>
+          <Link
+            href="https://hangang.life/"
+            target="_blank"
+            className="px-4 py-1 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors text-sm text-gray-600 dark:text-gray-400"
+          >
+            🌡️ 한강 수온:
+            <span className={getTemperatureColor(hangangTemp)}>
+              {" "}
+              {hangangTemp !== null ? `${hangangTemp}°C` : "로딩중..."}
+            </span>
+          </Link>
+        </div>
 
         {/* 스크롤 가능한 코인 가격 */}
         <div
