@@ -32,14 +32,14 @@ export default function Logo({ size = "md" }: LogoProps) {
         src="/icons/cocoa_white.webp"
         alt="코코아 로고"
         width={100}
-        height={100}
+        height={21}
       />
       <Image
         className="block dark:hidden"
         src="/icons/cocoa_black.webp"
         alt="코코아 로고"
         width={100}
-        height={100}
+        height={21}
       />
     </Link>
   );
