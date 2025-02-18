@@ -56,7 +56,7 @@ export default function Home() {
   return (
     <main>
       <div className="container mx-auto px-4 py-8">
-        <div className="flex lg:flex-row flex-col gap-6">
+        <div className="flex lg:flex-row flex-col gap-6 mb-6">
           <EventBanner />
           <div className="lg:w-2/3 w-full">
             <div className="flex items-center justify-between mb-4">
