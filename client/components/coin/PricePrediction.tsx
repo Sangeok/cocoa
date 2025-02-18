@@ -253,6 +253,8 @@ export default function PricePrediction({
         </h2>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
           가격이 오를지 내릴지 예측하고 승률을 높여보세요
+          <br />
+          (가격 예측에는 수수료가 발생하지 않습니다!)
         </p>
       </div>
       <div className="p-4">

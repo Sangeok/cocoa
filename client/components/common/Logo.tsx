@@ -11,11 +11,11 @@ export default function Logo({ size = "md" }: LogoProps) {
   const sizes = {
     sm: {
       icon: 20,
-      text: "text-lg",
+      text: "text-xl",
     },
     md: {
       icon: 24,
-      text: "text-2xl",
+      text: "text-3xl",
     },
   };
 
@@ -27,11 +27,20 @@ export default function Logo({ size = "md" }: LogoProps) {
         width={sizes[size].icon}
         height={sizes[size].icon}
       />
-      <span
-        className={`${sizes[size].text} font-bold text-gray-900 dark:text-white`}
-      >
-        COCOA
-      </span>
+      <Image
+        className="hidden dark:block"
+        src="/icons/cocoa_white.webp"
+        alt="코코아 로고"
+        width={100}
+        height={100}
+      />
+      <Image
+        className="block dark:hidden"
+        src="/icons/cocoa_black.webp"
+        alt="코코아 로고"
+        width={100}
+        height={100}
+      />
     </Link>
   );
 }

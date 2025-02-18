@@ -34,14 +34,14 @@ export const metadata: Metadata = {
   description: "암호화폐 차익거래 기회를 실시간으로 모니터링하세요",
   icons: {
     icon: "/favicon.ico",
-    apple: "/icons/logo_lg.webp",
+    apple: "/icons/og.png",
   },
   openGraph: {
     title: "코코아 | 코인코인코리아",
     description: "암호화폐 차익거래 기회를 실시간으로 모니터링하세요",
     images: [
       {
-        url: "/icons/logo_lg.webp",
+        url: "/icons/og.png",
         width: 800,
         height: 600,
         alt: "코코아",
