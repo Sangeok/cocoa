@@ -113,6 +113,108 @@ const ExchangeChange24h = ({
   );
 };
 
+const MarketSection = ({
+  title,
+  marketType,
+  symbol,
+  coins,
+}: {
+  title: string;
+  marketType: 'KRW' | 'USDT' | 'BTC';
+  symbol: string;
+  coins: Record<string, CoinData>;
+}) => {
+  const baseCoin = symbol.split('-')[0];
+  const fullSymbol = `${baseCoin}-${marketType}`;
+
+  // 해당 마켓 타입에 대한 데이터 존재 여부 확인
+  const hasMarketData = (() => {
+    if (marketType === 'KRW') {
+      return !!(
+        coins[fullSymbol]?.upbit ||
+        coins[fullSymbol]?.bithumb ||
+        coins[fullSymbol]?.coinone
+      );
+    }
+    if (marketType === 'USDT') {
+      return !!coins[fullSymbol]?.binance;
+    }
+    if (marketType === 'BTC') {
+      return !!coins[fullSymbol]?.upbit || !!coins[fullSymbol]?.binance;
+    }
+    return false;
+  })();
+
+  // 데이터가 없으면 null 반환
+  if (!hasMarketData) return null;
+
+  return (
+    <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
+      <div className="text-sm font-medium text-gray-900 dark:text-white mb-3">
+        {title}
+      </div>
+      <div className="space-y-4">
+        {/* 거래량 */}
+        <div>
+          <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+            거래량
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            {marketType === 'KRW' && (
+              <>
+                <ExchangeVolume symbol={fullSymbol} coins={coins} exchange="upbit" />
+                <ExchangeVolume symbol={fullSymbol} coins={coins} exchange="bithumb" />
+                <ExchangeVolume symbol={fullSymbol} coins={coins} exchange="coinone" />
+              </>
+            )}
+            {marketType === 'USDT' && (
+              <ExchangeVolume symbol={fullSymbol} coins={coins} exchange="binance" />
+            )}
+          </div>
+        </div>
+        
+        {/* 현재가 */}
+        <div>
+          <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+            현재가
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            {marketType === 'KRW' && (
+              <>
+                <ExchangePrice symbol={fullSymbol} coins={coins} exchange="upbit" />
+                <ExchangePrice symbol={fullSymbol} coins={coins} exchange="bithumb" />
+                <ExchangePrice symbol={fullSymbol} coins={coins} exchange="coinone" />
+              </>
+            )}
+            {marketType === 'USDT' && (
+              <ExchangePrice symbol={fullSymbol} coins={coins} exchange="binance" />
+            )}
+          </div>
+        </div>
+
+        {/* 24시간 변동 */}
+        <div>
+          <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+            전일 대비 가격(%)
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            {marketType === 'KRW' && (
+              <>
+                <ExchangeChange24h symbol={fullSymbol} coins={coins} exchange="upbit" />
+                <ExchangeChange24h symbol={fullSymbol} coins={coins} exchange="bithumb" />
+                <ExchangeChange24h symbol={fullSymbol} coins={coins} exchange="coinone" />
+              </>
+            )}
+            {marketType === 'USDT' && (
+              <ExchangeChange24h symbol={fullSymbol} coins={coins} exchange="binance" />
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function MarketData({ symbol, coins }: MarketDataProps) {
   return (
     <div className="bg-white dark:bg-gray-950 rounded-xl shadow-xl border border-gray-200 dark:border-gray-800">
@@ -121,55 +223,22 @@ export default function MarketData({ symbol, coins }: MarketDataProps) {
           실시간 시장 데이터
         </h2>
       </div>
+      
       <div className="p-4 space-y-4">
-        {/* 거래량 */}
-        <div>
-          <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-            거래량
-          </div>
-          <div className="grid grid-cols-3 gap-4">
-            <ExchangeVolume symbol={symbol} coins={coins} exchange="upbit" />
-            <ExchangeVolume symbol={symbol} coins={coins} exchange="bithumb" />
-            <ExchangeVolume symbol={symbol} coins={coins} exchange="binance" />
-          </div>
-        </div>
-
-        {/* 현재가 */}
-        <div>
-          <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-            현재가
-          </div>
-          <div className="grid grid-cols-3 gap-4">
-            <ExchangePrice symbol={symbol} coins={coins} exchange="upbit" />
-            <ExchangePrice symbol={symbol} coins={coins} exchange="bithumb" />
-            <ExchangePrice symbol={symbol} coins={coins} exchange="binance" />
-            <ExchangePrice symbol={symbol} coins={coins} exchange="coinone" />
-          </div>
-        </div>
-
-        {/* 24시간 변동 */}
-        <div>
-          <div className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-            전일 대비 가격(%)
-          </div>
-          <div className="grid grid-cols-3 gap-4">
-            <ExchangeChange24h symbol={symbol} coins={coins} exchange="upbit" />
-            <ExchangeChange24h
-              symbol={symbol}
-              coins={coins}
-              exchange="bithumb"
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[
+            { title: "원화 마켓 (KRW)", type: "KRW" as const },
+            { title: "테더 마켓 (USDT)", type: "USDT" as const },
+            { title: "비트코인 마켓 (BTC)", type: "BTC" as const }
+          ].map(market => (
+            <MarketSection 
+              key={market.type}
+              title={market.title} 
+              marketType={market.type} 
+              symbol={symbol} 
+              coins={coins} 
             />
-            <ExchangeChange24h
-              symbol={symbol}
-              coins={coins}
-              exchange="binance"
-            />
-            <ExchangeChange24h
-              symbol={symbol}
-              coins={coins}
-              exchange="coinone"
-            />
-          </div>
+          ))}
         </div>
       </div>
     </div>
