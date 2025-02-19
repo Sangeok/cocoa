@@ -1,4 +1,5 @@
-export type Exchange = "upbit" | "bithumb" | "binance" | "coinone";
+import { Exchange } from "@/types/exchange";
+
 export type Position = "L" | "S";
 export type Duration = 15 | 30 | 60 | 180;
 

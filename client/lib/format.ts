@@ -87,7 +87,7 @@ export function formatCurrency(value: number): string {
 type QuoteToken = "KRW" | "USDT" | "BTC";
 
 interface Market {
-  exchange: "upbit" | "bithumb" | "binance" | "coinone";
+  exchange: "upbit" | "bithumb" | "binance" | "coinone" | "okx";
   symbol: string;
   price: number;
   volume: number;
@@ -95,9 +95,9 @@ interface Market {
 }
 
 export type ExchangePair = {
-  from: "upbit" | "bithumb" | "binance" | "coinone";
+  from: "upbit" | "bithumb" | "binance" | "coinone" | "okx";
   fromBase: string;
-  to: "upbit" | "bithumb" | "binance" | "coinone";
+  to: "upbit" | "bithumb" | "binance" | "coinone" | "okx";
   toBase: string;
 };
 

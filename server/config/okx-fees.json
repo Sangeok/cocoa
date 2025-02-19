@@ -1,0 +1,1913 @@
+{
+  "note": "OKX withdrawal fees are dynamic and vary based on network congestion. The fees shown here are approximate and may change.",
+  "currencies": [
+    {
+      "currency": "1INCH",
+      "network": "Ethereum",
+      "minimumWithdrawal": "4.91",
+      "depositFee": "0",
+      "withdrawalFee": "3.91"
+    },
+    {
+      "currency": "AAVE",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.0142",
+      "depositFee": "0",
+      "withdrawalFee": "0.0042"
+    },
+    {
+      "currency": "ACA",
+      "network": "Acala",
+      "minimumWithdrawal": "0.2",
+      "depositFee": "0",
+      "withdrawalFee": "0.1"
+    },
+    {
+      "currency": "ACE",
+      "network": "Endurance Smart Chain",
+      "minimumWithdrawal": "0.108",
+      "depositFee": "0",
+      "withdrawalFee": "0.008"
+    },
+    {
+      "currency": "ACH",
+      "network": "Ethereum",
+      "minimumWithdrawal": "40.09",
+      "depositFee": "0",
+      "withdrawalFee": "30.09"
+    },
+    {
+      "currency": "ACT",
+      "network": "Solana",
+      "minimumWithdrawal": "7.34",
+      "depositFee": "0",
+      "withdrawalFee": "7.24"
+    },
+    {
+      "currency": "ADA",
+      "network": "Cardano",
+      "minimumWithdrawal": "2.8",
+      "depositFee": "0",
+      "withdrawalFee": "0.8"
+    },
+    {
+      "currency": "AERGO",
+      "network": "Ethereum",
+      "minimumWithdrawal": "12.84",
+      "depositFee": "0",
+      "withdrawalFee": "11.84"
+    },
+    {
+      "currency": "AEVO",
+      "network": "Ethereum",
+      "minimumWithdrawal": "7.03",
+      "depositFee": "0",
+      "withdrawalFee": "6.93"
+    },
+    {
+      "currency": "AGLD",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.83",
+      "depositFee": "0",
+      "withdrawalFee": "0.82"
+    },
+    {
+      "currency": "AIDOGE",
+      "network": "Arbitrum One",
+      "minimumWithdrawal": "3000000000",
+      "depositFee": "0",
+      "withdrawalFee": "2000000000"
+    },
+    {
+      "currency": "ALCX",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.0851",
+      "depositFee": "0",
+      "withdrawalFee": "0.085"
+    },
+    {
+      "currency": "ALGO",
+      "network": "Algorand",
+      "minimumWithdrawal": "0.108",
+      "depositFee": "0",
+      "withdrawalFee": "0.008"
+    },
+    {
+      "currency": "ALPHA",
+      "network": "Ethereum",
+      "minimumWithdrawal": "22.89",
+      "depositFee": "0",
+      "withdrawalFee": "21.89"
+    },
+    {
+      "currency": "ANIME",
+      "network": "Arbitrum One",
+      "minimumWithdrawal": "0.201",
+      "depositFee": "0",
+      "withdrawalFee": "0.2"
+    },
+    {
+      "currency": "APE",
+      "network": "Ethereum",
+      "minimumWithdrawal": "1.571",
+      "depositFee": "0",
+      "withdrawalFee": "1.57"
+    },
+    {
+      "currency": "API3",
+      "network": "Ethereum",
+      "minimumWithdrawal": "2.15",
+      "depositFee": "0",
+      "withdrawalFee": "1.15"
+    },
+    {
+      "currency": "APT",
+      "network": "Aptos",
+      "minimumWithdrawal": "0.011",
+      "depositFee": "0",
+      "withdrawalFee": "0.001"
+    },
+    {
+      "currency": "AR",
+      "network": "Arweave",
+      "minimumWithdrawal": "0.02",
+      "depositFee": "0",
+      "withdrawalFee": "0.01"
+    },
+    {
+      "currency": "ARB",
+      "networks": [
+        {
+          "network": "Arbitrum One",
+          "minimumWithdrawal": "0.07",
+          "depositFee": "0",
+          "withdrawalFee": "0.02"
+        },
+        {
+          "network": "Ethereum",
+          "minimumWithdrawal": "0.8",
+          "depositFee": "0",
+          "withdrawalFee": "0.7"
+        }
+      ]
+    },
+    {
+      "currency": "ARG",
+      "network": "Chiliz Chain",
+      "minimumWithdrawal": "1.1",
+      "depositFee": "0",
+      "withdrawalFee": "0.1"
+    },
+    {
+      "currency": "ARKM",
+      "network": "Ethereum",
+      "minimumWithdrawal": "1.73",
+      "depositFee": "0",
+      "withdrawalFee": "1.63"
+    },
+    {
+      "currency": "ARTY",
+      "network": "BNB Smart Chain",
+      "minimumWithdrawal": "2",
+      "depositFee": "0",
+      "withdrawalFee": "1"
+    },
+    {
+      "currency": "ASTR",
+      "network": "Astar",
+      "minimumWithdrawal": "2.001",
+      "depositFee": "0",
+      "withdrawalFee": "2"
+    },
+    {
+      "currency": "ATH",
+      "network": "Ethereum",
+      "minimumWithdrawal": "50.01",
+      "depositFee": "0",
+      "withdrawalFee": "50"
+    },
+    {
+      "currency": "ATOM",
+      "network": "Cosmos",
+      "minimumWithdrawal": "0.116",
+      "depositFee": "0",
+      "withdrawalFee": "0.016"
+    },
+    {
+      "currency": "AUCTION",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.19",
+      "depositFee": "0",
+      "withdrawalFee": "0.09"
+    },
+    {
+      "currency": "AVAX",
+      "networks": [
+        {
+          "network": "Avalanche C-Chain",
+          "minimumWithdrawal": "0.1064",
+          "depositFee": "0",
+          "withdrawalFee": "0.0064"
+        },
+        {
+          "network": "Avalanche X-Chain",
+          "minimumWithdrawal": "0.148",
+          "depositFee": "0",
+          "withdrawalFee": "0.048"
+        }
+      ]
+    },
+    {
+      "currency": "AXS",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.261",
+      "depositFee": "0",
+      "withdrawalFee": "0.26"
+    },
+    {
+      "currency": "BABYDOGE",
+      "networks": [
+        {
+          "network": "BNB Smart Chain",
+          "minimumWithdrawal": "900000001",
+          "depositFee": "0",
+          "withdrawalFee": "900000000"
+        },
+        {
+          "network": "OKT Chain",
+          "minimumWithdrawal": "500000001",
+          "depositFee": "0",
+          "withdrawalFee": "500000000"
+        }
+      ]
+    },
+    {
+      "currency": "BADGER",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.39",
+      "depositFee": "0",
+      "withdrawalFee": "0.29"
+    },
+    {
+      "currency": "BAL",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.65",
+      "depositFee": "0",
+      "withdrawalFee": "0.55"
+    },
+    {
+      "currency": "BANANA",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.054",
+      "depositFee": "0",
+      "withdrawalFee": "0.044"
+    },
+    {
+      "currency": "BAND",
+      "network": "Ethereum",
+      "minimumWithdrawal": "1.19",
+      "depositFee": "0",
+      "withdrawalFee": "1.09"
+    },
+    {
+      "currency": "BAT",
+      "network": "Ethereum",
+      "minimumWithdrawal": "6.86",
+      "depositFee": "0",
+      "withdrawalFee": "5.86"
+    },
+    {
+      "currency": "BCH",
+      "network": "Bitcoin Cash",
+      "minimumWithdrawal": "0.0108",
+      "depositFee": "0",
+      "withdrawalFee": "0.0008"
+    },
+    {
+      "currency": "BERA",
+      "network": "Berachain",
+      "minimumWithdrawal": "0.0011",
+      "depositFee": "0",
+      "withdrawalFee": "0.0001"
+    },
+    {
+      "currency": "BICO",
+      "network": "Ethereum",
+      "minimumWithdrawal": "6.2801",
+      "depositFee": "0",
+      "withdrawalFee": "6.28"
+    },
+    {
+      "currency": "BIGTIME",
+      "network": "Ethereum",
+      "minimumWithdrawal": "27.03",
+      "depositFee": "0",
+      "withdrawalFee": "17.03"
+    },
+    {
+      "currency": "BIO",
+      "network": "Ethereum",
+      "minimumWithdrawal": "8.7701",
+      "depositFee": "0",
+      "withdrawalFee": "8.77"
+    },
+    {
+      "currency": "BLUR",
+      "network": "Ethereum",
+      "minimumWithdrawal": "2",
+      "depositFee": "0",
+      "withdrawalFee": "1"
+    },
+    {
+      "currency": "BNB",
+      "network": "BNB Smart Chain",
+      "minimumWithdrawal": "0.00021",
+      "depositFee": "0",
+      "withdrawalFee": "0.0002"
+    },
+    {
+      "currency": "BNT",
+      "network": "Ethereum",
+      "minimumWithdrawal": "3.02",
+      "depositFee": "0",
+      "withdrawalFee": "2.02"
+    },
+    {
+      "currency": "BOBA",
+      "network": "Ethereum",
+      "minimumWithdrawal": "29.2",
+      "depositFee": "0",
+      "withdrawalFee": "28.3"
+    },
+    {
+      "currency": "BOME",
+      "network": "Solana",
+      "minimumWithdrawal": "394.17588561",
+      "depositFee": "0",
+      "withdrawalFee": "294.17588561"
+    },
+    {
+      "currency": "BONE",
+      "network": "Ethereum",
+      "minimumWithdrawal": "4.2",
+      "depositFee": "0",
+      "withdrawalFee": "3.7"
+    },
+    {
+      "currency": "BONK",
+      "network": "Solana",
+      "minimumWithdrawal": "47434.09920623",
+      "depositFee": "0",
+      "withdrawalFee": "37434.09920623"
+    },
+    {
+      "currency": "BORA",
+      "network": "Kaia",
+      "minimumWithdrawal": "1.3",
+      "depositFee": "0",
+      "withdrawalFee": "0.3"
+    },
+    {
+      "currency": "BSV",
+      "network": "Bitcoin SV",
+      "minimumWithdrawal": "0.0104",
+      "depositFee": "0",
+      "withdrawalFee": "0.0004"
+    },
+    {
+      "currency": "BTC",
+      "network": "Bitcoin",
+      "minimumWithdrawal": "0.00052",
+      "depositFee": "0",
+      "withdrawalFee": "0.00002"
+    },
+    {
+      "currency": "BTT",
+      "network": "Tron(TRC20)",
+      "minimumWithdrawal": "320001",
+      "depositFee": "0",
+      "withdrawalFee": "320000"
+    },
+    {
+      "currency": "BZZ",
+      "network": "Ethereum",
+      "minimumWithdrawal": "31.61",
+      "depositFee": "0",
+      "withdrawalFee": "31.51"
+    },
+    {
+      "currency": "CAT",
+      "network": "BNB Smart Chain",
+      "minimumWithdrawal": "30000",
+      "depositFee": "0",
+      "withdrawalFee": "20000"
+    },
+    {
+      "currency": "CATI",
+      "network": "TON",
+      "minimumWithdrawal": "1.04",
+      "depositFee": "0",
+      "withdrawalFee": "0.04"
+    },
+    {
+      "currency": "CEEK",
+      "network": "BNB Smart Chain",
+      "minimumWithdrawal": "0.11",
+      "depositFee": "0",
+      "withdrawalFee": "0.1"
+    },
+    {
+      "currency": "CELO",
+      "network": "Celo",
+      "minimumWithdrawal": "1.0008",
+      "depositFee": "0",
+      "withdrawalFee": "0.0008"
+    },
+    {
+      "currency": "CELR",
+      "network": "Ethereum",
+      "minimumWithdrawal": "85.98",
+      "depositFee": "0",
+      "withdrawalFee": "84.98"
+    },
+    {
+      "currency": "CETUS",
+      "network": "Sui",
+      "minimumWithdrawal": "10.1",
+      "depositFee": "0",
+      "withdrawalFee": "0.1"
+    },
+    {
+      "currency": "CFG",
+      "network": "Ethereum",
+      "minimumWithdrawal": "37.27",
+      "depositFee": "0",
+      "withdrawalFee": "37.17"
+    },
+    {
+      "currency": "DAO",
+      "network": "BNB Smart Chain",
+      "minimumWithdrawal": "0.3",
+      "depositFee": "0",
+      "withdrawalFee": "0.2"
+    },
+    {
+      "currency": "DEGEN",
+      "network": "Base",
+      "minimumWithdrawal": "100.5",
+      "depositFee": "0",
+      "withdrawalFee": "0.5"
+    },
+    {
+      "currency": "DEP",
+      "network": "Ethereum",
+      "minimumWithdrawal": "736.69",
+      "depositFee": "0",
+      "withdrawalFee": "735.69"
+    },
+    {
+      "currency": "DGB",
+      "network": "DigiByte",
+      "minimumWithdrawal": "100.0032",
+      "depositFee": "0",
+      "withdrawalFee": "0.0032"
+    },
+    {
+      "currency": "DIA",
+      "network": "Ethereum",
+      "minimumWithdrawal": "3.1",
+      "depositFee": "0",
+      "withdrawalFee": "2.1"
+    },
+    {
+      "currency": "DOGE",
+      "network": "Dogecoin",
+      "minimumWithdrawal": "14",
+      "depositFee": "0",
+      "withdrawalFee": "4"
+    },
+    {
+      "currency": "DOGS",
+      "network": "TON",
+      "minimumWithdrawal": "150",
+      "depositFee": "0",
+      "withdrawalFee": "50"
+    },
+    {
+      "currency": "DOT",
+      "network": "Polkadot",
+      "minimumWithdrawal": "2.08",
+      "depositFee": "0",
+      "withdrawalFee": "0.08"
+    },
+    {
+      "currency": "DUCK",
+      "network": "TON",
+      "minimumWithdrawal": "5.0001",
+      "depositFee": "0",
+      "withdrawalFee": "5"
+    },
+    {
+      "currency": "DYDX",
+      "network": "dYdX",
+      "minimumWithdrawal": "1.03",
+      "depositFee": "0",
+      "withdrawalFee": "0.03"
+    },
+    {
+      "currency": "EGLD",
+      "network": "MultiversX",
+      "minimumWithdrawal": "0.01064",
+      "depositFee": "0",
+      "withdrawalFee": "0.00064"
+    },
+    {
+      "currency": "EIGEN",
+      "network": "Ethereum",
+      "minimumWithdrawal": "2.1",
+      "depositFee": "0",
+      "withdrawalFee": "2"
+    },
+    {
+      "currency": "ELF",
+      "network": "AELF",
+      "minimumWithdrawal": "2",
+      "depositFee": "0",
+      "withdrawalFee": "1"
+    },
+    {
+      "currency": "ELON",
+      "network": "Ethereum",
+      "minimumWithdrawal": "15484712.22",
+      "depositFee": "0",
+      "withdrawalFee": "5484712.22"
+    },
+    {
+      "currency": "ENJ",
+      "network": "Enjin Relay Chain",
+      "minimumWithdrawal": "1.001",
+      "depositFee": "0",
+      "withdrawalFee": "0.001"
+    },
+    {
+      "currency": "ENS",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.05",
+      "depositFee": "0",
+      "withdrawalFee": "0.04"
+    },
+    {
+      "currency": "EOS",
+      "network": "EOS",
+      "minimumWithdrawal": "1.08",
+      "depositFee": "0",
+      "withdrawalFee": "0.08"
+    },
+    {
+      "currency": "ERN",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.771",
+      "depositFee": "0",
+      "withdrawalFee": "0.77"
+    },
+    {
+      "currency": "ETC",
+      "network": "Ethereum Classic",
+      "minimumWithdrawal": "0.108",
+      "depositFee": "0",
+      "withdrawalFee": "0.008"
+    },
+    {
+      "currency": "ETHFI",
+      "network": "Ethereum",
+      "minimumWithdrawal": "1.07",
+      "depositFee": "0",
+      "withdrawalFee": "0.97"
+    },
+    {
+      "currency": "ETHW",
+      "network": "EthereumPoW",
+      "minimumWithdrawal": "0.02",
+      "depositFee": "0",
+      "withdrawalFee": "0.01"
+    },
+    {
+      "currency": "EURC",
+      "network": "Ethereum",
+      "minimumWithdrawal": "4.1",
+      "depositFee": "0",
+      "withdrawalFee": "4"
+    },
+    {
+      "currency": "FET",
+      "network": "Ethereum",
+      "minimumWithdrawal": "3",
+      "depositFee": "0",
+      "withdrawalFee": "2"
+    },
+    {
+      "currency": "FIL",
+      "network": "Filecoin",
+      "minimumWithdrawal": "0.1008",
+      "depositFee": "0",
+      "withdrawalFee": "0.0008"
+    },
+    {
+      "currency": "FLM",
+      "network": "N3",
+      "minimumWithdrawal": "2",
+      "depositFee": "0",
+      "withdrawalFee": "1"
+    },
+    {
+      "currency": "FLOKI",
+      "network": "BNB Smart Chain",
+      "minimumWithdrawal": "10001",
+      "depositFee": "0",
+      "withdrawalFee": "10000"
+    },
+    {
+      "currency": "FLOW",
+      "network": "FLOW",
+      "minimumWithdrawal": "0.108",
+      "depositFee": "0",
+      "withdrawalFee": "0.008"
+    },
+    {
+      "currency": "FLR",
+      "network": "Flare",
+      "minimumWithdrawal": "2",
+      "depositFee": "0",
+      "withdrawalFee": "1"
+    },
+    {
+      "currency": "FORTH",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.4",
+      "depositFee": "0",
+      "withdrawalFee": "0.3"
+    },
+    {
+      "currency": "FOXY",
+      "network": "Linea",
+      "minimumWithdrawal": "1200",
+      "depositFee": "0",
+      "withdrawalFee": "200"
+    },
+    {
+      "currency": "FTM",
+      "network": "Fantom",
+      "minimumWithdrawal": "3",
+      "depositFee": "0",
+      "withdrawalFee": "2"
+    },
+    {
+      "currency": "FXS",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.7",
+      "depositFee": "0",
+      "withdrawalFee": "0.6"
+    },
+    {
+      "currency": "G",
+      "networks": [
+        {
+          "network": "Ethereum",
+          "minimumWithdrawal": "66.92",
+          "depositFee": "0",
+          "withdrawalFee": "56.92"
+        },
+        {
+          "network": "Gravity Alpha Mainnet",
+          "minimumWithdrawal": "0.000101",
+          "depositFee": "0",
+          "withdrawalFee": "0.000001"
+        }
+      ]
+    },
+    {
+      "currency": "GALA",
+      "network": "Ethereum",
+      "minimumWithdrawal": "363.3",
+      "depositFee": "0",
+      "withdrawalFee": "363.2"
+    },
+    {
+      "currency": "GALFT",
+      "network": "Chiliz Chain",
+      "minimumWithdrawal": "1.1",
+      "depositFee": "0",
+      "withdrawalFee": "0.1"
+    },
+    {
+      "currency": "GAS",
+      "network": "N3",
+      "minimumWithdrawal": "1.1",
+      "depositFee": "0",
+      "withdrawalFee": "0.1"
+    },
+    {
+      "currency": "GEAR",
+      "network": "Ethereum",
+      "minimumWithdrawal": "501",
+      "depositFee": "0",
+      "withdrawalFee": "500"
+    },
+    {
+      "currency": "GHST",
+      "network": "Ethereum",
+      "minimumWithdrawal": "2.95",
+      "depositFee": "0",
+      "withdrawalFee": "1.95"
+    },
+    {
+      "currency": "GLM",
+      "network": "Ethereum",
+      "minimumWithdrawal": "13.55",
+      "depositFee": "0",
+      "withdrawalFee": "3.55"
+    },
+    {
+      "currency": "GLMR",
+      "network": "Moonbeam",
+      "minimumWithdrawal": "0.0101",
+      "depositFee": "0",
+      "withdrawalFee": "0.01"
+    },
+    {
+      "currency": "DAI",
+      "networks": [
+        {
+          "network": "Ethereum",
+          "minimumWithdrawal": "2.05",
+          "depositFee": "0",
+          "withdrawalFee": "1.05"
+        },
+        {
+          "network": "Polygon",
+          "minimumWithdrawal": "0.1001",
+          "depositFee": "0",
+          "withdrawalFee": "0.1"
+        },
+        {
+          "network": "X Layer",
+          "minimumWithdrawal": "0.1001",
+          "depositFee": "0",
+          "withdrawalFee": "0.1"
+        }
+      ]
+    },
+    {
+      "currency": "GMT",
+      "networks": [
+        {
+          "network": "Polygon",
+          "minimumWithdrawal": "1.1",
+          "depositFee": "0",
+          "withdrawalFee": "1"
+        },
+        {
+          "network": "Solana",
+          "minimumWithdrawal": "8.01",
+          "depositFee": "0",
+          "withdrawalFee": "8"
+        }
+      ]
+    },
+    {
+      "currency": "GMX",
+      "network": "Arbitrum One",
+      "minimumWithdrawal": "0.02",
+      "depositFee": "0",
+      "withdrawalFee": "0.01"
+    },
+    {
+      "currency": "GOAL",
+      "networks": [
+        {
+          "network": "BNB Smart Chain",
+          "minimumWithdrawal": "2",
+          "depositFee": "0",
+          "withdrawalFee": "1"
+        },
+        {
+          "network": "Chiliz Chain",
+          "minimumWithdrawal": "1.1",
+          "depositFee": "0",
+          "withdrawalFee": "1"
+        }
+      ]
+    },
+    {
+      "currency": "GOAT",
+      "network": "Solana",
+      "minimumWithdrawal": "5.70930459",
+      "depositFee": "0",
+      "withdrawalFee": "5.20930459"
+    },
+    {
+      "currency": "GODS",
+      "network": "Ethereum",
+      "minimumWithdrawal": "8.711",
+      "depositFee": "0",
+      "withdrawalFee": "8.71"
+    },
+    {
+      "currency": "GOG",
+      "network": "Ethereum",
+      "minimumWithdrawal": "40.01",
+      "depositFee": "0",
+      "withdrawalFee": "40"
+    },
+    {
+      "currency": "GPT",
+      "network": "BNB Smart Chain",
+      "minimumWithdrawal": "15",
+      "depositFee": "0",
+      "withdrawalFee": "5"
+    },
+    {
+      "currency": "GRT",
+      "network": "Ethereum",
+      "minimumWithdrawal": "8.92",
+      "depositFee": "0",
+      "withdrawalFee": "7.92"
+    },
+    {
+      "currency": "HBAR",
+      "network": "Hedera",
+      "minimumWithdrawal": "1.8",
+      "depositFee": "0",
+      "withdrawalFee": "0.8"
+    },
+    {
+      "currency": "HMSTR",
+      "network": "TON",
+      "minimumWithdrawal": "40",
+      "depositFee": "0",
+      "withdrawalFee": "30"
+    },
+    {
+      "currency": "ICE",
+      "network": "BNB Smart Chain",
+      "minimumWithdrawal": "130",
+      "depositFee": "0",
+      "withdrawalFee": "30"
+    },
+    {
+      "currency": "ICP",
+      "network": "Internet Computer",
+      "minimumWithdrawal": "0.00124",
+      "depositFee": "0",
+      "withdrawalFee": "0.00024"
+    },
+    {
+      "currency": "ICX",
+      "network": "ICON",
+      "minimumWithdrawal": "1.016",
+      "depositFee": "0",
+      "withdrawalFee": "0.016"
+    },
+    {
+      "currency": "ID",
+      "network": "Ethereum",
+      "minimumWithdrawal": "11",
+      "depositFee": "0",
+      "withdrawalFee": "10"
+    },
+    {
+      "currency": "ILV",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.0551",
+      "depositFee": "0",
+      "withdrawalFee": "0.055"
+    },
+    {
+      "currency": "IMX",
+      "network": "Ethereum",
+      "minimumWithdrawal": "1.43",
+      "depositFee": "0",
+      "withdrawalFee": "1.42"
+    },
+    {
+      "currency": "INJ",
+      "network": "Injective",
+      "minimumWithdrawal": "0.108",
+      "depositFee": "0",
+      "withdrawalFee": "0.008"
+    },
+    {
+      "currency": "IOST",
+      "network": "IOST",
+      "minimumWithdrawal": "1.8",
+      "depositFee": "0",
+      "withdrawalFee": "0.8"
+    },
+    {
+      "currency": "IOTA",
+      "network": "IOTA",
+      "minimumWithdrawal": "1.5",
+      "depositFee": "0",
+      "withdrawalFee": "0.5"
+    },
+    {
+      "currency": "IP",
+      "network": "Story",
+      "minimumWithdrawal": "0.0101",
+      "depositFee": "0",
+      "withdrawalFee": "0.01"
+    },
+    {
+      "currency": "IQ",
+      "network": "EOS",
+      "minimumWithdrawal": "90",
+      "depositFee": "0",
+      "withdrawalFee": "40"
+    },
+    {
+      "currency": "J",
+      "network": "Solana",
+      "minimumWithdrawal": "2.6665036",
+      "depositFee": "0",
+      "withdrawalFee": "2.6664036"
+    },
+    {
+      "currency": "JOE",
+      "network": "Avalanche C-Chain",
+      "minimumWithdrawal": "2.0001",
+      "depositFee": "0",
+      "withdrawalFee": "2"
+    },
+    {
+      "currency": "JST",
+      "network": "Tron(TRC20)",
+      "minimumWithdrawal": "42",
+      "depositFee": "0",
+      "withdrawalFee": "40"
+    },
+    {
+      "currency": "JTO",
+      "network": "Solana",
+      "minimumWithdrawal": "0.365233",
+      "depositFee": "0",
+      "withdrawalFee": "0.265233"
+    },
+    {
+      "currency": "JUP",
+      "network": "Solana",
+      "minimumWithdrawal": "2.8",
+      "depositFee": "0",
+      "withdrawalFee": "1.8"
+    },
+    {
+      "currency": "KAIA",
+      "network": "Kaia",
+      "minimumWithdrawal": "0.104",
+      "depositFee": "0",
+      "withdrawalFee": "0.004"
+    },
+    {
+      "currency": "KDA",
+      "network": "Kadena",
+      "minimumWithdrawal": "0.001001",
+      "depositFee": "0",
+      "withdrawalFee": "0.000001"
+    },
+    {
+      "currency": "KISHU",
+      "network": "Ethereum",
+      "minimumWithdrawal": "39980756532.46654",
+      "depositFee": "0",
+      "withdrawalFee": "39880756532.46654"
+    },
+    {
+      "currency": "KNC",
+      "network": "Ethereum",
+      "minimumWithdrawal": "2.54",
+      "depositFee": "0",
+      "withdrawalFee": "2.53"
+    },
+    {
+      "currency": "KP3R",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.067",
+      "depositFee": "0",
+      "withdrawalFee": "0.057"
+    },
+    {
+      "currency": "KSM",
+      "network": "Kusama",
+      "minimumWithdrawal": "0.108",
+      "depositFee": "0",
+      "withdrawalFee": "0.008"
+    },
+    {
+      "currency": "LAMB",
+      "network": "Ethereum",
+      "minimumWithdrawal": "813.01",
+      "depositFee": "0",
+      "withdrawalFee": "812.01"
+    },
+    {
+      "currency": "LAT",
+      "network": "PlatON",
+      "minimumWithdrawal": "1.8",
+      "depositFee": "0",
+      "withdrawalFee": "0.8"
+    },
+    {
+      "currency": "LBR",
+      "network": "Ethereum",
+      "minimumWithdrawal": "5.1",
+      "depositFee": "0",
+      "withdrawalFee": "5"
+    },
+    {
+      "currency": "LDO",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.7",
+      "depositFee": "0",
+      "withdrawalFee": "0.6"
+    },
+    {
+      "currency": "LEO",
+      "network": "Ethereum",
+      "minimumWithdrawal": "4.03",
+      "depositFee": "0",
+      "withdrawalFee": "3.03"
+    },
+    {
+      "currency": "LINK",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.159",
+      "depositFee": "0",
+      "withdrawalFee": "0.059"
+    },
+    {
+      "currency": "LOOKS",
+      "network": "Ethereum",
+      "minimumWithdrawal": "56.4301",
+      "depositFee": "0",
+      "withdrawalFee": "56.43"
+    },
+    {
+      "currency": "LPT",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.25",
+      "depositFee": "0",
+      "withdrawalFee": "0.15"
+    },
+    {
+      "currency": "LQTY",
+      "network": "Ethereum",
+      "minimumWithdrawal": "1.22",
+      "depositFee": "0",
+      "withdrawalFee": "1.12"
+    },
+    {
+      "currency": "LRC",
+      "network": "Ethereum",
+      "minimumWithdrawal": "21.95",
+      "depositFee": "0",
+      "withdrawalFee": "7.95"
+    },
+    {
+      "currency": "LSK",
+      "network": "Lisk",
+      "minimumWithdrawal": "1.08",
+      "depositFee": "0",
+      "withdrawalFee": "0.08"
+    },
+    {
+      "currency": "LTC",
+      "network": "Litecoin",
+      "minimumWithdrawal": "0.011",
+      "depositFee": "0",
+      "withdrawalFee": "0.001"
+    },
+    {
+      "currency": "LUNA",
+      "network": "Terra",
+      "minimumWithdrawal": "0.06",
+      "depositFee": "0",
+      "withdrawalFee": "0.05"
+    },
+    {
+      "currency": "LUNC",
+      "network": "Terra Classic",
+      "minimumWithdrawal": "1001",
+      "depositFee": "0",
+      "withdrawalFee": "1000"
+    },
+    {
+      "currency": "MAGIC",
+      "network": "Arbitrum One",
+      "minimumWithdrawal": "1.01291864",
+      "depositFee": "0",
+      "withdrawalFee": "0.01291864"
+    },
+    {
+      "currency": "MAJOR",
+      "network": "TON",
+      "minimumWithdrawal": "1",
+      "depositFee": "0",
+      "withdrawalFee": "0.5"
+    },
+    {
+      "currency": "MANA",
+      "network": "Ethereum",
+      "minimumWithdrawal": "4.34",
+      "depositFee": "0",
+      "withdrawalFee": "3.34"
+    },
+    {
+      "currency": "MASK",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.58",
+      "depositFee": "0",
+      "withdrawalFee": "0.48"
+    },
+    {
+      "currency": "MAX",
+      "network": "Ethereum",
+      "minimumWithdrawal": "51",
+      "depositFee": "0",
+      "withdrawalFee": "50"
+    },
+    {
+      "currency": "MDT",
+      "network": "Ethereum",
+      "minimumWithdrawal": "30.56",
+      "depositFee": "0",
+      "withdrawalFee": "29.56"
+    },
+    {
+      "currency": "ME",
+      "network": "Solana",
+      "minimumWithdrawal": "0.52131844",
+      "depositFee": "0",
+      "withdrawalFee": "0.42131844"
+    },
+    {
+      "currency": "MEME",
+      "network": "Ethereum",
+      "minimumWithdrawal": "355.78",
+      "depositFee": "0",
+      "withdrawalFee": "255.78"
+    },
+    {
+      "currency": "MEMEFI",
+      "network": "Sui",
+      "minimumWithdrawal": "50.1",
+      "depositFee": "0",
+      "withdrawalFee": "50"
+    },
+    {
+      "currency": "MENGO",
+      "network": "Chiliz Chain",
+      "minimumWithdrawal": "1.1",
+      "depositFee": "0",
+      "withdrawalFee": "0.1"
+    },
+    {
+      "currency": "MERL",
+      "network": "Merlin",
+      "minimumWithdrawal": "6",
+      "depositFee": "0",
+      "withdrawalFee": "5"
+    },
+    {
+      "currency": "METIS",
+      "network": "Metis",
+      "minimumWithdrawal": "0.02",
+      "depositFee": "0",
+      "withdrawalFee": "0.01"
+    },
+    {
+      "currency": "MEW",
+      "network": "Solana",
+      "minimumWithdrawal": "284.12783381",
+      "depositFee": "0",
+      "withdrawalFee": "184.12783381"
+    },
+    {
+      "currency": "MILO",
+      "network": "BNB Smart Chain",
+      "minimumWithdrawal": "60000001",
+      "depositFee": "0",
+      "withdrawalFee": "60000000"
+    },
+    {
+      "currency": "MINA",
+      "network": "Mina",
+      "minimumWithdrawal": "2.72",
+      "depositFee": "0",
+      "withdrawalFee": "0.72"
+    },
+    {
+      "currency": "MKR",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.00189",
+      "depositFee": "0",
+      "withdrawalFee": "0.00089"
+    },
+    {
+      "currency": "MLN",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.182",
+      "depositFee": "0",
+      "withdrawalFee": "0.082"
+    },
+    {
+      "currency": "MOODENG",
+      "network": "Solana",
+      "minimumWithdrawal": "9.31496895",
+      "depositFee": "0",
+      "withdrawalFee": "9.21496895"
+    },
+    {
+      "currency": "MORPHO",
+      "network": "Ethereum",
+      "minimumWithdrawal": "1.5",
+      "depositFee": "0",
+      "withdrawalFee": "0.5"
+    },
+    {
+      "currency": "MOVE",
+      "network": "Ethereum",
+      "minimumWithdrawal": "3",
+      "depositFee": "0",
+      "withdrawalFee": "2"
+    },
+    {
+      "currency": "MOVR",
+      "network": "Moonriver",
+      "minimumWithdrawal": "0.0021",
+      "depositFee": "0",
+      "withdrawalFee": "0.002"
+    },
+    {
+      "currency": "MXC",
+      "network": "Layer 3",
+      "minimumWithdrawal": "300",
+      "depositFee": "0",
+      "withdrawalFee": "200"
+    },
+    {
+      "currency": "NC",
+      "network": "Solana",
+      "minimumWithdrawal": "13.29449267",
+      "depositFee": "0",
+      "withdrawalFee": "13.19449267"
+    },
+    {
+      "currency": "NEAR",
+      "network": "Near",
+      "minimumWithdrawal": "0.115",
+      "depositFee": "0",
+      "withdrawalFee": "0.015"
+    },
+    {
+      "currency": "NEIRO",
+      "network": "Ethereum",
+      "minimumWithdrawal": "6000",
+      "depositFee": "0",
+      "withdrawalFee": "3000"
+    },
+    {
+      "currency": "NEO",
+      "network": "N3",
+      "minimumWithdrawal": "1.01",
+      "depositFee": "0",
+      "withdrawalFee": "0.01"
+    },
+    {
+      "currency": "NFT",
+      "network": "Tron(TRC20)",
+      "minimumWithdrawal": "80000.01",
+      "depositFee": "0",
+      "withdrawalFee": "80000"
+    },
+    {
+      "currency": "NMR",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.194",
+      "depositFee": "0",
+      "withdrawalFee": "0.094"
+    },
+    {
+      "currency": "NOT",
+      "network": "TON",
+      "minimumWithdrawal": "40",
+      "depositFee": "0",
+      "withdrawalFee": "30"
+    },
+    {
+      "currency": "NULS",
+      "network": "NULS",
+      "minimumWithdrawal": "4.008",
+      "depositFee": "0",
+      "withdrawalFee": "0.008"
+    },
+    {
+      "currency": "OAS",
+      "network": "Oasys",
+      "minimumWithdrawal": "10.001",
+      "depositFee": "0",
+      "withdrawalFee": "10"
+    },
+    {
+      "currency": "OKB",
+      "networks": [
+        {
+          "network": "Ethereum",
+          "minimumWithdrawal": "0.121",
+          "depositFee": "0",
+          "withdrawalFee": "0.021"
+        },
+        {
+          "network": "X Layer",
+          "minimumWithdrawal": "0.011",
+          "depositFee": "0",
+          "withdrawalFee": "0.001"
+        }
+      ]
+    },
+    {
+      "currency": "ORDI",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.121",
+      "depositFee": "0",
+      "withdrawalFee": "0.021"
+    },
+    {
+      "currency": "ORCA",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.121",
+      "depositFee": "0",
+      "withdrawalFee": "0.021"
+    },
+    {
+      "currency": "POL",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.121",
+      "depositFee": "0",
+      "withdrawalFee": "0.021"
+    },
+    {
+      "currency": "PYUSD",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.121",
+      "depositFee": "0",
+      "withdrawalFee": "0.021"
+    },
+    {
+      "currency": "SATS",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.121",
+      "depositFee": "0",
+      "withdrawalFee": "0.021"
+    },
+    {
+      "currency": "SWEAT",
+      "networks": [
+        {
+          "network": "Ethereum",
+          "minimumWithdrawal": "667.58",
+          "depositFee": "0",
+          "withdrawalFee": "167.58"
+        },
+        {
+          "network": "Near",
+          "minimumWithdrawal": "2.1",
+          "depositFee": "0",
+          "withdrawalFee": "2"
+        }
+      ]
+    },
+    {
+      "currency": "SWFTC",
+      "network": "Ethereum",
+      "minimumWithdrawal": "55.76",
+      "depositFee": "0",
+      "withdrawalFee": "54.76"
+    },
+    {
+      "currency": "T",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.27",
+      "depositFee": "0",
+      "withdrawalFee": "0.17"
+    },
+    {
+      "currency": "THETA",
+      "network": "Theta",
+      "minimumWithdrawal": "1.096",
+      "depositFee": "0",
+      "withdrawalFee": "0.096"
+    },
+    {
+      "currency": "TIA",
+      "network": "Celestia",
+      "minimumWithdrawal": "0.2",
+      "depositFee": "0",
+      "withdrawalFee": "0.1"
+    },
+    {
+      "currency": "TNSR",
+      "network": "Solana",
+      "minimumWithdrawal": "2.2468957",
+      "depositFee": "0",
+      "withdrawalFee": "2.1468957"
+    },
+    {
+      "currency": "TON",
+      "network": "TON",
+      "minimumWithdrawal": "0.02",
+      "depositFee": "0",
+      "withdrawalFee": "0.01"
+    },
+    {
+      "currency": "TRA",
+      "network": "Chiliz Chain",
+      "minimumWithdrawal": "1.1",
+      "depositFee": "0",
+      "withdrawalFee": "0.1"
+    },
+    {
+      "currency": "TRB",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.13",
+      "depositFee": "0",
+      "withdrawalFee": "0.03"
+    },
+    {
+      "currency": "TRUMP",
+      "network": "Solana",
+      "minimumWithdrawal": "0.0801",
+      "depositFee": "0",
+      "withdrawalFee": "0.08"
+    },
+    {
+      "currency": "TRX",
+      "network": "Tron(TRC20)",
+      "minimumWithdrawal": "20.8",
+      "depositFee": "0",
+      "withdrawalFee": "0.8"
+    },
+    {
+      "currency": "TURBO",
+      "network": "Ethereum",
+      "minimumWithdrawal": "419.18",
+      "depositFee": "0",
+      "withdrawalFee": "319.18"
+    },
+    {
+      "currency": "TUSD",
+      "network": "Ethereum",
+      "minimumWithdrawal": "2.05",
+      "depositFee": "0",
+      "withdrawalFee": "1.05"
+    },
+    {
+      "currency": "ULTI",
+      "network": "BNB Smart Chain",
+      "minimumWithdrawal": "15",
+      "depositFee": "0",
+      "withdrawalFee": "5"
+    },
+    {
+      "currency": "UMA",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.68",
+      "depositFee": "0",
+      "withdrawalFee": "0.67"
+    },
+    {
+      "currency": "UNI",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.21",
+      "depositFee": "0",
+      "withdrawalFee": "0.11"
+    },
+    {
+      "currency": "USDC",
+      "networks": [
+        {
+          "network": "Arbitrum One",
+          "minimumWithdrawal": "0.198",
+          "depositFee": "0",
+          "withdrawalFee": "0.098"
+        },
+        {
+          "network": "Avalanche C-Chain",
+          "minimumWithdrawal": "0.81",
+          "depositFee": "0",
+          "withdrawalFee": "0.8"
+        },
+        {
+          "network": "Base",
+          "minimumWithdrawal": "0.2",
+          "depositFee": "0",
+          "withdrawalFee": "0.1"
+        },
+        {
+          "network": "Ethereum",
+          "minimumWithdrawal": "2.05",
+          "depositFee": "0",
+          "withdrawalFee": "1.05"
+        },
+        {
+          "network": "Optimism",
+          "minimumWithdrawal": "0.25",
+          "depositFee": "0",
+          "withdrawalFee": "0.15"
+        },
+        {
+          "network": "Polygon",
+          "minimumWithdrawal": "0.9",
+          "depositFee": "0",
+          "withdrawalFee": "0.8"
+        },
+        {
+          "network": "Polygon(Bridged)",
+          "minimumWithdrawal": "0.3",
+          "depositFee": "0",
+          "withdrawalFee": "0.2"
+        },
+        {
+          "network": "Solana",
+          "minimumWithdrawal": "1.01",
+          "depositFee": "0",
+          "withdrawalFee": "1"
+        },
+        {
+          "network": "X Layer",
+          "minimumWithdrawal": "0.1001",
+          "depositFee": "0",
+          "withdrawalFee": "0.1"
+        }
+      ]
+    },
+    {
+      "currency": "USDT",
+      "networks": [
+        {
+          "network": "Aptos",
+          "minimumWithdrawal": "0.13",
+          "depositFee": "0",
+          "withdrawalFee": "0.03"
+        },
+        {
+          "network": "Arbitrum One",
+          "minimumWithdrawal": "0.198",
+          "depositFee": "0",
+          "withdrawalFee": "0.098"
+        },
+        {
+          "network": "Avalanche C-Chain",
+          "minimumWithdrawal": "0.23",
+          "depositFee": "0",
+          "withdrawalFee": "0.22"
+        },
+        {
+          "network": "Ethereum",
+          "minimumWithdrawal": "3.05",
+          "depositFee": "0",
+          "withdrawalFee": "1.05"
+        },
+        {
+          "network": "Optimism",
+          "minimumWithdrawal": "1.15",
+          "depositFee": "0",
+          "withdrawalFee": "0.15"
+        },
+        {
+          "network": "Polygon",
+          "minimumWithdrawal": "0.81",
+          "depositFee": "0",
+          "withdrawalFee": "0.8"
+        },
+        {
+          "network": "Solana",
+          "minimumWithdrawal": "1.1",
+          "depositFee": "0",
+          "withdrawalFee": "1"
+        },
+        {
+          "network": "TON",
+          "minimumWithdrawal": "0.1501",
+          "depositFee": "0",
+          "withdrawalFee": "0.15"
+        },
+        {
+          "network": "Tron(TRC20)",
+          "minimumWithdrawal": "4",
+          "depositFee": "0",
+          "withdrawalFee": "2"
+        },
+        {
+          "network": "X Layer",
+          "minimumWithdrawal": "0.1001",
+          "depositFee": "0",
+          "withdrawalFee": "0.1"
+        }
+      ]
+    },
+    {
+      "currency": "USTC",
+      "network": "Terra Classic (USTC)",
+      "minimumWithdrawal": "11",
+      "depositFee": "0",
+      "withdrawalFee": "10"
+    },
+    {
+      "currency": "UXLINK",
+      "network": "Arbitrum One",
+      "minimumWithdrawal": "1.5",
+      "depositFee": "0",
+      "withdrawalFee": "0.5"
+    },
+    {
+      "currency": "VELO",
+      "network": "Stellar",
+      "minimumWithdrawal": "41",
+      "depositFee": "0",
+      "withdrawalFee": "40"
+    },
+    {
+      "currency": "VELODROME",
+      "network": "Optimism",
+      "minimumWithdrawal": "12",
+      "depositFee": "0",
+      "withdrawalFee": "2"
+    },
+    {
+      "currency": "VENOM",
+      "network": "Venom",
+      "minimumWithdrawal": "1.12",
+      "depositFee": "0",
+      "withdrawalFee": "0.12"
+    },
+    {
+      "currency": "VINE",
+      "network": "Solana",
+      "minimumWithdrawal": "12.60519872",
+      "depositFee": "0",
+      "withdrawalFee": "12.60509872"
+    },
+    {
+      "currency": "VRA",
+      "network": "Ethereum",
+      "minimumWithdrawal": "438.4",
+      "depositFee": "0",
+      "withdrawalFee": "428.4"
+    },
+    {
+      "currency": "W",
+      "networks": [
+        {
+          "network": "Ethereum",
+          "minimumWithdrawal": "6",
+          "depositFee": "0",
+          "withdrawalFee": "5"
+        },
+        {
+          "network": "Solana",
+          "minimumWithdrawal": "5.1",
+          "depositFee": "0",
+          "withdrawalFee": "5"
+        }
+      ]
+    },
+    {
+      "currency": "WAXP",
+      "networks": [
+        {
+          "network": "Ethereum",
+          "minimumWithdrawal": "21",
+          "depositFee": "0",
+          "withdrawalFee": "20"
+        },
+        {
+          "network": "Wax",
+          "minimumWithdrawal": "0.2",
+          "depositFee": "0",
+          "withdrawalFee": "0.1"
+        }
+      ]
+    },
+    {
+      "currency": "WBTC",
+      "networks": [
+        {
+          "network": "Ethereum",
+          "minimumWithdrawal": "0.000111",
+          "depositFee": "0",
+          "withdrawalFee": "0.000011"
+        },
+        {
+          "network": "X Layer",
+          "minimumWithdrawal": "0.000101",
+          "depositFee": "0",
+          "withdrawalFee": "0.000001"
+        }
+      ]
+    },
+    {
+      "currency": "WIF",
+      "network": "Solana",
+      "minimumWithdrawal": "1.10259896",
+      "depositFee": "0",
+      "withdrawalFee": "1.00259896"
+    },
+    {
+      "currency": "WIN",
+      "network": "Tron(TRC20)",
+      "minimumWithdrawal": "5839.46",
+      "depositFee": "0",
+      "withdrawalFee": "5838.46"
+    },
+    {
+      "currency": "WLD",
+      "networks": [
+        {
+          "network": "Ethereum",
+          "minimumWithdrawal": "1.03",
+          "depositFee": "0",
+          "withdrawalFee": "0.93"
+        },
+        {
+          "network": "Optimism",
+          "minimumWithdrawal": "0.122",
+          "depositFee": "0",
+          "withdrawalFee": "0.022"
+        }
+      ]
+    },
+    {
+      "currency": "WOO",
+      "network": "Ethereum",
+      "minimumWithdrawal": "8.781",
+      "depositFee": "0",
+      "withdrawalFee": "8.78"
+    },
+    {
+      "currency": "WSM",
+      "network": "BNB Smart Chain",
+      "minimumWithdrawal": "1010",
+      "depositFee": "0",
+      "withdrawalFee": "1000"
+    },
+    {
+      "currency": "X",
+      "network": "TON",
+      "minimumWithdrawal": "5500",
+      "depositFee": "0",
+      "withdrawalFee": "500"
+    },
+    {
+      "currency": "XAUT",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.0051",
+      "depositFee": "0",
+      "withdrawalFee": "0.005"
+    },
+    {
+      "currency": "XCH",
+      "network": "Chia",
+      "minimumWithdrawal": "0.0104",
+      "depositFee": "0",
+      "withdrawalFee": "0.0004"
+    },
+    {
+      "currency": "XLM",
+      "network": "Stellar",
+      "minimumWithdrawal": "21.008",
+      "depositFee": "0",
+      "withdrawalFee": "0.008"
+    },
+    {
+      "currency": "XNO",
+      "network": "Nano",
+      "minimumWithdrawal": "0.101",
+      "depositFee": "0",
+      "withdrawalFee": "0.1"
+    },
+    {
+      "currency": "XR",
+      "network": "BNB Smart Chain",
+      "minimumWithdrawal": "1.1",
+      "depositFee": "0",
+      "withdrawalFee": "0.1"
+    },
+    {
+      "currency": "XRP",
+      "network": "Ripple",
+      "minimumWithdrawal": "2.2",
+      "depositFee": "0",
+      "withdrawalFee": "0.2"
+    },
+    {
+      "currency": "XTZ",
+      "network": "Tezos",
+      "minimumWithdrawal": "1.08",
+      "depositFee": "0",
+      "withdrawalFee": "0.08"
+    },
+    {
+      "currency": "YFI",
+      "network": "Ethereum",
+      "minimumWithdrawal": "0.00119",
+      "depositFee": "0",
+      "withdrawalFee": "0.00019"
+    },
+    {
+      "currency": "YGG",
+      "network": "Ethereum",
+      "minimumWithdrawal": "4.36",
+      "depositFee": "0",
+      "withdrawalFee": "4.26"
+    },
+    {
+      "currency": "ZBCN",
+      "network": "Solana",
+      "minimumWithdrawal": "1300",
+      "depositFee": "0",
+      "withdrawalFee": "1200"
+    },
+    {
+      "currency": "ZENT",
+      "network": "Ethereum",
+      "minimumWithdrawal": "74.42",
+      "depositFee": "0",
+      "withdrawalFee": "64.42"
+    },
+    {
+      "currency": "ZERO",
+      "network": "Linea",
+      "minimumWithdrawal": "1100",
+      "depositFee": "0",
+      "withdrawalFee": "100"
+    },
+    {
+      "currency": "ZETA",
+      "network": "ZetaChain",
+      "minimumWithdrawal": "2.001",
+      "depositFee": "0",
+      "withdrawalFee": "0.001"
+    },
+    {
+      "currency": "ZEUS",
+      "network": "Solana",
+      "minimumWithdrawal": "3.53",
+      "depositFee": "0",
+      "withdrawalFee": "2.53"
+    },
+    {
+      "currency": "ZIL",
+      "network": "Zilliqa",
+      "minimumWithdrawal": "1.8",
+      "depositFee": "0",
+      "withdrawalFee": "0.8"
+    },
+    {
+      "currency": "ZK",
+      "network": "zkSync Era",
+      "minimumWithdrawal": "1.5",
+      "depositFee": "0",
+      "withdrawalFee": "0.5"
+    },
+    {
+      "currency": "ZKJ",
+      "network": "Ethereum",
+      "minimumWithdrawal": "5.1",
+      "depositFee": "0",
+      "withdrawalFee": "5"
+    },
+    {
+      "currency": "ZRO",
+      "networks": [
+        {
+          "network": "Arbitrum One",
+          "minimumWithdrawal": "0.2",
+          "depositFee": "0",
+          "withdrawalFee": "0.1"
+        },
+        {
+          "network": "Ethereum",
+          "minimumWithdrawal": "0.47",
+          "depositFee": "0",
+          "withdrawalFee": "0.37"
+        }
+      ]
+    },
+    {
+      "currency": "ZRX",
+      "network": "Ethereum",
+      "minimumWithdrawal": "4.36",
+      "depositFee": "0",
+      "withdrawalFee": "3.36"
+    }
+  ]
+} 

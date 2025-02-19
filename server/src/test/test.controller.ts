@@ -41,11 +41,13 @@ export class TestController {
     const upbitFees = await this.feeClient.getUpbitFees();
     const binanceFees = await this.feeClient.getBinanceFees();
     const coinoneFees = await this.feeClient.getCoinoneFees();
+    const okxFees = await this.feeClient.getOkxFees();
 
     return {
       upbit: upbitFees,
       binance: binanceFees,
       coinone: coinoneFees,
+      okx: okxFees,
     };
   }
 

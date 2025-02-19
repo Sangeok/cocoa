@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
-import { ClientAPICall } from '@/lib/axios'
-import { NewsListResponse, NewsListResponseSchema } from '@/dto/news.dto'
-import { API_ROUTES } from '@/const/api'
+import { useState } from "react";
+import { ClientAPICall } from "@/lib/axios";
+import { NewsListResponse, NewsListResponseSchema } from "@/dto/news.dto";
+import { API_ROUTES } from "@/const/api";
 
 interface ApiResponse<T> {
   success: boolean;
@@ -20,22 +20,23 @@ export function useNews() {
 
   if (!newsCache) {
     if (!fetchPromise) {
-      fetchPromise = ClientAPICall
-        .get<ApiResponse<NewsListResponse>>(API_ROUTES.NEWS.GET.url, {
+      fetchPromise = ClientAPICall.get<ApiResponse<NewsListResponse>>(
+        API_ROUTES.NEWS.GET.url,
+        {
           params: {
             limit: 20,
             page: 1,
-          }
-        })
-        .then(response => {
-          const data = NewsListResponseSchema.parse(response.data.data);
-          newsCache = data;
-          setNews(data);
-          return data;
-        });
+          },
+        }
+      ).then((response) => {
+        const data = NewsListResponseSchema.parse(response.data.data);
+        newsCache = data;
+        setNews(data);
+        return data;
+      });
     }
     throw fetchPromise;
   }
 
   return newsCache;
-} 
+}

@@ -4,7 +4,7 @@ export interface MarketPair {
 }
 
 export interface TickerData {
-  exchange: 'upbit' | 'binance' | 'bithumb' | 'coinone';
+  exchange: 'upbit' | 'binance' | 'bithumb' | 'coinone' | 'okx';
   baseToken: string;
   quoteToken: string;
   price: number;
@@ -26,6 +26,7 @@ export interface CoinPremiumData {
     binance?: ExchangeTickerData;
     bithumb?: ExchangeTickerData;
     coinone?: ExchangeTickerData;
+    okx?: ExchangeTickerData;
   };
 }
 

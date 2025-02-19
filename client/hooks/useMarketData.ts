@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import { calculatePriceGap } from "@/lib/format";
 import useMarketStore from "@/store/useMarketStore";
 import useMarketsStore, { KoreanMarket } from "@/store/useMarketsStore";
@@ -32,7 +32,7 @@ export function useMarketData() {
   const filteredMarkets = useMemo(() => {
     if (!coins || !exchangeRate?.rate || !markets) return [];
 
-    if (exchangePair.from === "binance") {
+    if (exchangePair.from === "binance" || exchangePair.from === "okx") {
       const list = markets?.binance.map((market) => {
         const { baseToken, quoteToken } = market;
         const fromMarketSymbol = `${baseToken}-${exchangePair.fromBase}`;

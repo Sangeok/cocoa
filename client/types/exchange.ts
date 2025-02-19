@@ -1,6 +1,6 @@
 import type { QuoteTokenValue } from "@/const/exchange";
 
-export type Exchange = "upbit" | "bithumb" | "binance" | "coinone";
+export type Exchange = "upbit" | "bithumb" | "binance" | "coinone" | "okx";
 export type QuoteToken = QuoteTokenValue;
 
 export interface ExchangePair {

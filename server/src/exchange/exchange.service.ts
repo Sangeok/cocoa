@@ -4,7 +4,12 @@ import { RedisService } from '../redis/redis.service';
 import { AppGateway } from '../gateway/app.gateway';
 import { CoinPremiumData } from '../collector/types/common.types';
 import { DrizzleClient } from '../database/database.module';
-import { upbitMarkets, bithumbMarkets, binanceMarkets } from '../database/schema/market';
+import {
+  upbitMarkets,
+  bithumbMarkets,
+  binanceMarkets,
+  okxMarkets,
+} from '../database/schema/market';
 import { PredictService } from '../predict/predict.service';
 
 @Injectable()
@@ -29,6 +34,7 @@ export class ExchangeService {
       const binanceKeys = await this.redisService.getKeys('ticker-binance-*');
       const bithumbKeys = await this.redisService.getKeys('ticker-bithumb-*');
       const coinoneKeys = await this.redisService.getKeys('ticker-coinone-*');
+      const okxKeys = await this.redisService.getKeys('ticker-okx-*');
 
       // Process Upbit data
       for (const key of upbitKeys) {
@@ -110,6 +116,26 @@ export class ExchangeService {
         };
       }
 
+      // Process Okx data
+      for (const key of okxKeys) {
+        const data = await this.redisService.get(key);
+        if (!data) continue;
+
+        const tickerData = JSON.parse(data);
+        const symbol = tickerData.baseToken;
+
+        if (!premiumData[`${symbol}-${tickerData.quoteToken}`]) {
+          premiumData[`${symbol}-${tickerData.quoteToken}`] = {};
+        }
+
+        premiumData[`${symbol}-${tickerData.quoteToken}`].okx = {
+          price: tickerData.price,
+          timestamp: tickerData.timestamp,
+          volume: tickerData.volume,
+          change24h: tickerData.change24h,
+        };
+      }
+
       // Cache the premium data
       await this.redisService.set(
         this.PREMIUM_CACHE_KEY,
@@ -133,16 +159,18 @@ export class ExchangeService {
 
   async getMarkets() {
     try {
-      const [upbitData, bithumbData, binanceData] = await Promise.all([
+      const [upbitData, bithumbData, binanceData, okxData] = await Promise.all([
         this.db.select().from(upbitMarkets),
         this.db.select().from(bithumbMarkets),
         this.db.select().from(binanceMarkets),
+        this.db.select().from(okxMarkets),
       ]);
 
       return {
         upbit: upbitData,
         bithumb: bithumbData,
         binance: binanceData,
+        okx: okxData,
       };
     } catch (error) {
       this.logger.error('Failed to get markets:', error);

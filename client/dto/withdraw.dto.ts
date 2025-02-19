@@ -57,9 +57,10 @@ export type WithdrawResponse = z.infer<typeof WithdrawResponseSchema>;
 export const KOREA_EXCHANGES = [
   { value: "upbit", label: "업비트", image: true },
   { value: "bithumb", label: "빗썸", image: true },
-  { value: "coinone", label: "코인원", image: true },
+  // { value: "coinone", label: "코인원", image: true },
 ] as const;
 
 export const GLOBAL_EXCHANGES = [
   { value: "binance", label: "바이낸스", image: true },
+  { value: "okx", label: "OKX", image: true },
 ] as const;

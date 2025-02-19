@@ -16,6 +16,7 @@ export interface CoinData {
   binance?: MarketData;
   bithumb?: MarketData;
   coinone?: MarketData;
+  okx?: MarketData;
 }
 
 interface MarketStore {

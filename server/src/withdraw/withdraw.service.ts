@@ -51,6 +51,9 @@ export class WithdrawService {
         case 'binance':
           fromFees = await this.feeClient.getBinanceFees();
           break;
+        case 'okx':
+          fromFees = await this.feeClient.getOkxFees();
+          break;
       }
 
       // Get fees for target exchange
@@ -63,6 +66,9 @@ export class WithdrawService {
           break;
         case 'binance':
           toFees = await this.feeClient.getBinanceFees();
+          break;
+        case 'okx':
+          toFees = await this.feeClient.getOkxFees();
           break;
       }
 
@@ -135,7 +141,7 @@ export class WithdrawService {
         if (fromPrice <= 0) continue;
 
         const coinAmount = amount / fromPrice;
-        
+
         // 2. 출금 수수료 계산
         const withdrawFee = await this.getWithdrawalFee(coin, from);
         const estimatedReceiveAmount = coinAmount - withdrawFee;
@@ -147,7 +153,7 @@ export class WithdrawService {
         if (toPrice <= 0) continue;
 
         const finalValueInUSD = estimatedReceiveAmount * toPrice;
-        
+
         // 4. 수수료의 원화 가치 계산
         const feeInKRW = withdrawFee * fromPrice;
         const feeRate = (feeInKRW / amount) * 100; // 수수료율 계산
@@ -168,7 +174,7 @@ export class WithdrawService {
           feeInKRW,
           exchangeRate,
           profitRate,
-          sourceAmountInKRW: amount,  // 초기 투자 금액
+          sourceAmountInKRW: amount, // 초기 투자 금액
           targetAmountInKRW: finalValueInKRW,
           fromPrice,
           toPrice,
@@ -179,7 +185,9 @@ export class WithdrawService {
           ],
         });
       } catch (error) {
-        this.logger.warn(`Failed to calculate path for ${coin}: ${error.message}`);
+        this.logger.warn(
+          `Failed to calculate path for ${coin}: ${error.message}`,
+        );
         continue;
       }
     }
@@ -286,6 +294,9 @@ export class WithdrawService {
         case 'binance':
           fees = await this.feeClient.getBinanceFees([coin]);
           break;
+        case 'okx':
+          fees = await this.feeClient.getOkxFees();
+          break;
         default:
           throw new Error(`Unsupported exchange: ${exchange}`);
       }
@@ -314,6 +325,22 @@ export class WithdrawService {
 
         // binance는 항상 USDT 마켓 사용
         const key = createTickerKey('binance', coin, 'USDT');
+        const tickerStr = await this.redisService.get(key);
+
+        if (!tickerStr) {
+          throw new Error(`No price data found for ${coin} on ${exchange}`);
+        }
+
+        const ticker = JSON.parse(tickerStr);
+        if (!ticker || typeof ticker.price !== 'number') {
+          throw new Error(`Invalid price data for ${coin} on ${exchange}`);
+        }
+
+        return ticker.price;
+      } else if (exchange === 'okx') {
+        if (coin === 'USDT') return 1;
+
+        const key = createTickerKey('okx', coin, 'USDT');
         const tickerStr = await this.redisService.get(key);
 
         if (!tickerStr) {

@@ -28,8 +28,6 @@ export class BinanceClient {
   private readonly RATE_LIMIT_WINDOW = 5 * 60 * 1000; // 5분
   private requestCount = 0;
   private lastRequestTime = Date.now();
-
-  private readonly VALID_SYMBOLS_KEY = 'valid-binance-symbols';
   private readonly TICKER_REQUEST_CHUNK_SIZE = 100; // weight 제한 고려한 청크 사이즈
 
   constructor(

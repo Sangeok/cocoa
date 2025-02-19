@@ -3,6 +3,7 @@ export const EXCHANGE_OPTIONS = [
   { value: "bithumb", label: "빗썸", image: true, url: "https://bithumb.com" },
   { value: "binance", label: "바이낸스", image: true, url: "https://binance.com" },
   { value: "coinone", label: "코인원", image: true, url: "https://coinone.com" },
+  { value: "okx", label: "OKX", image: true, url: "https://okx.com" },
 ] as const;
 
 export const BASE_TOKEN_OPTIONS = {
@@ -17,6 +18,7 @@ export const BASE_TOKEN_OPTIONS = {
   ],
   binance: [{ value: "USDT", label: "USDT", image: true }],
   coinone: [{ value: "KRW", label: "KRW", image: true }],
+  okx: [{ value: "USDT", label: "USDT", image: true }],
 } as const;
 
 

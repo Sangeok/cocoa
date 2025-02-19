@@ -11,6 +11,7 @@ import { GatewayModule } from '../gateway/gateway.module';
 import { BinanceClient } from './clients/binance.client';
 import { FeeClient } from './clients/fee.client';
 import { BithumbWebsocketClient } from './clients/bithumb-websocket.client';
+import { OKXClient } from './clients/okx.client';
 
 @Module({
   imports: [ScheduleModule.forRoot(), DatabaseModule, GatewayModule],
@@ -23,8 +24,15 @@ import { BithumbWebsocketClient } from './clients/bithumb-websocket.client';
     MarketCodesService,
     BinanceClient,
     FeeClient,
+    OKXClient,
     BithumbWebsocketClient,
   ],
-  exports: [UpbitClient, UpbitWebsocketClient, BinanceClient, BithumbWebsocketClient],
+  exports: [
+    UpbitClient,
+    UpbitWebsocketClient,
+    BinanceClient,
+    OKXClient,
+    BithumbWebsocketClient,
+  ],
 })
 export class CollectorModule {}
