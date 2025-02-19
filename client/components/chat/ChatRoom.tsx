@@ -1,7 +1,6 @@
 import { Tab } from "@headlessui/react";
 import ChatMessageList from "./ChatMessageList";
 import ChatInput from "./ChatInput";
-import { CoinTalkMessageData, GlobalChatMessageData } from "@/types/chat";
 import clsx from "clsx";
 import { useChatRoom } from "@/hooks/useChat";
 
@@ -55,7 +54,7 @@ export default function ChatRoom({ symbol, symbolKoreanName }: ChatRoomProps) {
               )
             }
           >
-            {(symbolKoreanName)} 채팅방
+            {symbolKoreanName} 채팅방
           </Tab>
         </Tab.List>
         <Tab.Panels>

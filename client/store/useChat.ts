@@ -1,11 +1,13 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import useAuthStore from './useAuthStore';
 
 interface ChatStore {
   nickname: string;
   setNickname: (nickname: string) => void;
   validateNickname: (nickname: string) => boolean;
   generateRandomNickname: () => string;
+  getCurrentNickname: () => string;
 }
 
 const generateRandomNickname = () => {
@@ -21,7 +23,7 @@ const validateNickname = (nickname: string) => {
 
 const useChat = create<ChatStore>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       nickname: generateRandomNickname(),
       setNickname: (newNickname: string) => {
         if (validateNickname(newNickname)) {
@@ -30,6 +32,12 @@ const useChat = create<ChatStore>()(
       },
       validateNickname,
       generateRandomNickname,
+      getCurrentNickname: () => {
+        const authStore = useAuthStore.getState();
+        return authStore.isAuthenticated && authStore.user
+          ? authStore.user.name
+          : get().nickname;
+      },
     }),
     {
       name: 'chat-storage',

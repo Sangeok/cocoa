@@ -88,4 +88,4 @@ export default function CoinPageContent({ symbol }: { symbol: string }) {
       />
     </div>
   );
-} 
+}

@@ -8,14 +8,14 @@ import { CoinTalkMessageData, GlobalChatMessageData } from "@/types/chat";
 import useChat from "@/store/useChat";
 
 export function useChatRoom(symbol: string) {
-  const { nickname, setNickname, validateNickname } = useChat();
+  const { getCurrentNickname, setNickname, validateNickname } = useChat();
   const [globalMessages, setGlobalMessages] = useState<GlobalChatMessageData[]>([]);
   const [coinMessages, setCoinMessages] = useState<CoinTalkMessageData[]>([]);
   const [pendingMessages, setPendingMessages] = useState<Set<number>>(new Set());
   const [inputMessage, setInputMessage] = useState("");
   const [selectedChat, setSelectedChat] = useState<"global" | "coin">("global");
   const [isNicknameModalOpen, setIsNicknameModalOpen] = useState(false);
-  const [newNickname, setNewNickname] = useState(nickname);
+  const [newNickname, setNewNickname] = useState(getCurrentNickname());
 
   useEffect(() => {
     // 초기 메시지 로드
@@ -78,7 +78,7 @@ export function useChatRoom(symbol: string) {
     const baseMessageData = {
       message: message.trim(),
       timestamp,
-      nickname,
+      nickname: getCurrentNickname(),
     };
 
     if (selectedChat === "global") {
@@ -113,7 +113,7 @@ export function useChatRoom(symbol: string) {
     selectedChat,
     isNicknameModalOpen,
     newNickname,
-    nickname,
+    nickname: getCurrentNickname(),
     setInputMessage,
     setSelectedChat,
     setIsNicknameModalOpen,

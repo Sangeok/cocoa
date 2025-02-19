@@ -2,13 +2,14 @@
 
 import { useRouter } from "next/navigation";
 import useAuthStore from "@/store/useAuthStore";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { ClientAPICall } from "@/lib/axios";
 import toast from "react-hot-toast";
 import { API_ROUTES } from "@/const/api";
 import useMarketStore from "@/store/useMarketStore";
 import clsx from "clsx";
-import { formatNumber } from "@/lib/format";
+import { formatDollar } from "@/lib/format";
+import { createChart, Time, AreaSeries } from "lightweight-charts";
 
 interface PredictLog {
   id: number;
@@ -21,6 +22,11 @@ interface PredictLog {
   leverage: number;
   entryAt: string;
   exitAt: string;
+}
+
+interface ProfitData {
+  time: Time;
+  value: number;
 }
 
 export default function ProfilePage() {
@@ -42,6 +48,8 @@ export default function ProfilePage() {
     ? new Date(user.predict.lastCheckInAt).toDateString() !==
       new Date().toDateString()
     : true;
+  const chartContainerRef = useRef<HTMLDivElement>(null);
+  const [profitData, setProfitData] = useState<ProfitData[]>([]);
 
   const handleLogout = () => {
     logout();
@@ -188,6 +196,91 @@ export default function ProfilePage() {
     }
   };
 
+  const calculateProfitData = useCallback((logs: PredictLog[]) => {
+    let runningProfit = 0;
+    return logs
+      .sort((a, b) => {
+        const timeA = new Date(a.exitAt).getTime();
+        const timeB = new Date(b.exitAt).getTime();
+        if (timeA === timeB) {
+          return a.id - b.id; // 같은 시간일 경우 ID로 정렬
+        }
+        return timeA - timeB;
+      })
+      .map((log) => {
+        const pnl =
+          ((log.closePrice - log.entryPrice) / log.entryPrice) *
+          100 *
+          log.leverage;
+        const profit =
+          log.position === "L"
+            ? (pnl * log.deposit) / 100
+            : (-1 * pnl * log.deposit) / 100;
+        runningProfit += profit;
+
+        return {
+          time: (new Date(log.exitAt).getTime() / 1000) as Time,
+          value: runningProfit,
+        };
+      });
+  }, []);
+
+  useEffect(() => {
+    if (predictLogs.length > 0) {
+      const newProfitData = calculateProfitData(predictLogs);
+      setProfitData(newProfitData);
+    }
+  }, [predictLogs, calculateProfitData]);
+
+  useEffect(() => {
+    if (!chartContainerRef.current || profitData.length === 0) return;
+
+    const chart = createChart(chartContainerRef.current, {
+      layout: {
+        background: { color: "transparent" },
+        textColor: "#D1D5DB",
+      },
+      grid: {
+        vertLines: { color: "#2D3748" },
+        horzLines: { color: "#2D3748" },
+      },
+      width: chartContainerRef.current.clientWidth,
+      height: 300,
+    });
+
+    const areaSeries = chart.addSeries(AreaSeries, {
+      lineWidth: 2,
+      topColor: "#10B981",
+      bottomColor: "#EF4444",
+      lineColor: "#888888",
+      crosshairMarkerBackgroundColor: "#10B981",
+      crosshairMarkerBorderColor: "#10B981",
+      lastValueVisible: true,
+      priceLineVisible: false,
+      baseLineColor: "#888888",
+      baseLineWidth: 1,
+      baseLineVisible: true,
+    });
+
+    areaSeries.setData(profitData);
+    chart.timeScale().fitContent();
+
+    const handleResize = () => {
+      if (chartContainerRef.current) {
+        chart.applyOptions({
+          width: chartContainerRef.current.clientWidth,
+        });
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      chart.remove();
+    };
+  }, [profitData]);
+
   if (!isAuthenticated || !user) {
     router.push("/signin");
     return null;
@@ -205,7 +298,7 @@ export default function ProfilePage() {
                 </h3>
                 <div className="mt-4 space-y-1">
                   <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                    $ {formatNumber(user?.predict.vault)}
+                    $ {formatDollar(user?.predict.vault)}
                   </div>
                   <div className="text-sm text-gray-500">
                     ≈{" "}
@@ -408,6 +501,7 @@ export default function ProfilePage() {
                   예측 기록이 없습니다.
                 </div>
               )}
+              <div ref={chartContainerRef} className="w-full h-[300px]" />
               {predictLogs.map((log) => {
                 const pnl =
                   ((log.closePrice - log.entryPrice) / log.entryPrice) *
@@ -449,21 +543,19 @@ export default function ProfilePage() {
                             : "text-red-500"
                         }`}
                       >
-                        $
-                        {formatNumber(
+                        {formatDollar(
                           (log.position === "S"
                             ? -1 * pnl * log.deposit
                             : pnl * log.deposit) / 100
                         )}
                         (
-                        {(log.position === "L" && isProfit) ||
-                        (log.position === "S" && !isProfit)
-                          ? `+${(-1 * pnl).toFixed(2)}%`
-                          : `${pnl.toFixed(2)}%`}
+                        {log.position === "L"
+                          ? `${pnl.toFixed(2)}%`
+                          : `${(-1 * pnl).toFixed(2)}%`}
                         )
                       </div>
                       <div className="text-sm text-gray-500">
-                        {log.leverage}배 · ${formatNumber(log.deposit)}
+                        {log.leverage}배 · {formatDollar(log.deposit)}
                       </div>
                     </div>
                   </div>

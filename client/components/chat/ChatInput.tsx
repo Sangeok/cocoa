@@ -1,4 +1,5 @@
 import { PencilIcon } from "@heroicons/react/24/outline";
+import useAuthStore from "@/store/useAuthStore";
 
 interface ChatInputProps {
   inputMessage: string;
@@ -16,18 +17,21 @@ export default function ChatInput({
   onEditNickname,
 }: ChatInputProps) {
   const MAX_MESSAGE_LENGTH = 100;
+  const { isAuthenticated } = useAuthStore();
 
   return (
     <div>
       <div className="px-4 py-2 border-t border-gray-200 dark:border-gray-800 flex items-center justify-between">
         <div className="text-sm text-gray-600 dark:text-gray-400 flex items-center gap-2">
           <span>닉네임: {nickname}</span>
-          <button
-            onClick={onEditNickname}
-            className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full"
-          >
-            <PencilIcon className="h-4 w-4" />
-          </button>
+          {!isAuthenticated && (
+            <button
+              onClick={onEditNickname}
+              className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full"
+            >
+              <PencilIcon className="h-4 w-4" />
+            </button>
+          )}
         </div>
         <div className="text-xs text-gray-500">
           {inputMessage.length}/{MAX_MESSAGE_LENGTH}

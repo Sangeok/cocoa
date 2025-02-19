@@ -189,6 +189,13 @@ export function formatNumber(num: number): string {
   return new Intl.NumberFormat("ko-KR").format(num);
 }
 
+export function formatDollar(num: number): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  }).format(num);
+}
+
 /**
  * 가격을 포맷팅합니다.
  * @param price 포맷팅할 가격
