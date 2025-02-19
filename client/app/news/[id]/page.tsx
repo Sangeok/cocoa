@@ -15,7 +15,8 @@ interface NewsPageProps {
 // 동적 메타데이터 생성
 export async function generateMetadata({ params }: NewsPageProps): Promise<Metadata> {
   try {
-    const url = API_ROUTES.NEWS.READ.url.replace(":id", params.id)
+    const { id } = await params
+    const url = API_ROUTES.NEWS.READ.url.replace(":id", id)
     const response = await ServerAPICall.get(url)
     const newsData: NewsResponse = response.data.data[0]
 
