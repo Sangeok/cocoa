@@ -169,7 +169,7 @@ export default function PredictPage() {
             <div className="p-4">
               {rankings ? (
                 <div className="space-y-2">
-                  {rankingComponents[currentRankingIndex]?.map(
+                  {rankingComponents[currentRankingIndex]?.slice(0, 10).map(
                     (rank, index) => (
                       <div
                         key={rank.userId}

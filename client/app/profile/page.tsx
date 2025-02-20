@@ -298,7 +298,7 @@ export default function ProfilePage() {
                 </h3>
                 <div className="mt-4 space-y-1">
                   <div className="text-2xl font-bold text-gray-900 dark:text-white">
-                    $ {formatDollar(user?.predict.vault)}
+                    {formatDollar(user?.predict.vault)}
                   </div>
                   <div className="text-sm text-gray-500">
                     ≈{" "}
