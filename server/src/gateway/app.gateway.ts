@@ -13,8 +13,9 @@ import { ChatService } from '../chat/chat.service';
 import { Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Socket } from 'socket.io';
-import cookie from 'cookie';
 import { MessageBody, ConnectedSocket } from '@nestjs/websockets';
+import { PredictService } from '../predict/predict.service';
+import { Interval } from '@nestjs/schedule';
 
 config();
 
@@ -45,6 +46,7 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private readonly chatService: ChatService,
     private readonly jwtService: JwtService,
+    private readonly predictService: PredictService,
   ) {}
 
   private readonly logger = new Logger(AppGateway.name);
@@ -142,5 +144,31 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     }
 
     return messageData;
+  }
+
+  @Interval(1000) // 1초마다 실행
+  async emitLongShortRatios() {
+    try {
+      // 전체 롱숏 비율
+      const globalRatio = await this.predictService.getGlobalLongShortRatio();
+      this.server.emit('global-long-short-ratio', globalRatio);
+
+      // 주요 마켓별 롱숏 비율
+      const markets = [
+        'BTC-KRW', 'ETH-KRW', 'XRP-KRW', 
+        'BTC-USDT', 'ETH-USDT', 'XRP-USDT'
+      ];
+
+      const marketRatios = await Promise.all(
+        markets.map(async (market) => {
+          const ratio = await this.predictService.getMarketLongShortRatio(market);
+          return { market, ...ratio };
+        })
+      );
+
+      this.server.emit('market-long-short-ratios', marketRatios);
+    } catch (error) {
+      this.logger.error('Failed to emit long/short ratios:', error);
+    }
   }
 }

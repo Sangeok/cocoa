@@ -3,11 +3,9 @@ import { RedisService } from '../redis/redis.service';
 import { DrizzleClient } from '../database/database.module';
 import { predicts } from '../database/schema/predict';
 import { eq, sql, desc } from 'drizzle-orm';
-import { AppGateway } from '../gateway/app.gateway';
 import { users } from '../database/schema/user';
 import { predictLogs } from '../database/schema/predict-log';
 import { NewPredictLog } from '../database/schema/predict-log';
-
 export interface PredictData {
   market: string;
   exchange: 'upbit' | 'bithumb' | 'binance' | 'coinone';
@@ -32,6 +30,14 @@ export interface PredictResult {
   vault: number;
 }
 
+interface LongShortRatio {
+  long: number;
+  short: number;
+  total: number;
+  longPercent: number;
+  shortPercent: number;
+}
+
 @Injectable()
 export class PredictService {
   private readonly logger = new Logger(PredictService.name);
@@ -39,7 +45,6 @@ export class PredictService {
   constructor(
     private readonly redisService: RedisService,
     @Inject('DATABASE') private readonly db: typeof DrizzleClient,
-    private readonly appGateway: AppGateway,
   ) {}
 
   async createPredict(
@@ -127,6 +132,16 @@ export class PredictService {
           lastPredictAt: new Date(),
         })
         .where(eq(predicts.userId, userId));
+
+      // Update long/short ratio for the market
+      const ratioKey = `market-long-short-ratio-${market}`;
+      const existingRatio = await this.redisService.get(ratioKey);
+      let ratio = existingRatio ? JSON.parse(existingRatio) : { long: 0, short: 0 };
+      
+      if (position === 'L') ratio.long++;
+      if (position === 'S') ratio.short++;
+      
+      await this.redisService.set(ratioKey, JSON.stringify(ratio));
 
       // If database operations succeed, store prediction in Redis
       await this.redisService.set(
@@ -217,10 +232,26 @@ export class PredictService {
             `Updated vault for user ${userId}: ${updatedVault}`,
           );
 
+          // Update long/short ratio for the market
+          const ratioKey = `market-long-short-ratio-${predict.market}`;
+          const existingRatio = await this.redisService.get(ratioKey);
+          if (existingRatio) {
+            const ratio = JSON.parse(existingRatio);
+            if (predict.position === 'L') ratio.long--;
+            if (predict.position === 'S') ratio.short--;
+            
+            // 만약 모든 포지션이 종료되면 키 삭제
+            if (ratio.long === 0 && ratio.short === 0) {
+              await this.redisService.del(ratioKey);
+            } else {
+              await this.redisService.set(ratioKey, JSON.stringify(ratio));
+            }
+          }
+
           await this.redisService.del(key);
 
           // Emit result with liquidation info
-          this.appGateway.server.emit(`predict-result-${userId}`, {
+          this.emitPredictResult(userId, {
             isWin,
             isDraw: !isLiquidated && priceChange === 0,
             isLiquidated,
@@ -231,7 +262,7 @@ export class PredictService {
             leverage: predict.leverage,
             deposit: predict.deposit,
             vault: updatedVault,
-          } satisfies PredictResult);
+          });
         }
       }
     } catch (error) {
@@ -395,5 +426,62 @@ export class PredictService {
       .innerJoin(users, eq(predicts.userId, users.id))
       .orderBy(desc(predicts.vault))
       .limit(100);
+  }
+
+  async getGlobalLongShortRatio(): Promise<LongShortRatio> {
+    const ratioKeys = await this.redisService.getKeys('market-long-short-ratio-*');
+    let totalLong = 0;
+    let totalShort = 0;
+
+    for (const key of ratioKeys) {
+      const ratio = await this.redisService.get(key);
+      if (!ratio) continue;
+      
+      const { long, short } = JSON.parse(ratio);
+      totalLong += long;
+      totalShort += short;
+    }
+
+    const total = totalLong + totalShort;
+    return {
+      long: totalLong,
+      short: totalShort,
+      total,
+      longPercent: total > 0 ? (totalLong / total) * 100 : 0,
+      shortPercent: total > 0 ? (totalShort / total) * 100 : 0,
+    };
+  }
+
+  async getMarketLongShortRatio(market: string): Promise<LongShortRatio> {
+    const ratioKey = `market-long-short-ratio-${market}`;
+    const ratio = await this.redisService.get(ratioKey);
+    
+    if (!ratio) return {
+      long: 0,
+      short: 0,
+      total: 0,
+      longPercent: 0,
+      shortPercent: 0,
+    };
+
+    const { long, short } = JSON.parse(ratio);
+    const total = long + short;
+    
+    return {
+      long,
+      short,
+      total,
+      longPercent: total > 0 ? (long / total) * 100 : 0,
+      shortPercent: total > 0 ? (short / total) * 100 : 0,
+    };
+  }
+
+  private async emitPredictResult(userId: number, result: PredictResult) {
+    // Redis에 결과 저장
+    await this.redisService.set(
+      `predict-result-${userId}`,
+      JSON.stringify(result),
+      5 // 5초 후 만료
+    );
   }
 }

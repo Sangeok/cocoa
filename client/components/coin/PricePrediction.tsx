@@ -20,11 +20,54 @@ import { PredictResult } from "@/types/predict";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { ClientAPICall } from "@/lib/axios";
 import { API_ROUTES } from "@/const/api";
+import useLongShortStore from '@/store/useLongShort';
 
 interface PricePredictionProps {
   symbol: string;
   coins: Record<string, CoinData>;
 }
+
+const MarketLongShortRatio = ({ symbol }: { symbol: string }) => {
+  const { marketRatios, initializeSocket } = useLongShortStore();
+  const ratio = marketRatios[symbol];
+
+  useEffect(() => {
+    initializeSocket();
+  }, [initializeSocket]);
+
+  if (!ratio) return null;
+
+  return (
+    <div className="space-y-2 mt-4">
+      <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+        실시간 포지션 ({ratio.total})
+      </div>
+      <div className="flex items-center justify-between mb-2">
+        <div className="text-sm font-medium">
+          <span className="text-green-500">롱 {ratio.longPercent.toFixed(1)}%</span>
+          <span className="mx-2 text-gray-400">|</span>
+          <span className="text-red-500">숏 {ratio.shortPercent.toFixed(1)}%</span>
+        </div>
+      </div>
+      <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden flex">
+        <div
+          className="h-full bg-green-500"
+          style={{
+            width: `${ratio.longPercent}%`,
+            transition: 'width 0.3s ease-in-out'
+          }}
+        />
+        <div
+          className="h-full bg-red-500"
+          style={{
+            width: `${ratio.shortPercent}%`,
+            transition: 'width 0.3s ease-in-out'
+          }}
+        />
+      </div>
+    </div>
+  );
+};
 
 export default function PricePrediction({
   symbol,
@@ -526,6 +569,9 @@ export default function PricePrediction({
             </span>
           </div>
         </div>
+
+        {/* Move MarketLongShortRatio here */}
+        <MarketLongShortRatio symbol={symbol} />
       </div>
     </div>
   );

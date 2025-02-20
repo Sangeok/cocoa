@@ -12,6 +12,7 @@ import EventBanner from "@/components/event/EventBanner";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import { useSwipeable } from "react-swipeable";
 import useAuthStore from "@/store/useAuthStore";
+import useLongShortStore from '@/store/useLongShort';
 
 interface Ranking {
   userId: number;
@@ -45,6 +46,52 @@ const RankingSkeleton = () => (
     ))}
   </div>
 );
+
+const LongShortRatioSection = () => {
+  const { globalRatio, initializeSocket } = useLongShortStore();
+
+  useEffect(() => {
+    initializeSocket();
+  }, [initializeSocket]);
+
+  return (
+    <div className="bg-white dark:bg-gray-950 rounded-xl shadow-xl border border-gray-200 dark:border-gray-800 mt-6">
+      <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-800">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+          실시간 롱/숏 포지션
+        </h2>
+      </div>
+      <div className="p-4">
+        <div className="flex items-center justify-between mb-2">
+          <div className="text-sm text-gray-600 dark:text-gray-400">
+            전체 포지션: {globalRatio.total}
+          </div>
+          <div className="text-sm font-medium">
+            <span className="text-green-500">롱 {globalRatio.longPercent.toFixed(1)}%</span>
+            <span className="mx-2 text-gray-400">|</span>
+            <span className="text-red-500">숏 {globalRatio.shortPercent.toFixed(1)}%</span>
+          </div>
+        </div>
+        <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden flex">
+          <div
+            className="h-full bg-green-500"
+            style={{
+              width: `${globalRatio.longPercent}%`,
+              transition: 'width 0.3s ease-in-out'
+            }}
+          />
+          <div
+            className="h-full bg-red-500"
+            style={{
+              width: `${globalRatio.shortPercent}%`,
+              transition: 'width 0.3s ease-in-out'
+            }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default function PredictPage() {
   const [rankings, setRankings] = useState<Rankings | null>(null);
@@ -168,7 +215,7 @@ export default function PredictPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <section className="mb-12 flex gap-6 lg:flex-row flex-col">
-        <EventBanner />
+        <EventBanner className="lg:w-1/3 w-full h-[400px] object-contain" />
         <div className="lg:w-2/3 w-full" {...handlers}>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold">
@@ -244,6 +291,7 @@ export default function PredictPage() {
               </div>
             </div>
           </div>
+          <LongShortRatioSection />
         </div>
       </section>
 

@@ -13,7 +13,7 @@ export default function ChatMessageList({
   pendingMessages,
 }: ChatMessageListProps) {
   return (
-    <div className="flex-1 overflow-y-auto p-2 flex flex-col-reverse h-[500px]">
+    <div className="flex-1 overflow-y-auto p-2 flex flex-col-reverse h-[385px]">
       {messages.map((msg, i) => (
         <ChatMessage
           key={msg.timestamp + i}
