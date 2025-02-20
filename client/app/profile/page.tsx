@@ -198,7 +198,9 @@ export default function ProfilePage() {
   useEffect(() => {
     const fetchRankings = async () => {
       try {
-        const response = await ClientAPICall.get(API_ROUTES.PREDICT.RANKINGS.url);
+        const response = await ClientAPICall.get(
+          API_ROUTES.PREDICT.RANKINGS.url
+        );
         if (response.data.success) {
           setRankings(response.data.data);
         }
@@ -214,9 +216,13 @@ export default function ProfilePage() {
 
   const getUserRanking = () => {
     if (!rankings || !user) return null;
-    const vaultIndex = rankings.mostVault.findIndex(r => r.userId === user.id);
-    const winsIndex = rankings.mostWins.findIndex(r => r.userId === user.id);
-    const winRateIndex = rankings.bestWinRate.findIndex(r => r.userId === user.id);
+    const vaultIndex = rankings.mostVault.findIndex(
+      (r) => r.userId === user.id
+    );
+    const winsIndex = rankings.mostWins.findIndex((r) => r.userId === user.id);
+    const winRateIndex = rankings.bestWinRate.findIndex(
+      (r) => r.userId === user.id
+    );
 
     return {
       vault: vaultIndex === -1 ? "100+" : `${vaultIndex + 1}`,
@@ -255,7 +261,7 @@ export default function ProfilePage() {
                   </div>
                   {rankings && (
                     <div className="mt-3 flex items-center gap-4 text-sm">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 shrink-0">
                         <span className="text-blue-600 dark:text-blue-400">
                           자산 순위
                         </span>
@@ -263,7 +269,7 @@ export default function ProfilePage() {
                           {getUserRanking()?.vault}위
                         </span>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 shrink-0">
                         <span className="text-green-600 dark:text-green-400">
                           승리 순위
                         </span>
@@ -271,7 +277,7 @@ export default function ProfilePage() {
                           {getUserRanking()?.wins}위
                         </span>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 shrink-0">
                         <span className="text-purple-600 dark:text-purple-400">
                           승률 순위
                         </span>
@@ -353,7 +359,7 @@ export default function ProfilePage() {
                       </button>
                     </div>
                   ) : (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 sh">
                       <span className="text-gray-900 dark:text-white">
                         {user?.name}
                       </span>
@@ -433,7 +439,7 @@ export default function ProfilePage() {
                       </button>
                     </div>
                   ) : (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 sh">
                       <span className="text-gray-900 dark:text-white">
                         {user?.phoneNumber || "미등록"}
                       </span>
@@ -468,7 +474,7 @@ export default function ProfilePage() {
             </h3>
 
             <div className="overflow-x-auto">
-              <div className="space-y-4 min-w-[600px]">
+              <div className="space-y-4">
                 {!hasMore && predictLogs.length === 0 && (
                   <div className="text-gray-500 dark:text-gray-400">
                     예측 기록이 없습니다.
@@ -487,14 +493,14 @@ export default function ProfilePage() {
                       className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 rounded-lg gap-2"
                     >
                       <div className="flex flex-col gap-1">
-                        <div className="flex items-center gap-2">
-                          <div className="px-2 py-1 rounded-lg bg-gray-200 dark:bg-gray-800 text-sm">
+                        <div className="flex items-center gap-2 shrink-0 flex-wrap">
+                          <div className="px-2 py-1 rounded-lg bg-gray-200 dark:bg-gray-800 text-sm shrink-0">
                             {log.position === "L" ? "LONG" : "SHORT"}
                           </div>
-                          <span className="text-gray-900 dark:text-white font-medium">
+                          <span className="text-gray-900 dark:text-white font-medium truncate">
                             {log.market}
                           </span>
-                          <span className="text-sm text-gray-500">
+                          <span className="text-sm text-gray-500 shrink-0">
                             {log.exchange}
                           </span>
                         </div>
@@ -508,7 +514,7 @@ export default function ProfilePage() {
                       </div>
                       <div className="flex flex-col items-end gap-1">
                         <div
-                          className={`font-medium ${
+                          className={`font-medium whitespace-nowrap ${
                             (log.position === "L" && isProfit) ||
                             (log.position === "S" && !isProfit)
                               ? "text-green-500"
@@ -526,7 +532,7 @@ export default function ProfilePage() {
                             : `${(-1 * pnl).toFixed(2)}%`}
                           )
                         </div>
-                        <div className="text-sm text-gray-500">
+                        <div className="text-sm text-gray-500 whitespace-nowrap">
                           {log.leverage}배 · {formatDollar(log.deposit)}
                         </div>
                       </div>
