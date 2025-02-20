@@ -61,7 +61,7 @@ export default function PredictPage() {
     onSwipedLeft: () => handleNext(),
     onSwipedRight: () => handlePrev(),
     preventScrollOnSwipe: true,
-    trackMouse: true
+    trackMouse: true,
   });
 
   const handlePrev = () => {
@@ -110,7 +110,10 @@ export default function PredictPage() {
     }
   };
 
-  const getRankingContent = (rank: Ranking, type: "vault" | "wins" | "winRate") => {
+  const getRankingContent = (
+    rank: Ranking,
+    type: "vault" | "wins" | "winRate"
+  ) => {
     switch (type) {
       case "vault":
         return (
@@ -166,29 +169,31 @@ export default function PredictPage() {
             <div className="p-4">
               {rankings ? (
                 <div className="space-y-2">
-                  {rankingComponents[currentRankingIndex]?.map((rank, index) => (
-                    <div
-                      key={rank.userId}
-                      className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-6 text-center font-medium">
-                          {getRankIcon(index)}
+                  {rankingComponents[currentRankingIndex]?.map(
+                    (rank, index) => (
+                      <div
+                        key={rank.userId}
+                        className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-6 text-center font-medium">
+                            {getRankIcon(index)}
+                          </div>
+                          <div>{rank.name}</div>
                         </div>
-                        <div>{rank.name}</div>
+                        <div className="text-sm">
+                          {getRankingContent(
+                            rank,
+                            currentRankingIndex === 0
+                              ? "vault"
+                              : currentRankingIndex === 1
+                              ? "wins"
+                              : "winRate"
+                          )}
+                        </div>
                       </div>
-                      <div className="text-sm">
-                        {getRankingContent(
-                          rank,
-                          currentRankingIndex === 0
-                            ? "vault"
-                            : currentRankingIndex === 1
-                            ? "wins"
-                            : "winRate"
-                        )}
-                      </div>
-                    </div>
-                  ))}
+                    )
+                  )}
                 </div>
               ) : (
                 <RankingSkeleton />
@@ -230,13 +235,3 @@ export default function PredictPage() {
     </div>
   );
 }
-
-export const metadata = {
-  title: "가격 예측 | 코코아",
-  description: "암호화폐 가격 예측에 참여하고 랭킹을 확인해보세요.",
-  openGraph: {
-    title: "가격 예측 | 코코아",
-    description: "암호화폐 가격 예측에 참여하고 랭킹을 확인해보세요.",
-    images: ["/icons/og.png"],
-  },
-};
