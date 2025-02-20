@@ -136,7 +136,7 @@ export default function MarketTicker() {
           <Link
             href="https://www.google.com/finance/quote/USD-KRW"
             target="_blank"
-            className="px-4 py-1 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors border-b border-gray-200 dark:border-gray-900"
+            className="px-4 py-0.5 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors border-b border-gray-200 dark:border-gray-900"
           >
             <span className="text-sm text-gray-600 dark:text-gray-400">
               💹 환율:{" "}
@@ -146,7 +146,7 @@ export default function MarketTicker() {
           <Link
             href="https://hangang.life/"
             target="_blank"
-            className="px-4 py-1 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors text-sm text-gray-600 dark:text-gray-400"
+            className="px-4 py-0.5 hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors text-sm text-gray-600 dark:text-gray-400"
           >
             🌡️ 한강 수온:
             <span className={getTemperatureColor(hangangTemp)}>
@@ -165,7 +165,7 @@ export default function MarketTicker() {
           onMouseUp={handleMouseUp}
           onMouseMove={handleMouseMove}
         >
-          <div className="inline-block whitespace-nowrap py-2">
+          <div className="inline-block whitespace-nowrap pt-2">
             {krwMarketPrices.map((coin) => (
               <CoinItem key={coin.symbol} coin={coin} />
             ))}

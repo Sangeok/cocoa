@@ -13,7 +13,7 @@ import { ChatModule } from './chat/chat.module';
 import { GatewayModule } from './gateway/gateway.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
-
+import { YieldModule } from './yield/yield.module';
 @Module({
   imports: [
     ConfigModule,
@@ -28,6 +28,7 @@ import { AuthModule } from './auth/auth.module';
     ChatModule,
     UserModule,
     AuthModule,
+    YieldModule,
   ],
   controllers: [AppController],
   providers: [AppService],

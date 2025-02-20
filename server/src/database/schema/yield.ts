@@ -1,0 +1,40 @@
+import { pgTable, text, numeric, timestamp, boolean, uuid } from 'drizzle-orm/pg-core';
+
+export const yields = pgTable('yields', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  chain: text('chain').notNull(),
+  project: text('project').notNull(),
+  symbol: text('symbol').notNull(),
+  tvlUsd: numeric('tvl_usd').notNull(),
+  apyBase: numeric('apy_base'),
+  apyReward: numeric('apy_reward'),
+  apy: numeric('apy'),
+  rewardTokens: text('reward_tokens').array(),
+  pool: uuid('pool'),
+  apyPct1D: numeric('apy_pct_1d'),
+  apyPct7D: numeric('apy_pct_7d'),
+  apyPct30D: numeric('apy_pct_30d'),
+  stablecoin: boolean('stablecoin').notNull(),
+  ilRisk: text('il_risk'),
+  exposure: text('exposure'),
+  predictedClass: text('predicted_class'),
+  predictedProbability: numeric('predicted_probability'),
+  binnedConfidence: numeric('binned_confidence'),
+  poolMeta: text('pool_meta'),
+  mu: numeric('mu'),
+  sigma: numeric('sigma'),
+  count: numeric('count'),
+  outlier: boolean('outlier').notNull(),
+  underlyingTokens: text('underlying_tokens').array(),
+  il7d: numeric('il_7d'),
+  apyBase7d: numeric('apy_base_7d'),
+  apyMean30d: numeric('apy_mean_30d'),
+  volumeUsd1d: numeric('volume_usd_1d'),
+  volumeUsd7d: numeric('volume_usd_7d'),
+  apyBaseInception: numeric('apy_base_inception'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+});
+
+export type Yield = typeof yields.$inferSelect;
+export type NewYield = typeof yields.$inferInsert;

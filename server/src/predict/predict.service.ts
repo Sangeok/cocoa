@@ -267,7 +267,7 @@ export class PredictService {
         sql`(${predicts.wins} + ${predicts.losses} + ${predicts.draws}) > 0`,
       ) // 최소 1게임 이상
       .orderBy(desc(predicts.wins))
-      .limit(10);
+      .limit(100);
   }
 
   async getBestWinRateRanking() {
@@ -290,7 +290,7 @@ export class PredictService {
           sql`CAST(${predicts.wins} AS FLOAT) / NULLIF((${predicts.wins} + ${predicts.losses} + ${predicts.draws}), 0)`,
         ),
       )
-      .limit(10);
+      .limit(100);
   }
 
   async getPredictLogs(userId: number, page: number = 1, limit: number = 20) {
@@ -394,6 +394,6 @@ export class PredictService {
       .from(predicts)
       .innerJoin(users, eq(predicts.userId, users.id))
       .orderBy(desc(predicts.vault))
-      .limit(10);
+      .limit(100);
   }
 }

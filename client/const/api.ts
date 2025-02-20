@@ -107,4 +107,14 @@ export const API_ROUTES = {
       method: "GET",
     },
   },
+  YIELDS: {
+    GET: {
+      url: "/yields",
+      method: "GET",
+    },
+    PROJECT: {
+      url: "/yields/project/:name",
+      method: "GET",
+    },
+  },
 } as const;

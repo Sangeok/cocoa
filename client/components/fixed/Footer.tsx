@@ -2,8 +2,12 @@
 
 import Link from "next/link";
 import Logo from "@/components/common/Logo";
+import { UserGroupIcon } from "@heroicons/react/24/outline";
+import useActiveUsersStore from "@/store/useActiveUsersStore";
 
 export default function Footer() {
+  const { count: activeUsers } = useActiveUsersStore();
+
   return (
     <footer className="bg-white dark:bg-gray-950 border-t border-gray-200 dark:border-gray-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
@@ -22,6 +26,12 @@ export default function Footer() {
 
           {/* Right side links and copyright */}
           <div className="flex flex-col space-y-4 md:items-end">
+            {/* Active Users */}
+            <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+              <UserGroupIcon className="h-4 w-4 mr-1" />
+              <span>현재 접속자: {activeUsers.toLocaleString()}명</span>
+            </div>
+
             {/* Links */}
             <div className="flex space-x-4">
               <Link

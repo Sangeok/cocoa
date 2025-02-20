@@ -2,14 +2,14 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "제 1회 코코아 가격 예측 대회 | CoinCoin",
+  title: "제 1회 코코아 가격 예측 대회 | 코코아",
   description:
-    "코인코인에서 진행하는 가격 예측 대회! 치킨과 커피를 받아가세요.",
+    "코코아에서 진행하는 가격 예측 대회! 치킨과 커피를 받아가세요.",
   openGraph: {
     title: "제 1회 코코아 가격 예측 대회",
     description:
-      "코인코인에서 진행하는 가격 예측 대회! 치킨과 커피를 받아가세요.",
-    images: ["/images/event-banner.png"], // 이벤트 배너 이미지 필요
+      "코코아에서 진행하는 가격 예측 대회! 치킨과 커피를 받아가세요.",
+    images: ["/images/event-banner.png"],
   },
 };
 

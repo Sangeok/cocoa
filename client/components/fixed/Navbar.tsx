@@ -8,7 +8,6 @@ import {
   Bars3Icon,
   SunIcon,
   MoonIcon,
-  UserGroupIcon,
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
 import { clsx } from "clsx";
@@ -25,14 +24,16 @@ const navigation = [
   { name: "송금 계산기", href: "/withdraw" },
   { name: "국내 KOL 목록", href: "/kol" },
   { name: "컨트랙트 스캐너", href: "/scanner" },
+  { name: "DeFi 수익률", href: "/defi" },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
-  const { count: activeUsers, initializeSocket } = useActiveUsersStore();
+  const { initializeSocket } = useActiveUsersStore();
   const { user, isAuthenticated } = useAuthStore();
   const { fetchExchangeRate } = useMarketStore();
+
   useEffect(() => {
     initializeSocket();
     fetchExchangeRate();
@@ -74,11 +75,6 @@ export default function Navbar() {
                 )}
               </Switch>
 
-              <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                <span>현재 접속자:</span>
-                <span>{activeUsers}</span>
-              </div>
-
               {isAuthenticated ? (
                 <Link
                   href="/profile"
@@ -103,11 +99,6 @@ export default function Navbar() {
           <div className="lg:hidden">
             <Menu as="div" className="relative inline-block text-left">
               <div className="flex items-center space-x-2">
-                <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
-                  <UserGroupIcon className="h-4 w-4 mr-1" />
-                  <span>{activeUsers}</span>
-                </div>
-
                 <Switch checked={theme === "dark"} onChange={toggleTheme}>
                   <span className="sr-only">Toggle dark mode</span>
                   {theme === "dark" ? (
