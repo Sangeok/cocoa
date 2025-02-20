@@ -24,6 +24,7 @@ const navigation = [
   { name: "코코아 뉴스", href: "/news" },
   { name: "송금 계산기", href: "/withdraw" },
   { name: "국내 KOL 목록", href: "/kol" },
+  { name: "컨트랙트 스캐너", href: "/scanner" },
 ];
 
 export default function Navbar() {
@@ -53,7 +54,7 @@ export default function Navbar() {
                 key={item.name}
                 href={item.href}
                 className={clsx(
-                  "px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                  "px-2 py-2 rounded-md text-sm font-medium transition-colors",
                   pathname === item.href
                     ? "bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white"
                     : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900 hover:text-gray-900 dark:hover:text-white"

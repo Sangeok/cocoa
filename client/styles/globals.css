@@ -1,0 +1,10 @@
+/* SVG 아이콘에 대한 다크모드 스타일 추가 */
+.dark [class*='icon-'] {
+  color: #93c5fd; /* blue-300 색상 */
+}
+
+/* 또는 각 아이콘별로 다른 색상을 지정할 수도 있습니다 */
+.dark .icon-liquidity { color: #93c5fd; }
+.dark .icon-sale { color: #fca5a5; }
+.dark .icon-distribution { color: #86efac; }
+.dark .icon-code { color: #c4b5fd; } 

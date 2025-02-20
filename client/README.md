@@ -38,7 +38,3 @@
 
 ## 스플라이스 이미지
   - 토큰 이미지들을 모두 모아서 스플라이스 이미지로 합쳐서 background position
-
-# Client
-
-Next.js frontend application

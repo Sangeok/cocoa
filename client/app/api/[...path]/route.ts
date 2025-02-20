@@ -12,6 +12,14 @@ const getAuthHeaders = (request: NextRequest) => {
   };
 };
 
+// API URL 선택 함수 추가
+const getBaseUrl = (pathString: string) => {
+  if (pathString.startsWith('scamscanner/')) {
+    return process.env.SCAMSCANNER_API_URL || "https://api.scamscanner.info/api";
+  }
+  return process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+};
+
 export async function GET(
   request: NextRequest,
   { params }: { params: { path: string[] } }
@@ -20,12 +28,18 @@ export async function GET(
     const { path } = await params;
     const pathString = path.join("/");
     const searchParams = request.nextUrl.searchParams;
+    
+    console.log('API Route - Path:', pathString);
+    console.log('API Route - SearchParams:', searchParams.toString());
+    console.log('API Route - Full URL:', `/${pathString}?${searchParams}`);
+
     const response = await ServerAPICall.get(`/${pathString}?${searchParams}`, {
       withCredentials: true,
       headers: getAuthHeaders(request)
     });
     return NextResponse.json(response.data);
   } catch (error: any) {
+    console.error('API Route - Error:', error);
     return NextResponse.json(
       { message: error.message },
       { status: error.response?.status || 500 }
@@ -42,7 +56,13 @@ export async function POST(
     const pathString = path.join("/");
     const body = await request.json();
     
-    const response = await ServerAPICall.post(`/${pathString}`, body, {
+    const baseUrl = getBaseUrl(pathString);
+    const apiPath = pathString.startsWith('scamscanner/') 
+      ? `/${pathString.substring('scamscanner/'.length)}` 
+      : `/${pathString}`;
+    
+    const response = await ServerAPICall.post(`${apiPath}`, body, {
+      baseURL: baseUrl,
       withCredentials: true,
       headers: getAuthHeaders(request)
     });
@@ -63,7 +83,14 @@ export async function PUT(
     const { path } = await params;
     const pathString = path.join("/");
     const body = await request.json();
-    const response = await ServerAPICall.put(`/${pathString}`, body, {
+    
+    const baseUrl = getBaseUrl(pathString);
+    const apiPath = pathString.startsWith('scamscanner/') 
+      ? `/${pathString.substring('scamscanner/'.length)}` 
+      : `/${pathString}`;
+    
+    const response = await ServerAPICall.put(`${apiPath}`, body, {
+      baseURL: baseUrl,
       withCredentials: true,
       headers: getAuthHeaders(request)
     });
@@ -83,7 +110,14 @@ export async function DELETE(
   try {
     const { path } = await params;
     const pathString = path.join("/");
-    const response = await ServerAPICall.delete(`/${pathString}`, {
+    
+    const baseUrl = getBaseUrl(pathString);
+    const apiPath = pathString.startsWith('scamscanner/') 
+      ? `/${pathString.substring('scamscanner/'.length)}` 
+      : `/${pathString}`;
+    
+    const response = await ServerAPICall.delete(`${apiPath}`, {
+      baseURL: baseUrl,
       withCredentials: true,
       headers: getAuthHeaders(request)
     });
@@ -105,7 +139,13 @@ export async function PATCH(
     const pathString = path.join("/");
     const body = await request.json();
     
-    const response = await ServerAPICall.patch(`/${pathString}`, body, {
+    const baseUrl = getBaseUrl(pathString);
+    const apiPath = pathString.startsWith('scamscanner/') 
+      ? `/${pathString.substring('scamscanner/'.length)}` 
+      : `/${pathString}`;
+    
+    const response = await ServerAPICall.patch(`${apiPath}`, body, {
+      baseURL: baseUrl,
       withCredentials: true,
       headers: getAuthHeaders(request)
     });

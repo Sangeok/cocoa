@@ -89,4 +89,22 @@ export const API_ROUTES = {
       method: "POST",
     },
   },
+  SCAMSCANNER: {
+    CONTRACT_DETAIL: {
+      url: "/scamscanner/contract/:address",
+      method: "GET",
+    },
+    CONTRACT_SEARCH: {
+      url: "/scamscanner/search",
+      method: "GET",
+    },
+    EXPLORE: {
+      url: "/scamscanner/explore",
+      method: "GET",
+    },
+    TOP: {
+      url: "/scamscanner/top",
+      method: "GET",
+    },
+  },
 } as const;
