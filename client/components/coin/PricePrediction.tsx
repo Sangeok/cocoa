@@ -14,7 +14,7 @@ import { usePredict } from "@/hooks/usePredict";
 import { CoinData } from "@/store/useMarketStore";
 import useMarketStore from "@/store/useMarketStore";
 import Input from "@/components/common/Input";
-import { toast } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { PredictResultToast } from "@/components/toast/PredictResultToast";
 import { PredictResult } from "@/types/predict";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
