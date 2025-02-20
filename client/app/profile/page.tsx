@@ -9,7 +9,6 @@ import { API_ROUTES } from "@/const/api";
 import useMarketStore from "@/store/useMarketStore";
 import clsx from "clsx";
 import { formatDollar } from "@/lib/format";
-import { createChart, Time, AreaSeries } from "lightweight-charts";
 
 interface PredictLog {
   id: number;
@@ -24,9 +23,10 @@ interface PredictLog {
   exitAt: string;
 }
 
-interface ProfitData {
-  time: Time;
-  value: number;
+interface Rankings {
+  mostVault: { userId: number; vault: string }[];
+  mostWins: { userId: number; wins: number }[];
+  bestWinRate: { userId: number; winRate: number }[];
 }
 
 export default function ProfilePage() {
@@ -48,8 +48,7 @@ export default function ProfilePage() {
     ? new Date(user.predict.lastCheckInAt).toDateString() !==
       new Date().toDateString()
     : true;
-  const chartContainerRef = useRef<HTMLDivElement>(null);
-  const [profitData, setProfitData] = useState<ProfitData[]>([]);
+  const [rankings, setRankings] = useState<Rankings | null>(null);
 
   const handleLogout = () => {
     logout();
@@ -196,90 +195,35 @@ export default function ProfilePage() {
     }
   };
 
-  const calculateProfitData = useCallback((logs: PredictLog[]) => {
-    let runningProfit = 0;
-    return logs
-      .sort((a, b) => {
-        const timeA = new Date(a.exitAt).getTime();
-        const timeB = new Date(b.exitAt).getTime();
-        if (timeA === timeB) {
-          return a.id - b.id; // 같은 시간일 경우 ID로 정렬
+  useEffect(() => {
+    const fetchRankings = async () => {
+      try {
+        const response = await ClientAPICall.get(API_ROUTES.PREDICT.RANKINGS.url);
+        if (response.data.success) {
+          setRankings(response.data.data);
         }
-        return timeA - timeB;
-      })
-      .map((log) => {
-        const pnl =
-          ((log.closePrice - log.entryPrice) / log.entryPrice) *
-          100 *
-          log.leverage;
-        const profit =
-          log.position === "L"
-            ? (pnl * log.deposit) / 100
-            : (-1 * pnl * log.deposit) / 100;
-        runningProfit += profit;
-
-        return {
-          time: (new Date(log.exitAt).getTime() / 1000) as Time,
-          value: runningProfit,
-        };
-      });
-  }, []);
-
-  useEffect(() => {
-    if (predictLogs.length > 0) {
-      const newProfitData = calculateProfitData(predictLogs);
-      setProfitData(newProfitData);
-    }
-  }, [predictLogs, calculateProfitData]);
-
-  useEffect(() => {
-    if (!chartContainerRef.current || profitData.length === 0) return;
-
-    const chart = createChart(chartContainerRef.current, {
-      layout: {
-        background: { color: "transparent" },
-        textColor: "#D1D5DB",
-      },
-      grid: {
-        vertLines: { color: "#2D3748" },
-        horzLines: { color: "#2D3748" },
-      },
-      width: chartContainerRef.current.clientWidth,
-      height: 300,
-    });
-
-    const areaSeries = chart.addSeries(AreaSeries, {
-      lineWidth: 2,
-      topColor: "#10B981",
-      bottomColor: "#EF4444",
-      lineColor: "#888888",
-      crosshairMarkerBackgroundColor: "#10B981",
-      crosshairMarkerBorderColor: "#10B981",
-      lastValueVisible: true,
-      priceLineVisible: false,
-      baseLineColor: "#888888",
-      baseLineWidth: 1,
-      baseLineVisible: true,
-    });
-
-    areaSeries.setData(profitData);
-    chart.timeScale().fitContent();
-
-    const handleResize = () => {
-      if (chartContainerRef.current) {
-        chart.applyOptions({
-          width: chartContainerRef.current.clientWidth,
-        });
+      } catch (error) {
+        console.error("Failed to fetch rankings:", error);
       }
     };
 
-    window.addEventListener("resize", handleResize);
+    if (isAuthenticated) {
+      fetchRankings();
+    }
+  }, [isAuthenticated]);
 
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      chart.remove();
+  const getUserRanking = () => {
+    if (!rankings || !user) return null;
+    const vaultIndex = rankings.mostVault.findIndex(r => r.userId === user.id);
+    const winsIndex = rankings.mostWins.findIndex(r => r.userId === user.id);
+    const winRateIndex = rankings.bestWinRate.findIndex(r => r.userId === user.id);
+
+    return {
+      vault: vaultIndex === -1 ? "100+" : `${vaultIndex + 1}`,
+      wins: winsIndex === -1 ? "100+" : `${winsIndex + 1}`,
+      winRate: winRateIndex === -1 ? "100+" : `${winRateIndex + 1}`,
     };
-  }, [profitData]);
+  };
 
   if (!isAuthenticated || !user) {
     router.push("/signin");
@@ -309,6 +253,34 @@ export default function ProfilePage() {
                       : "---"}
                     원
                   </div>
+                  {rankings && (
+                    <div className="mt-3 flex items-center gap-4 text-sm">
+                      <div className="flex items-center gap-2">
+                        <span className="text-blue-600 dark:text-blue-400">
+                          자산 순위
+                        </span>
+                        <span className="font-bold text-blue-600 dark:text-blue-400">
+                          {getUserRanking()?.vault}위
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-green-600 dark:text-green-400">
+                          승리 순위
+                        </span>
+                        <span className="font-bold text-green-600 dark:text-green-400">
+                          {getUserRanking()?.wins}위
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-purple-600 dark:text-purple-400">
+                          승률 순위
+                        </span>
+                        <span className="font-bold text-purple-600 dark:text-purple-400">
+                          {getUserRanking()?.winRate}위
+                        </span>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
               <button
@@ -495,84 +467,85 @@ export default function ProfilePage() {
               예측 기록
             </h3>
 
-            <div className="space-y-4">
-              {!hasMore && predictLogs.length === 0 && (
-                <div className="text-gray-500 dark:text-gray-400">
-                  예측 기록이 없습니다.
-                </div>
-              )}
-              <div ref={chartContainerRef} className="w-full h-[300px]" />
-              {predictLogs.map((log) => {
-                const pnl =
-                  ((log.closePrice - log.entryPrice) / log.entryPrice) *
-                  100 *
-                  log.leverage;
-                const isProfit = pnl > 0;
-
-                return (
-                  <div
-                    key={log.id}
-                    className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 rounded-lg gap-2"
-                  >
-                    <div className="flex flex-col gap-1">
-                      <div className="flex items-center gap-2">
-                        <div className="px-2 py-1 rounded-lg bg-gray-200 dark:bg-gray-800 text-sm">
-                          {log.position === "L" ? "LONG" : "SHORT"}
-                        </div>
-                        <span className="text-gray-900 dark:text-white font-medium">
-                          {log.market}
-                        </span>
-                        <span className="text-sm text-gray-500">
-                          {log.exchange}
-                        </span>
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {new Date(log.entryAt).toLocaleString()} →{" "}
-                        {(new Date(log.exitAt).getTime() -
-                          new Date(log.entryAt).getTime()) /
-                          1000}
-                        초
-                      </div>
-                    </div>
-                    <div className="flex flex-col items-end gap-1">
-                      <div
-                        className={`font-medium ${
-                          (log.position === "L" && isProfit) ||
-                          (log.position === "S" && !isProfit)
-                            ? "text-green-500"
-                            : "text-red-500"
-                        }`}
-                      >
-                        {formatDollar(
-                          (log.position === "S"
-                            ? -1 * pnl * log.deposit
-                            : pnl * log.deposit) / 100
-                        )}
-                        (
-                        {log.position === "L"
-                          ? `${pnl.toFixed(2)}%`
-                          : `${(-1 * pnl).toFixed(2)}%`}
-                        )
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {log.leverage}배 · {formatDollar(log.deposit)}
-                      </div>
-                    </div>
+            <div className="overflow-x-auto">
+              <div className="space-y-4 min-w-[600px]">
+                {!hasMore && predictLogs.length === 0 && (
+                  <div className="text-gray-500 dark:text-gray-400">
+                    예측 기록이 없습니다.
                   </div>
-                );
-              })}
+                )}
+                {predictLogs.map((log) => {
+                  const pnl =
+                    ((log.closePrice - log.entryPrice) / log.entryPrice) *
+                    100 *
+                    log.leverage;
+                  const isProfit = pnl > 0;
 
-              {hasMore && (
-                <button
-                  onClick={() => setPage((prev) => prev + 1)}
-                  disabled={isLoading}
-                  className="w-full py-2 text-sm text-gray-500 hover:text-gray-700 
-                    dark:text-gray-400 dark:hover:text-gray-200 disabled:opacity-50"
-                >
-                  {isLoading ? "로딩 중..." : "더 보기"}
-                </button>
-              )}
+                  return (
+                    <div
+                      key={log.id}
+                      className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 dark:bg-gray-900 rounded-lg gap-2"
+                    >
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2">
+                          <div className="px-2 py-1 rounded-lg bg-gray-200 dark:bg-gray-800 text-sm">
+                            {log.position === "L" ? "LONG" : "SHORT"}
+                          </div>
+                          <span className="text-gray-900 dark:text-white font-medium">
+                            {log.market}
+                          </span>
+                          <span className="text-sm text-gray-500">
+                            {log.exchange}
+                          </span>
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {new Date(log.entryAt).toLocaleString()} →{" "}
+                          {(new Date(log.exitAt).getTime() -
+                            new Date(log.entryAt).getTime()) /
+                            1000}
+                          초
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end gap-1">
+                        <div
+                          className={`font-medium ${
+                            (log.position === "L" && isProfit) ||
+                            (log.position === "S" && !isProfit)
+                              ? "text-green-500"
+                              : "text-red-500"
+                          }`}
+                        >
+                          {formatDollar(
+                            (log.position === "S"
+                              ? -1 * pnl * log.deposit
+                              : pnl * log.deposit) / 100
+                          )}
+                          (
+                          {log.position === "L"
+                            ? `${pnl.toFixed(2)}%`
+                            : `${(-1 * pnl).toFixed(2)}%`}
+                          )
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {log.leverage}배 · {formatDollar(log.deposit)}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
+
+            {hasMore && (
+              <button
+                onClick={() => setPage((prev) => prev + 1)}
+                disabled={isLoading}
+                className="w-full mt-4 py-2 text-sm text-gray-500 hover:text-gray-700 
+                  dark:text-gray-400 dark:hover:text-gray-200 disabled:opacity-50"
+              >
+                {isLoading ? "로딩 중..." : "더 보기"}
+              </button>
+            )}
           </div>
         </div>
       </div>

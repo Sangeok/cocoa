@@ -208,38 +208,40 @@ export default function PredictPage() {
                 </div>
               </div>
             )}
-            <div className="p-4">
-              {rankings ? (
-                <div className="space-y-2">
-                  {rankingComponents[currentRankingIndex]?.slice(0, 10).map(
-                    (rank, index) => (
-                      <div
-                        key={rank.userId}
-                        className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg"
-                      >
-                        <div className="flex items-center gap-3">
-                          <div className="w-6 text-center font-medium">
-                            {getRankIcon(index)}
+            <div className="overflow-x-auto">
+              <div className="p-4">
+                {rankings ? (
+                  <div className="space-y-2 min-w-[600px]">
+                    {rankingComponents[currentRankingIndex]?.slice(0, 10).map(
+                      (rank, index) => (
+                        <div
+                          key={rank.userId}
+                          className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-6 text-center font-medium">
+                              {getRankIcon(index)}
+                            </div>
+                            <div>{rank.name}</div>
                           </div>
-                          <div>{rank.name}</div>
+                          <div className="text-sm">
+                            {getRankingContent(
+                              rank,
+                              currentRankingIndex === 0
+                                ? "vault"
+                                : currentRankingIndex === 1
+                                ? "wins"
+                                : "winRate"
+                            )}
+                          </div>
                         </div>
-                        <div className="text-sm">
-                          {getRankingContent(
-                            rank,
-                            currentRankingIndex === 0
-                              ? "vault"
-                              : currentRankingIndex === 1
-                              ? "wins"
-                              : "winRate"
-                          )}
-                        </div>
-                      </div>
-                    )
-                  )}
-                </div>
-              ) : (
-                <RankingSkeleton />
-              )}
+                      )
+                    )}
+                  </div>
+                ) : (
+                  <RankingSkeleton />
+                )}
+              </div>
             </div>
           </div>
         </div>

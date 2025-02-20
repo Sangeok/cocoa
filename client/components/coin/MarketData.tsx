@@ -10,6 +10,25 @@ interface MarketDataProps {
   coins: Record<string, CoinData>;
 }
 
+const getExchangeMarketUrl = (exchange: Exchange, symbol: string) => {
+  const [base, quote] = symbol.split("-");
+  
+  switch (exchange) {
+    case "upbit":
+      return `https://upbit.com/exchange?code=CRIX.UPBIT.${quote}-${base}`;
+    case "bithumb":
+      return `https://www.bithumb.com/trade/order/${base}_${quote}`;
+    case "coinone":
+      return `https://coinone.co.kr/exchange/${base.toLowerCase()}`;
+    case "binance":
+      return `https://www.binance.com/en/trade/${base}_${quote}`;
+    case "okx":
+      return `https://www.okx.com/trade-spot/${base.toLowerCase()}-${quote.toLowerCase()}`;
+    default:
+      return "";
+  }
+};
+
 const ExchangeVolume = ({
   symbol,
   coins,
@@ -21,8 +40,15 @@ const ExchangeVolume = ({
 }) => {
   if (!coins[symbol]?.[exchange]) return null;
 
+  const marketUrl = getExchangeMarketUrl(exchange, symbol);
+
   return (
-    <div className="flex items-center gap-2">
+    <a
+      href={marketUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-lg transition-colors cursor-pointer"
+    >
       <Image
         src={`/exchanges/${exchange}.svg`}
         alt={exchange}
@@ -38,7 +64,7 @@ const ExchangeVolume = ({
           {formatKRWWithUnit(coins[symbol]?.[exchange]?.volume || 0)}
         </div>
       </div>
-    </div>
+    </a>
   );
 };
 
@@ -53,8 +79,15 @@ const ExchangePrice = ({
 }) => {
   if (!coins[symbol]?.[exchange]) return null;
 
+  const marketUrl = getExchangeMarketUrl(exchange, symbol);
+
   return (
-    <div className="flex items-center gap-2">
+    <a
+      href={marketUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-lg transition-colors cursor-pointer"
+    >
       <Image
         src={`/exchanges/${exchange}.svg`}
         alt={exchange}
@@ -70,7 +103,7 @@ const ExchangePrice = ({
           {formatKRWWithUnit(coins[symbol]?.[exchange]?.price || 0)}
         </div>
       </div>
-    </div>
+    </a>
   );
 };
 
@@ -85,8 +118,15 @@ const ExchangeChange24h = ({
 }) => {
   if (!coins[symbol]?.[exchange]) return null;
 
+  const marketUrl = getExchangeMarketUrl(exchange, symbol);
+
   return (
-    <div className="flex items-center gap-2">
+    <a
+      href={marketUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-lg transition-colors cursor-pointer"
+    >
       <Image
         src={`/exchanges/${exchange}.svg`}
         alt={exchange}
@@ -108,7 +148,7 @@ const ExchangeChange24h = ({
           {formatPercent(coins[symbol]?.[exchange]?.change24h || 0)}
         </div>
       </div>
-    </div>
+    </a>
   );
 };
 
