@@ -265,32 +265,40 @@ export default function PredictPage() {
             <div className="overflow-x-auto">
               <div className="p-4">
                 {rankings ? (
-                  <div className="space-y-2 min-w-[600px]">
-                    {rankingComponents[currentRankingIndex]
-                      ?.slice(0, 10)
-                      .map((rank, index) => (
-                        <div
-                          key={rank.userId}
-                          className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="w-6 text-center font-medium">
-                              {getRankIcon(index)}
-                            </div>
-                            <div>{rank.name}</div>
+                  <div className="space-y-2">
+                    {rankingComponents[currentRankingIndex]?.slice(0, 10).map((rank, index) => (
+                      <div
+                        key={rank.userId}
+                        className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg"
+                      >
+                        <div className="flex items-center gap-3 min-w-[100px] flex-shrink">
+                          <div className="w-6 text-center font-medium shrink-0">
+                            {getRankIcon(index)}
                           </div>
-                          <div className="text-sm">
-                            {getRankingContent(
-                              rank,
-                              currentRankingIndex === 0
-                                ? "vault"
-                                : currentRankingIndex === 1
-                                ? "wins"
-                                : "winRate"
-                            )}
-                          </div>
+                          <div className="truncate">{rank.name}</div>
                         </div>
-                      ))}
+                        <div className="text-sm flex-shrink-0 ml-4">
+                          {currentRankingIndex === 0 ? (
+                            <span className="text-green-500 whitespace-nowrap">
+                              ${formatNumber(Number(rank.vault))}
+                            </span>
+                          ) : currentRankingIndex === 1 ? (
+                            <div className="flex gap-1 sm:gap-2 whitespace-nowrap">
+                              <span className="text-green-500">{rank.wins}승</span>
+                              <span className="text-red-500">{rank.losses}패</span>
+                              <span className="text-gray-500">{rank.draws}무</span>
+                            </div>
+                          ) : (
+                            <div className="flex gap-1 sm:gap-2 whitespace-nowrap">
+                              <span className="text-blue-500">{rank.winRate?.toFixed(1)}%</span>
+                              <span className="text-gray-500 hidden sm:inline">
+                                ({rank.wins}/{rank.wins + rank.losses + rank.draws})
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 ) : (
                   <RankingSkeleton />
