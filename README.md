@@ -80,10 +80,16 @@ docker system prune -a -f --volumes
 
 ## 추가 거래소
 
-- OKX
+- OKX: 완료
 - Bybit
 - HTX
 - Gate.io
 - Bitget
 - MEXC
 - Coinbase
+
+## 관리 메시지 전달
+
+- API를 통해서 허용된 IP 주소로 POST 요청 발생
+- 전체 시스템 메시지가 고정적으로 상시 표시
+- 관리자가 끄기 전까지 적용

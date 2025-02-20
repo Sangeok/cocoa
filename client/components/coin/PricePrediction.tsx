@@ -434,7 +434,11 @@ export default function PricePrediction({
                       : "text-red-600"
                   )}
                 >
-                  {activePredict?.position === "L" ? "롱 포지션" : "숏 포지션"}
+                  {activePredict?.position === "L"
+                    ? "롱 포지션"
+                    : activePredict?.position === "S"
+                    ? "숏 포지션"
+                    : ""}
                 </div>
               </div>
               {activePredict ? (
