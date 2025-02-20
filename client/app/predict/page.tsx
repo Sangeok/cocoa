@@ -11,6 +11,7 @@ import { formatNumber } from "@/lib/format";
 import EventBanner from "@/components/event/EventBanner";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import { useSwipeable } from "react-swipeable";
+import useAuthStore from "@/store/useAuthStore";
 
 interface Ranking {
   userId: number;
@@ -49,6 +50,7 @@ export default function PredictPage() {
   const [rankings, setRankings] = useState<Rankings | null>(null);
   const { markets, fetchMarkets, getKoreanName } = useMarketsStore();
   const [currentRankingIndex, setCurrentRankingIndex] = useState(0);
+  const { user, isAuthenticated } = useAuthStore();
 
   const rankingTitles = ["현재 자산", "최다 적중", "최고 승률"];
   const rankingComponents = [
@@ -141,6 +143,28 @@ export default function PredictPage() {
     }
   };
 
+  const getUserRanking = (rankings: Ranking[] | undefined) => {
+    if (!rankings || !isAuthenticated || !user) return null;
+    const index = rankings.findIndex((rank) => rank.userId === user.id);
+    if (index === -1) return "랭킹 100위권 이하";
+    return `${index + 1}위`;
+  };
+
+  const getUserRankingContent = (rankings: Ranking[] | undefined) => {
+    if (!rankings || !isAuthenticated || !user) return null;
+    const userRank = rankings.find((rank) => rank.userId === user.id);
+    if (!userRank) return null;
+    
+    return getRankingContent(
+      userRank,
+      currentRankingIndex === 0
+        ? "vault"
+        : currentRankingIndex === 1
+        ? "wins"
+        : "winRate"
+    );
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <section className="mb-12 flex gap-6 lg:flex-row flex-col">
@@ -166,6 +190,24 @@ export default function PredictPage() {
             </div>
           </div>
           <div className="bg-white dark:bg-gray-950 rounded-xl shadow-xl border border-gray-200 dark:border-gray-800">
+            {isAuthenticated && (
+              <div className="p-4 border-b border-gray-200 dark:border-gray-800">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="text-sm font-medium text-blue-600 dark:text-blue-400 flex items-center gap-2">
+                      <span role="img" aria-label="user">👤</span>
+                      <span>나의 순위</span>
+                    </div>
+                    <div className="font-bold text-lg text-blue-600 dark:text-blue-400">
+                      {getUserRanking(rankingComponents[currentRankingIndex])}
+                    </div>
+                  </div>
+                  <div className="text-sm font-medium">
+                    {getUserRankingContent(rankingComponents[currentRankingIndex])}
+                  </div>
+                </div>
+              </div>
+            )}
             <div className="p-4">
               {rankings ? (
                 <div className="space-y-2">
