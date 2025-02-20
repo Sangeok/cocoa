@@ -15,20 +15,24 @@ export default function Home() {
   const [recentNews, setRecentNews] = useState<NewsListResponse>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentNewsIndex, setCurrentNewsIndex] = useState(0);
-  
+
   const handlers = useSwipeable({
     onSwipedLeft: () => handleNext(),
     onSwipedRight: () => handlePrev(),
     preventScrollOnSwipe: true,
-    trackMouse: true
+    trackMouse: true,
   });
 
   const handlePrev = () => {
-    setCurrentNewsIndex((prev) => (prev === 0 ? recentNews.length - 1 : prev - 1));
+    setCurrentNewsIndex((prev) =>
+      prev === 0 ? recentNews.length - 1 : prev - 1
+    );
   };
 
   const handleNext = () => {
-    setCurrentNewsIndex((prev) => (prev === recentNews.length - 1 ? 0 : prev + 1));
+    setCurrentNewsIndex((prev) =>
+      prev === recentNews.length - 1 ? 0 : prev + 1
+    );
   };
 
   useEffect(() => {
@@ -38,13 +42,13 @@ export default function Home() {
           params: {
             limit: 3,
             page: 1,
-          }
+          },
         });
-        
+
         const data = NewsListResponseSchema.parse(response.data.data);
         setRecentNews(data);
       } catch (err) {
-        console.error('Failed to fetch news:', err);
+        console.error("Failed to fetch news:", err);
       } finally {
         setIsLoading(false);
       }
@@ -57,7 +61,6 @@ export default function Home() {
     <main>
       <div className="container mx-auto px-4 py-8">
         <div className="flex lg:flex-row flex-col gap-6 mb-6">
-          <EventBanner />
           <div className="lg:w-2/3 w-full">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -78,7 +81,7 @@ export default function Home() {
                     <ChevronRightIcon className="w-6 h-6" />
                   </button>
                 </div>
-                <Link 
+                <Link
                   href="/news"
                   className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                 >
@@ -94,6 +97,7 @@ export default function Home() {
               )}
             </div>
           </div>
+          <EventBanner />
         </div>
         {/* Premium Table Section */}
         <section>

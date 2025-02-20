@@ -12,7 +12,7 @@ import EventBanner from "@/components/event/EventBanner";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import { useSwipeable } from "react-swipeable";
 import useAuthStore from "@/store/useAuthStore";
-import useLongShortStore from '@/store/useLongShort';
+import useLongShortStore from "@/store/useLongShort";
 
 interface Ranking {
   userId: number;
@@ -67,9 +67,13 @@ const LongShortRatioSection = () => {
             전체 포지션: {globalRatio.total}
           </div>
           <div className="text-sm font-medium">
-            <span className="text-green-500">롱 {globalRatio.longPercent.toFixed(1)}%</span>
+            <span className="text-green-500">
+              롱 {globalRatio.longPercent.toFixed(1)}%
+            </span>
             <span className="mx-2 text-gray-400">|</span>
-            <span className="text-red-500">숏 {globalRatio.shortPercent.toFixed(1)}%</span>
+            <span className="text-red-500">
+              숏 {globalRatio.shortPercent.toFixed(1)}%
+            </span>
           </div>
         </div>
         <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden flex">
@@ -77,14 +81,14 @@ const LongShortRatioSection = () => {
             className="h-full bg-green-500"
             style={{
               width: `${globalRatio.longPercent}%`,
-              transition: 'width 0.3s ease-in-out'
+              transition: "width 0.3s ease-in-out",
             }}
           />
           <div
             className="h-full bg-red-500"
             style={{
               width: `${globalRatio.shortPercent}%`,
-              transition: 'width 0.3s ease-in-out'
+              transition: "width 0.3s ease-in-out",
             }}
           />
         </div>
@@ -201,7 +205,7 @@ export default function PredictPage() {
     if (!rankings || !isAuthenticated || !user) return null;
     const userRank = rankings.find((rank) => rank.userId === user.id);
     if (!userRank) return null;
-    
+
     return getRankingContent(
       userRank,
       currentRankingIndex === 0
@@ -215,7 +219,6 @@ export default function PredictPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <section className="mb-12 flex gap-6 lg:flex-row flex-col">
-        <EventBanner className="lg:w-1/3 w-full h-[400px] object-contain" />
         <div className="lg:w-2/3 w-full" {...handlers}>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold">
@@ -242,7 +245,9 @@ export default function PredictPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="text-sm font-medium text-blue-600 dark:text-blue-400 flex items-center gap-2">
-                      <span role="img" aria-label="user">👤</span>
+                      <span role="img" aria-label="user">
+                        👤
+                      </span>
                       <span>나의 순위</span>
                     </div>
                     <div className="font-bold text-lg text-blue-600 dark:text-blue-400">
@@ -250,7 +255,9 @@ export default function PredictPage() {
                     </div>
                   </div>
                   <div className="text-sm font-medium">
-                    {getUserRankingContent(rankingComponents[currentRankingIndex])}
+                    {getUserRankingContent(
+                      rankingComponents[currentRankingIndex]
+                    )}
                   </div>
                 </div>
               </div>
@@ -259,8 +266,9 @@ export default function PredictPage() {
               <div className="p-4">
                 {rankings ? (
                   <div className="space-y-2 min-w-[600px]">
-                    {rankingComponents[currentRankingIndex]?.slice(0, 10).map(
-                      (rank, index) => (
+                    {rankingComponents[currentRankingIndex]
+                      ?.slice(0, 10)
+                      .map((rank, index) => (
                         <div
                           key={rank.userId}
                           className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg"
@@ -282,8 +290,7 @@ export default function PredictPage() {
                             )}
                           </div>
                         </div>
-                      )
-                    )}
+                      ))}
                   </div>
                 ) : (
                   <RankingSkeleton />
@@ -293,6 +300,7 @@ export default function PredictPage() {
           </div>
           <LongShortRatioSection />
         </div>
+        <EventBanner />
       </section>
 
       <section>
