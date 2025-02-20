@@ -67,9 +67,18 @@ export class PredictService {
     const predictKey = `predict-${userId}`;
 
     try {
-      // Check if user already has an active prediction
+      // Check if user already has an active prediction using Redis SETNX
+      const lockKey = `predict-lock-${userId}`;
+      const acquired = await this.redisService.setNX(lockKey, '1', 5); // 5초 타임아웃
+
+      if (!acquired) {
+        throw new Error('현재 진행 중인 예측이 있습니다.');
+      }
+
+      // 기존 예측 확인
       const existingPredict = await this.redisService.get(predictKey);
       if (existingPredict) {
+        await this.redisService.del(lockKey);
         throw new Error('현재 진행 중인 예측이 있습니다.');
       }
 
@@ -158,8 +167,9 @@ export class PredictService {
 
       return predictData;
     } catch (error) {
+      // Cleanup lock in case of error
+      await this.redisService.del(`predict-lock-${userId}`);
       this.logger.error('Error in createPredict:', error);
-      // Cleanup Redis key if it exists
       await this.redisService.del(predictKey);
       throw error;
     }
@@ -254,6 +264,8 @@ export class PredictService {
             }
           }
 
+          // 예측이 종료되면 락 해제
+          await this.redisService.del(`predict-lock-${userId}`);
           await this.redisService.del(key);
 
           // Emit result with liquidation info

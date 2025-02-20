@@ -20,7 +20,7 @@ import { PredictResult } from "@/types/predict";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { ClientAPICall } from "@/lib/axios";
 import { API_ROUTES } from "@/const/api";
-import useLongShortStore from '@/store/useLongShort';
+import useLongShortStore from "@/store/useLongShort";
 
 interface PricePredictionProps {
   symbol: string;
@@ -44,9 +44,13 @@ const MarketLongShortRatio = ({ symbol }: { symbol: string }) => {
       </div>
       <div className="flex items-center justify-between mb-2">
         <div className="text-sm font-medium">
-          <span className="text-green-500">롱 {ratio.longPercent.toFixed(1)}%</span>
+          <span className="text-green-500">
+            롱 {ratio.longPercent.toFixed(1)}%
+          </span>
           <span className="mx-2 text-gray-400">|</span>
-          <span className="text-red-500">숏 {ratio.shortPercent.toFixed(1)}%</span>
+          <span className="text-red-500">
+            숏 {ratio.shortPercent.toFixed(1)}%
+          </span>
         </div>
       </div>
       <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden flex">
@@ -54,14 +58,14 @@ const MarketLongShortRatio = ({ symbol }: { symbol: string }) => {
           className="h-full bg-green-500"
           style={{
             width: `${ratio.longPercent}%`,
-            transition: 'width 0.3s ease-in-out'
+            transition: "width 0.3s ease-in-out",
           }}
         />
         <div
           className="h-full bg-red-500"
           style={{
             width: `${ratio.shortPercent}%`,
-            transition: 'width 0.3s ease-in-out'
+            transition: "width 0.3s ease-in-out",
           }}
         />
       </div>
@@ -154,18 +158,6 @@ export default function PricePrediction({
   // 결과 수신 시 자산 업데이트 로직 개선
   useEffect(() => {
     if (lastResult) {
-      // 청산된 경우 특별한 토스트 메시지 표시
-      if (lastResult.isLiquidated) {
-        toast.error(<PredictResultToast result={lastResult} />, {
-          duration: 5000,
-        });
-      } else {
-        toast(<PredictResultToast result={lastResult} />, {
-          duration: 5000,
-          icon: lastResult.isWin ? "🎉" : lastResult.isDraw ? "🤝" : "😢",
-        });
-      }
-
       // 결과 표시 설정
       setResultDisplay({ show: true, result: lastResult });
 
@@ -449,7 +441,7 @@ export default function PricePrediction({
                 <>
                   <div
                     className={clsx(
-                      "text-base font-bold",
+                      "text-lg font-bold",
                       getPriceChangePercentDisplay === 0
                         ? "text-gray-500"
                         : getPriceChangePercentDisplay > 0
@@ -461,34 +453,20 @@ export default function PricePrediction({
                         : "text-green-500"
                     )}
                   >
-                    가상 손익:{" "}
                     {formatPriceByMarket(
                       getVirtualPnLDisplayAmount,
                       marketType
                     )}
-                  </div>
-                  <div
-                    className={clsx(
-                      "text-xs",
-                      getPriceChangePercentDisplay === 0
-                        ? "text-gray-500"
-                        : getPriceChangePercentDisplay > 0
-                        ? activePredict?.position === "L"
-                          ? "text-green-500"
-                          : "text-red-500"
-                        : activePredict?.position === "L"
-                        ? "text-red-500"
-                        : "text-green-500"
-                    )}
-                  >
-                    수익률:{" "}
+                    (
                     {formatPercent(
                       activePredict?.position === "L"
                         ? getPriceChangePercentDisplay
                         : -getPriceChangePercentDisplay,
                       2
                     )}
+                    )
                   </div>
+
                   <div className="flex justify-between items-center">
                     <div className="text-sm font-medium">
                       {(remainingTimeDisplay / 1000).toFixed(1)}초 남음
@@ -499,7 +477,7 @@ export default function PricePrediction({
                 <>
                   <div
                     className={clsx(
-                      "text-base font-bold flex justify-between",
+                      "text-base font-bold flex justify-between items-center",
                       resultDisplay?.result?.isLiquidated
                         ? "text-yellow-500"
                         : resultDisplay?.result?.isWin
@@ -518,6 +496,22 @@ export default function PricePrediction({
                         ? "예측 무승부"
                         : "예측 실패"}
                     </span>
+                    {!resultDisplay?.result?.isDraw && (
+                      <span className="text-xl">
+                        {resultDisplay?.result?.isWin
+                          ? "+"
+                          : resultDisplay?.result?.isDraw
+                          ? ""
+                          : "-"}
+                        {formatPriceByMarket(
+                          resultDisplay?.result
+                            ? resultDisplay.result.vault -
+                                resultDisplay.result.deposit
+                            : 0,
+                          "KRW"
+                        )}
+                      </span>
+                    )}
                   </div>
                 </>
               )}

@@ -3,7 +3,7 @@ import { formatPriceByMarket, getMarketType } from "@/lib/market";
 
 export const PredictResultToast = ({ result }: { result: PredictResult }) => {
   const marketType = getMarketType(result.market);
-  const pnl = result.vault - result.deposit; // 손익 계산
+  const pnl = result.vault - result.deposit; // 순수 손익 계산
   const isProfit = pnl > 0;
 
   return (
@@ -27,13 +27,9 @@ export const PredictResultToast = ({ result }: { result: PredictResult }) => {
         </span>
       </div>
       {!result.isDraw && (
-        <div
-          className={`text-sm font-medium ${
-            isProfit ? "text-green-500" : "text-red-500"
-          }`}
-        >
+        <div className={`text-sm font-medium ${isProfit ? "text-green-500" : "text-red-500"}`}>
           {isProfit ? "+" : ""}
-          {formatPriceByMarket(pnl, marketType)}
+          {formatPriceByMarket(pnl, "USDT")}
           {` (${((pnl / result.deposit) * 100).toFixed(2)}%)`}
         </div>
       )}

@@ -8,12 +8,13 @@ export class RedisService implements OnModuleInit {
   private client: RedisClientType;
 
   constructor(private configService: ConfigService) {
-    const host = this.configService.get('NODE_ENV') === 'production'
-      ? this.configService.get('REDIS_HOST', 'redis')
-      : 'localhost';
-    
+    const host =
+      this.configService.get('NODE_ENV') === 'production'
+        ? this.configService.get('REDIS_HOST', 'redis')
+        : 'localhost';
+
     this.client = createClient({
-      url: `redis://${host}:${this.configService.get('REDIS_PORT', '6379')}`
+      url: `redis://${host}:${this.configService.get('REDIS_PORT', '6379')}`,
     });
 
     this.client.on('error', (err) => console.error('Redis Client Error', err));
@@ -63,10 +64,10 @@ export class RedisService implements OnModuleInit {
   async debugKeys(pattern: string) {
     const keys = await this.client.keys(pattern);
     const values = await Promise.all(
-      keys.map(async key => {
+      keys.map(async (key) => {
         const value = await this.client.get(key);
         return { key, value };
-      })
+      }),
     );
     return values;
   }
@@ -104,4 +105,12 @@ export class RedisService implements OnModuleInit {
       return [];
     }
   }
-} 
+
+  async setNX(key: string, value: string, expireSeconds?: number): Promise<boolean> {
+    const result = await this.client.set(key, value, {
+      NX: true,
+      EX: expireSeconds || 60
+    });
+    return result === 'OK';
+  }
+}

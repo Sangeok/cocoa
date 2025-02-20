@@ -55,14 +55,9 @@ export const usePredict = () => {
   // 결과 수신 시 canPredict 상태 업데이트 추가
   useEffect(() => {
     if (lastResult) {
-      // 토스트 메시지가 표시될 시간을 주기 위해 reset을 지연
-      setTimeout(() => {
-        reset();
-        setCanPredict(true);
-      }, 5000); // 5초 후에 리셋
-      
-      // 즉시 예측 가능 상태로 변경
+      // 즉시 예측 가능 상태로 변경하고 상태 리셋
       setCanPredict(true);
+      reset();
     }
   }, [lastResult, reset]);
 
