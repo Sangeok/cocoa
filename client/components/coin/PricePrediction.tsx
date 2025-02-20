@@ -502,11 +502,7 @@ export default function PricePrediction({
                     </span>
                     {!resultDisplay?.result?.isDraw && (
                       <span className="text-xl">
-                        {resultDisplay?.result?.isWin
-                          ? "+"
-                          : resultDisplay?.result?.isDraw
-                          ? ""
-                          : "-"}
+                        {resultDisplay?.result?.isWin ? "+" : ""}
                         {formatPriceByMarket(
                           resultDisplay?.result
                             ? resultDisplay.result.vault -
