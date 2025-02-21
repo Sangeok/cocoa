@@ -786,11 +786,12 @@ export default function UserProfilePage() {
                     </div>
                   </div>
                   <p
-                    className={
+                    className={clsx(
+                      "whitespace-pre-wrap",
                       guestbook.isSecret
                         ? "text-gray-600 dark:text-gray-400"
                         : ""
-                    }
+                    )}
                   >
                     {guestbook.content}
                   </p>
@@ -885,11 +886,12 @@ export default function UserProfilePage() {
                               </div>
                             </div>
                             <p
-                              className={
+                              className={clsx(
+                                "whitespace-pre-wrap",
                                 comment.isSecret
-                                  ? "text-gray-600 dark:text-gray-400 text-sm mt-1 whitespace-pre-wrap"
-                                  : "text-sm mt-1 whitespace-pre-wrap"
-                              }
+                                  ? "text-gray-600 dark:text-gray-400 text-sm mt-1"
+                                  : "text-sm mt-1"
+                              )}
                             >
                               {comment.mentionedUser && (
                                 <span className="text-teal-600">
