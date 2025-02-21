@@ -60,7 +60,7 @@ export default function CoinPageContent({ symbol }: { symbol: string }) {
   }
 
   return (
-    <div className="w-full px-4 py-4">
+    <div className="w-full max-w-[2000px] mx-auto px-4 py-4">
       <CoinHeader symbol={symbol} koreanName={koreanName} />
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
