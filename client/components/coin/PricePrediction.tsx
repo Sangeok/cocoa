@@ -320,8 +320,7 @@ export default function PricePrediction({
             min={0}
             max={
               user
-                ? Number(user?.predict?.vault) +
-                  (activePredict?.deposit || 0)
+                ? Number(user?.predict?.vault) + (activePredict?.deposit || 0)
                 : 0
             }
           />
@@ -509,10 +508,10 @@ export default function PricePrediction({
                       <span className="text-xl">
                         {resultDisplay?.result?.isWin ? "+" : ""}
                         {formatPriceByMarket(
-                          resultDisplay?.result
+                          (resultDisplay?.result
                             ? resultDisplay.result.vault -
-                                resultDisplay.result.deposit
-                            : 0,
+                              resultDisplay.result.deposit
+                            : 0) * (exchangeRate || 0),
                           "KRW"
                         )}
                       </span>
