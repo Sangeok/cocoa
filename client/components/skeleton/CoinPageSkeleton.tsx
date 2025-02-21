@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function CoinPageSkeleton() {
   return (
-    <div className="w-full px-4 py-4 animate-pulse">
+    <div className="w-full max-w-[2000px] mx-auto px-4 py-4 animate-pulse">
       {/* Header Skeleton */}
       <div className="mb-6">
         <div className="flex items-center gap-2">
