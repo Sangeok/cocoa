@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 import { API_ROUTES } from "@/const/api";
 import useMarketStore from "@/store/useMarketStore";
 import clsx from "clsx";
-import { formatDollar } from "@/lib/format";
+import { formatDollar, getPnl, getDollarFromPnl } from "@/lib/format";
 import { Field, Description, Textarea } from "@headlessui/react";
 import Button from "@/components/common/Button";
 
@@ -562,10 +562,11 @@ export default function ProfilePage() {
                   </div>
                 )}
                 {predictLogs.map((log) => {
-                  const pnl =
-                    ((log.closePrice - log.entryPrice) / log.entryPrice) *
-                    100 *
-                    log.leverage;
+                  const pnl = getPnl(
+                    log.entryPrice,
+                    log.closePrice,
+                    log.leverage
+                  );
                   const isProfit = pnl > 0;
 
                   return (
@@ -602,10 +603,12 @@ export default function ProfilePage() {
                               : "text-red-500"
                           }`}
                         >
-                          {formatDollar(
-                            (log.position === "S"
-                              ? -1 * pnl * log.deposit
-                              : pnl * log.deposit) / 100
+                          {getDollarFromPnl(
+                            log.entryPrice,
+                            log.closePrice,
+                            log.leverage,
+                            log.deposit,
+                            log.position as "L" | "S"
                           )}
                           (
                           {log.position === "L"

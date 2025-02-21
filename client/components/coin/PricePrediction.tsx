@@ -9,13 +9,12 @@ import {
   getMarketType,
   getPriorityExchanges,
 } from "@/lib/market";
-import { formatPercent } from "@/lib/format";
+import { formatPercent, getKRWFromPnl } from "@/lib/format";
 import { usePredict } from "@/hooks/usePredict";
 import { CoinData } from "@/store/useMarketStore";
 import useMarketStore from "@/store/useMarketStore";
 import Input from "@/components/common/Input";
 import toast from "react-hot-toast";
-import { PredictResultToast } from "@/components/toast/PredictResultToast";
 import { PredictResult } from "@/types/predict";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { ClientAPICall } from "@/lib/axios";
@@ -507,12 +506,13 @@ export default function PricePrediction({
                     {!resultDisplay?.result?.isDraw && (
                       <span className="text-xl">
                         {resultDisplay?.result?.isWin ? "+" : ""}
-                        {formatPriceByMarket(
-                          (resultDisplay?.result
-                            ? resultDisplay.result.vault -
-                              resultDisplay.result.deposit
-                            : 0) * (exchangeRate || 0),
-                          "KRW"
+                        {getKRWFromPnl(
+                          resultDisplay?.result?.entryPrice || 0,
+                          resultDisplay?.result?.closePrice || 0,
+                          resultDisplay?.result?.leverage || 20,
+                          Number(deposit),
+                          resultDisplay?.result?.position as "L" | "S",
+                          exchangeRate || 0
                         )}
                       </span>
                     )}

@@ -196,6 +196,41 @@ export function formatDollar(num: number): string {
   }).format(num);
 }
 
+export function getPnl(
+  entryPrice: number,
+  closePrice: number,
+  leverage: number
+) {
+  return ((closePrice - entryPrice) / entryPrice) * 100 * leverage;
+}
+
+export function getDollarFromPnl(
+  entryPrice: number,
+  closePrice: number,
+  leverage: number,
+  deposit: number,
+  position: "L" | "S"
+): string {
+  const pnl = getPnl(entryPrice, closePrice, leverage);
+
+  return formatDollar((position === "S" ? -1 : 1) * (pnl / 100) * deposit);
+}
+
+export function getKRWFromPnl(
+  entryPrice: number,
+  closePrice: number,
+  leverage: number,
+  deposit: number,
+  position: "L" | "S",
+  exchangeRate: number
+) {
+  const pnl = getPnl(entryPrice, closePrice, leverage);
+
+  return formatKRW(
+    (position === "S" ? -1 : 1) * (pnl / 100) * deposit * exchangeRate
+  );
+}
+
 /**
  * 가격을 포맷팅합니다.
  * @param price 포맷팅할 가격
