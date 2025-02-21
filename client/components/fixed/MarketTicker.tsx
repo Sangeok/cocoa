@@ -139,7 +139,7 @@ export default function MarketTicker() {
           onMouseUp={handleMouseUp}
           onMouseMove={handleMouseMove}
         >
-          <div className="inline-block whitespace-nowrap pt-2">
+          <div className="inline-block whitespace-nowrap pt-2 min-w-[200%]">
             {krwMarketPrices.map((coin) => (
               <CoinItem key={coin.symbol} coin={coin} />
             ))}

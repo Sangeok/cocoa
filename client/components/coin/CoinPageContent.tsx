@@ -60,11 +60,11 @@ export default function CoinPageContent({ symbol }: { symbol: string }) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="w-full px-4 py-4">
       <CoinHeader symbol={symbol} koreanName={koreanName} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="lg:col-span-2 space-y-4">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+        <div className="lg:col-span-3 space-y-4">
           <div className="bg-black rounded-lg shadow-lg overflow-hidden">
             <TradingViewWidget symbol={formattedSymbol} />
           </div>

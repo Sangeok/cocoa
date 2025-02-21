@@ -47,7 +47,7 @@ const ExchangeVolume = ({
       href={marketUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-lg transition-colors cursor-pointer"
+      className="flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 p-1 sm:p-2 rounded-lg transition-colors cursor-pointer"
     >
       <Image
         src={`/exchanges/${exchange}.svg`}
@@ -86,7 +86,7 @@ const ExchangePrice = ({
       href={marketUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-lg transition-colors cursor-pointer"
+      className="flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 p-1 sm:p-2 rounded-lg transition-colors cursor-pointer"
     >
       <Image
         src={`/exchanges/${exchange}.svg`}
@@ -125,7 +125,7 @@ const ExchangeChange24h = ({
       href={marketUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 p-2 rounded-lg transition-colors cursor-pointer"
+      className="flex items-center gap-2 hover:bg-gray-100 dark:hover:bg-gray-800 p-1 sm:p-2 rounded-lg transition-colors cursor-pointer"
     >
       <Image
         src={`/exchanges/${exchange}.svg`}
@@ -188,7 +188,7 @@ const MarketSection = ({
   if (!hasMarketData) return null;
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
+    <div className="bg-gray-50 dark:bg-gray-900 p-2 sm:p-4 rounded-lg">
       <div className="text-sm font-medium text-gray-900 dark:text-white mb-3">
         {title}
       </div>
@@ -198,7 +198,7 @@ const MarketSection = ({
           <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
             거래량
           </div>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-2 sm:gap-4">
             {marketType === "KRW" && (
               <>
                 <ExchangeVolume
@@ -245,7 +245,7 @@ const MarketSection = ({
           <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
             현재가
           </div>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-2 sm:gap-4">
             {marketType === "KRW" && (
               <>
                 <ExchangePrice
@@ -292,7 +292,7 @@ const MarketSection = ({
           <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
             전일 대비 가격(%)
           </div>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-2 sm:gap-4">
             {marketType === "KRW" && (
               <>
                 <ExchangeChange24h
@@ -347,7 +347,7 @@ export default function MarketData({ symbol, coins }: MarketDataProps) {
         </h2>
       </div>
 
-      <div className="p-4 space-y-4">
+      <div className="p-1 sm:p-4 space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {[
             { title: "원화 마켓 (KRW)", type: "KRW" as const },

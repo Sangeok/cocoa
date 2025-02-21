@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function CoinPageSkeleton() {
   return (
-    <div className="container mx-auto px-4 py-8 animate-pulse">
+    <div className="w-full px-4 py-4 animate-pulse">
       {/* Header Skeleton */}
       <div className="mb-6">
         <div className="flex items-center gap-2">
@@ -12,11 +12,16 @@ export default function CoinPageSkeleton() {
       </div>
 
       {/* Main Content Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         {/* Left Column */}
-        <div className="lg:col-span-2 space-y-4">
+        <div className="lg:col-span-3 space-y-4">
           {/* Chart Skeleton */}
-          <div className="bg-gray-200 dark:bg-gray-800 rounded-lg h-[calc(100vh-200px)]" />
+          <div 
+            className="bg-gray-200 dark:bg-gray-800 rounded-lg" 
+            style={{ 
+              height: "clamp(400px, calc(100vh - 160px), 800px)",
+            }}
+          />
 
           {/* Market Data Skeleton */}
           <div className="bg-white dark:bg-gray-950 rounded-xl shadow-xl border border-gray-200 dark:border-gray-800">
@@ -27,7 +32,7 @@ export default function CoinPageSkeleton() {
               {[1, 2, 3].map((i) => (
                 <div key={i}>
                   <div className="h-4 w-24 bg-gray-200 dark:bg-gray-800 rounded mb-2" />
-                  <div className="grid grid-cols-3 gap-4">
+                  <div className="grid grid-cols-3 gap-2 sm:gap-4">
                     {[1, 2, 3].map((j) => (
                       <div key={j} className="flex items-center gap-2">
                         <div className="w-4 h-4 bg-gray-200 dark:bg-gray-800 rounded" />
