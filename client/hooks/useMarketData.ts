@@ -149,12 +149,12 @@ export function useMarketData() {
     if (searchTerm) {
       return list.filter((item) => {
         const { symbol } = item;
-
-        if (getKoreanName(symbol)) {
-          return getKoreanName(symbol).includes(searchTerm);
-        }
-
-        return symbol.includes(searchTerm.toUpperCase());
+        
+        // 한글 검색과 영문 검색 조건을 OR 연산으로 처리
+        return (
+          (getKoreanName(symbol) && getKoreanName(symbol).includes(searchTerm)) || 
+          symbol.toUpperCase().includes(searchTerm.toUpperCase())
+        );
       });
     }
 

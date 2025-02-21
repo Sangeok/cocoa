@@ -14,11 +14,10 @@ import { EXCHANGE_OPTIONS, BASE_TOKEN_OPTIONS } from "@/const/exchange";
 import type { SortField, SortState } from "@/types/exchange";
 import { useMarketData } from "@/hooks/useMarketData";
 import { Exchange, QuoteToken } from "@/types/exchange";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { UPBIT_STATIC_IMAGE_URL } from "@/const";
 import Link from "next/link";
-import useMarketsStore from "@/store/useMarketsStore";
-
+import { UsdtPremiumBox } from "./UsdtPremiumBox";
 function ImageWithFallback({ symbol }: { symbol: string }) {
   const [showImage, setShowImage] = useState(true);
 
@@ -149,14 +148,14 @@ export default function PremiumTableContent() {
           </div>
         </div>
       </div>
+      <UsdtPremiumBox />
 
-      {sortedMarkets.length === 0 && searchTerm && (
+      {(sortedMarkets.length === 0 && searchTerm) ? (
         <div className="text-center py-8 text-gray-500 dark:text-gray-400">
           검색 결과가 없습니다
         </div>
-      )}
-
-      <div className="bg-white dark:bg-gray-950 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-900">
+      ) : (
+        <div className="bg-white dark:bg-gray-950 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-900">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-900">
             <thead>
@@ -362,8 +361,9 @@ export default function PremiumTableContent() {
               ))}
             </tbody>
           </table>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

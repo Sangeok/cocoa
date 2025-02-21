@@ -52,6 +52,11 @@ export const metadata: Metadata = {
     locale: "ko",
     url: "https://cocoacoin.kr",
   },
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+  },
 };
 
 export default function RootLayout({
@@ -62,10 +67,6 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <head>
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1, maximum-scale=1"
-        />
         <Script id="google-tag-manager" strategy="afterInteractive">
           {`
             (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
