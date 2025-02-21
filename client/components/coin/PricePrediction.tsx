@@ -318,7 +318,12 @@ export default function PricePrediction({
             onChange={setDeposit}
             placeholder="금액을 입력하세요($)"
             min={0}
-            max={Number(user?.predict?.vault) + (activePredict?.deposit || 0)}
+            max={
+              user
+                ? Number(user?.predict?.vault) +
+                  (activePredict?.deposit || 0)
+                : 0
+            }
           />
           <div>
             <label className="text-sm font-medium text-gray-900 dark:text-white">

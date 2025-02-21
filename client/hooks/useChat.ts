@@ -6,16 +6,22 @@ import { ClientAPICall } from "@/lib/axios";
 import { API_ROUTES } from "@/const/api";
 import { CoinTalkMessageData, GlobalChatMessageData } from "@/types/chat";
 import useChat from "@/store/useChat";
+import useAuthStore from "@/store/useAuthStore";
 
 export function useChatRoom(symbol: string) {
   const { getCurrentNickname, setNickname, validateNickname } = useChat();
-  const [globalMessages, setGlobalMessages] = useState<GlobalChatMessageData[]>([]);
+  const [globalMessages, setGlobalMessages] = useState<GlobalChatMessageData[]>(
+    []
+  );
   const [coinMessages, setCoinMessages] = useState<CoinTalkMessageData[]>([]);
-  const [pendingMessages, setPendingMessages] = useState<Set<number>>(new Set());
+  const [pendingMessages, setPendingMessages] = useState<Set<number>>(
+    new Set()
+  );
   const [inputMessage, setInputMessage] = useState("");
   const [selectedChat, setSelectedChat] = useState<"global" | "coin">("global");
   const [isNicknameModalOpen, setIsNicknameModalOpen] = useState(false);
   const [newNickname, setNewNickname] = useState(getCurrentNickname());
+  const { user } = useAuthStore();
 
   useEffect(() => {
     // 초기 메시지 로드
@@ -45,7 +51,9 @@ export function useChatRoom(symbol: string) {
           return newPending;
         });
         setCoinMessages((prev) => {
-          const exists = prev.some((msg) => msg.timestamp === message.timestamp);
+          const exists = prev.some(
+            (msg) => msg.timestamp === message.timestamp
+          );
           if (exists) return prev;
           return [message, ...prev];
         });
@@ -79,6 +87,7 @@ export function useChatRoom(symbol: string) {
       message: message.trim(),
       timestamp,
       nickname: getCurrentNickname(),
+      userId: user?.id,
     };
 
     if (selectedChat === "global") {
@@ -121,4 +130,4 @@ export function useChatRoom(symbol: string) {
     handleSendMessage,
     handleNicknameChange,
   };
-} 
+}

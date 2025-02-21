@@ -10,6 +10,12 @@ export const predicts = pgTable('predicts', {
   wins: integer('wins').notNull().default(0),
   losses: integer('losses').notNull().default(0),
   draws: integer('draws').notNull().default(0),
+  longCount: integer('long_count').notNull().default(0),   // 롱 포지션 횟수
+  shortCount: integer('short_count').notNull().default(0), // 숏 포지션 횟수
+  maxWinStreak: integer('max_win_streak').notNull().default(0),  // 최다 연승
+  maxLoseStreak: integer('max_lose_streak').notNull().default(0), // 최다 연패
+  currentWinStreak: integer('current_win_streak').notNull().default(0), // 현재 연승
+  currentLoseStreak: integer('current_lose_streak').notNull().default(0), // 현재 연패
   vault: decimal('vault').notNull().default('10000'),
   lastPredictAt: timestamp('last_predict_at').notNull(),
   lastCheckInAt: timestamp('last_check_in_at'),

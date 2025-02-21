@@ -19,6 +19,13 @@ export default function ChatInput({
   const MAX_MESSAGE_LENGTH = 100;
   const { isAuthenticated } = useAuthStore();
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inputMessage.trim()) return;
+    onSendMessage(inputMessage.trim());
+    setInputMessage("");
+  };
+
   return (
     <div>
       <div className="px-4 py-2 border-t border-gray-200 dark:border-gray-800 flex items-center justify-between">
@@ -39,19 +46,16 @@ export default function ChatInput({
       </div>
 
       <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (!inputMessage.trim()) return;
-          onSendMessage(inputMessage.trim());
-          setInputMessage("");
-        }}
+        onSubmit={handleSubmit}
         className="p-2 border-t border-gray-200 dark:border-gray-800"
       >
         <div className="flex gap-2">
           <input
             type="text"
             value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value.slice(0, MAX_MESSAGE_LENGTH))}
+            onChange={(e) =>
+              setInputMessage(e.target.value.slice(0, MAX_MESSAGE_LENGTH))
+            }
             placeholder="메시지를 입력하세요"
             className="flex-1 rounded-lg px-3 py-2 bg-gray-50 dark:bg-gray-950 
                    border border-gray-300 dark:border-gray-800
@@ -71,4 +75,4 @@ export default function ChatInput({
       </form>
     </div>
   );
-} 
+}

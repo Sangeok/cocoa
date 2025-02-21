@@ -1,9 +1,20 @@
-import { Controller, Get, UseGuards, Patch, Body, Res } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  UseGuards,
+  Patch,
+  Body,
+  Res,
+  Param,
+  Req,
+  BadRequestException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { AuthService } from '../auth/auth.service';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { ConfigService } from '@nestjs/config';
 
 interface UpdateNameDto {
@@ -99,6 +110,56 @@ export class UserController {
         success: false,
         message: error.message,
       };
+    }
+  }
+
+  @Get(':userId')
+  async getPublicProfile(@Param('userId') userId: string) {
+    try {
+      const profile = await this.userService.getPublicProfile(parseInt(userId));
+      return {
+        success: true,
+        data: profile,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message,
+      };
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('profile')
+  async updateProfile(
+    @Req() req: Request & { user: { id: number } },
+    @Body()
+    updateData: {
+      name?: string;
+      bio?: string;
+      telegram?: string;
+      youtube?: string;
+      instagram?: string;
+      twitter?: string;
+      discord?: string;
+      homepage?: string;
+      github?: string;
+    },
+  ) {
+    try {
+      const updatedUser = await this.userService.updateProfile(
+        req.user.id,
+        updateData,
+      );
+      return {
+        success: true,
+        data: updatedUser,
+      };
+    } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to update profile');
     }
   }
 }

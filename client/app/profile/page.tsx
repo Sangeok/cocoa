@@ -2,13 +2,15 @@
 
 import { useRouter } from "next/navigation";
 import useAuthStore from "@/store/useAuthStore";
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { ClientAPICall } from "@/lib/axios";
 import toast from "react-hot-toast";
 import { API_ROUTES } from "@/const/api";
 import useMarketStore from "@/store/useMarketStore";
 import clsx from "clsx";
 import { formatDollar } from "@/lib/format";
+import { Field, Description, Textarea } from "@headlessui/react";
+import Button from "@/components/common/Button";
 
 interface PredictLog {
   id: number;
@@ -49,6 +51,8 @@ export default function ProfilePage() {
       new Date().toDateString()
     : true;
   const [rankings, setRankings] = useState<Rankings | null>(null);
+  const [bio, setBio] = useState(user?.bio || "");
+  const [isEditingBio, setIsEditingBio] = useState(false);
 
   const handleLogout = () => {
     logout();
@@ -229,6 +233,22 @@ export default function ProfilePage() {
       wins: winsIndex === -1 ? "100+" : `${winsIndex + 1}`,
       winRate: winRateIndex === -1 ? "100+" : `${winRateIndex + 1}`,
     };
+  };
+
+  const handleUpdateBio = async () => {
+    try {
+      const response = await ClientAPICall.patch(API_ROUTES.USER.PROFILE.url, {
+        bio: bio.trim(),
+      });
+
+      if (response.data.success) {
+        toast.success("자기소개가 수정되었습니다.");
+        setIsEditingBio(false);
+      }
+    } catch (error) {
+      console.error("Failed to update bio:", error);
+      toast.error("자기소개 수정에 실패했습니다.");
+    }
   };
 
   if (!isAuthenticated || !user) {
@@ -464,6 +484,67 @@ export default function ProfilePage() {
                 로그아웃
               </button>
             </div>
+          </div>
+        </div>
+
+        <div className="bg-white dark:bg-gray-950 shadow rounded-lg">
+          <div className="px-4 py-5 sm:p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">자기소개</h2>
+              {!isEditingBio && (
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => setIsEditingBio(true)}
+                >
+                  수정
+                </Button>
+              )}
+            </div>
+
+            {isEditingBio ? (
+              <div className="space-y-4">
+                <Field>
+                  <Description className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                    최대 100자까지 입력할 수 있습니다.
+                  </Description>
+                  <Textarea
+                    value={bio}
+                    onChange={(e) => setBio(e.target.value)}
+                    maxLength={100}
+                    rows={3}
+                    className={clsx(
+                      "mt-2 block w-full resize-none rounded-lg border-none",
+                      "bg-white/5 dark:bg-gray-800 py-2 px-3",
+                      "text-gray-900 dark:text-white text-sm/6",
+                      "focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2",
+                      "data-[focus]:outline-teal-500/25 dark:data-[focus]:outline-teal-400/25",
+                      "placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                    )}
+                    placeholder="자기소개를 입력해주세요"
+                  />
+                </Field>
+                <div className="flex justify-end gap-2">
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={() => {
+                      setBio(user?.bio || "");
+                      setIsEditingBio(false);
+                    }}
+                  >
+                    취소
+                  </Button>
+                  <Button size="sm" variant="primary" onClick={handleUpdateBio}>
+                    저장
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                {bio || "자기소개가 없습니다."}
+              </p>
+            )}
           </div>
         </div>
 

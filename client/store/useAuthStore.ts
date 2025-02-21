@@ -8,6 +8,14 @@ interface User {
   provider: string;
   phoneNumber: string;
   createdAt: string;
+  bio: string;
+  telegram: string;
+  youtube: string;
+  instagram: string;
+  twitter: string;
+  discord: string;
+  homepage: string;
+  github: string;
   predict: {
     wins: number;
     losses: number;
@@ -42,6 +50,19 @@ const useAuthStore = create<AuthStore>()(
         return set({
           user: {
             ...user,
+            id: user?.id || 0,
+            email: user?.email || "",
+            provider: user?.provider || "",
+            phoneNumber: user?.phoneNumber || "",
+            name: user?.name || "",
+            bio: user?.bio || "",
+            telegram: user?.telegram || "",
+            youtube: user?.youtube || "",
+            instagram: user?.instagram || "",
+            twitter: user?.twitter || "",
+            discord: user?.discord || "",
+            homepage: user?.homepage || "",
+            github: user?.github || "",
             predict: {
               ...user?.predict,
               lastCheckInAt: user?.predict?.lastCheckInAt || "",
@@ -60,15 +81,17 @@ const useAuthStore = create<AuthStore>()(
           user: null,
           isAuthenticated: false,
         }),
-      updateVault: (newVault) => 
+      updateVault: (newVault) =>
         set((state) => ({
-          user: state.user ? {
-            ...state.user,
-            predict: {
-              ...state.user.predict,
-              vault: newVault,
-            },
-          } : null,
+          user: state.user
+            ? {
+                ...state.user,
+                predict: {
+                  ...state.user.predict,
+                  vault: newVault,
+                },
+              }
+            : null,
         })),
     }),
     {

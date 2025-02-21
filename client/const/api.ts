@@ -62,6 +62,10 @@ export const API_ROUTES = {
       url: "/user/phone",
       method: "PATCH",
     },
+    PUBLIC_PROFILE: {
+      url: "/user/:userId",
+      method: "GET",
+    },
   },
   PREDICT: {
     GET: {
@@ -115,6 +119,68 @@ export const API_ROUTES = {
     PROJECT: {
       url: "/yields/project/:name",
       method: "GET",
+    },
+  },
+  PROFILE_STATS: {
+    GET: {
+      url: "/profile-stats/:userId",
+      method: "GET",
+    },
+    RECORD_VISIT: {
+      url: "/profile-stats/:userId/visit",
+      method: "POST",
+    },
+  },
+  GUESTBOOK: {
+    LIST: {
+      url: "/guestbook",
+      method: "GET",
+    },
+    CREATE: {
+      url: "/guestbook",
+      method: "POST",
+    },
+    GET_COMMENTS: {
+      url: "/guestbook/:guestbookId/comments",
+      method: "GET",
+    },
+    CREATE_COMMENT: {
+      url: "/guestbook/:guestbookId/comments",
+      method: "POST",
+    },
+    DELETE: {
+      url: "/guestbook/:guestbookId",
+      method: "DELETE",
+    },
+    DELETE_COMMENT: {
+      url: "/guestbook/comments/:commentId",
+      method: "DELETE",
+    },
+    UPDATE_COMMENT: {
+      url: "/guestbook/comments/:commentId",
+      method: "PATCH",
+    },
+  },
+  NOTIFICATIONS: {
+    GET: {
+      url: "/notifications",
+      method: "GET",
+    },
+    UNREAD: {
+      url: "/notifications/unread",
+      method: "GET",
+    },
+    MARK_AS_READ: {
+      url: "/notifications/read/:id",
+      method: "PATCH",
+    },
+    MARK_ALL_AS_READ: {
+      url: "/notifications/read-all",
+      method: "POST",
+    },
+    DELETE: {
+      url: "/notifications/:id",
+      method: "DELETE",
     },
   },
 } as const;

@@ -14,6 +14,9 @@ import { GatewayModule } from './gateway/gateway.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { YieldModule } from './yield/yield.module';
+import { GuestbookModule } from './guestbook/guestbook.module';
+import { ProfileStatsModule } from './profile-stats/profile-stats.module';
+import { NotificationModule } from './notification/notification.module';
 @Module({
   imports: [
     ConfigModule,
@@ -29,6 +32,9 @@ import { YieldModule } from './yield/yield.module';
     UserModule,
     AuthModule,
     YieldModule,
+    GuestbookModule,
+    ProfileStatsModule,
+    NotificationModule
   ],
   controllers: [AppController],
   providers: [AppService],

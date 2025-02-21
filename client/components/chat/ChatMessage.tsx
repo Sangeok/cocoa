@@ -1,6 +1,7 @@
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
-import { CheckCircleIcon } from "@heroicons/react/24/solid";
+import { UserCircleIcon } from "@heroicons/react/24/solid";
+import Link from "next/link";
 
 interface ChatMessageProps {
   message: string;
@@ -21,9 +22,7 @@ export default function ChatMessage({
 }: ChatMessageProps) {
   return (
     <div
-      className={`flex ${
-        isMyMessage ? "justify-end" : "justify-start"
-      } mb-3`}
+      className={`flex ${isMyMessage ? "justify-end" : "justify-start"} mb-3`}
     >
       <div
         className={`inline-block rounded-lg px-4 py-2 max-w-[80%] ${
@@ -35,9 +34,21 @@ export default function ChatMessage({
         }`}
       >
         <div className="text-xs opacity-75 mb-1 flex items-center gap-2">
-          <span className="font-medium">{nickname}</span>
           {userId && (
-            <CheckCircleIcon className="h-4 w-4 text-blue-500" title="인증된 사용자" />
+            <UserCircleIcon
+              className="h-4 w-4 text-blue-500"
+              title="인증된 사용자"
+            />
+          )}
+          {userId ? (
+            <Link
+              href={`/u/${userId}`}
+              className="font-medium hover:text-blue-500 dark:hover:text-blue-400 transition-colors"
+            >
+              {nickname}
+            </Link>
+          ) : (
+            <span className="font-medium">{nickname}</span>
           )}
           {isPending && (
             <span className="text-xs text-gray-500">전송중...</span>
@@ -50,4 +61,4 @@ export default function ChatMessage({
       </div>
     </div>
   );
-} 
+}

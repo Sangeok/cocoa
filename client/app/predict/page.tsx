@@ -102,6 +102,7 @@ export default function PredictPage() {
   const { markets, fetchMarkets, getKoreanName } = useMarketsStore();
   const [currentRankingIndex, setCurrentRankingIndex] = useState(0);
   const { user, isAuthenticated } = useAuthStore();
+  const [currentPage, setCurrentPage] = useState(0);
 
   const rankingTitles = ["현재 자산", "최다 적중", "최고 승률"];
   const rankingComponents = [
@@ -123,6 +124,15 @@ export default function PredictPage() {
 
   const handleNext = () => {
     setCurrentRankingIndex((prev) => (prev === 2 ? 0 : prev + 1));
+  };
+
+  const handlePrevPage = () => {
+    setCurrentPage(prev => Math.max(0, prev - 1));
+  };
+
+  const handleNextPage = () => {
+    const maxPage = Math.floor((rankingComponents[currentRankingIndex]?.length || 0) / 10) - 1;
+    setCurrentPage(prev => Math.min(maxPage, prev + 1));
   };
 
   useEffect(() => {
@@ -147,6 +157,10 @@ export default function PredictPage() {
 
     fetchRankings();
   }, []);
+
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [currentRankingIndex]);
 
   const bestCoins = [
     "BTC",
@@ -286,52 +300,86 @@ export default function PredictPage() {
             <div className="overflow-x-auto">
               <div className="p-4">
                 {rankings ? (
-                  <div className="space-y-2">
-                    {rankingComponents[currentRankingIndex]
-                      ?.slice(0, 10)
-                      .map((rank, index) => (
-                        <div
-                          key={rank.userId}
-                          className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg"
-                        >
-                          <div className="flex items-center gap-3 min-w-[100px] flex-shrink">
-                            <div className="w-6 text-center font-medium shrink-0">
-                              {getRankIcon(index)}
-                            </div>
-                            <div className="truncate">{rank.name}</div>
-                          </div>
-                          <div className="text-sm flex-shrink-0 ml-4">
-                            {currentRankingIndex === 0 ? (
-                              <span className="text-green-500 whitespace-nowrap">
-                                ${formatNumber(Number(rank.vault))}
-                              </span>
-                            ) : currentRankingIndex === 1 ? (
-                              <div className="flex gap-1 sm:gap-2 whitespace-nowrap">
-                                <span className="text-green-500">
-                                  {rank.wins}승
-                                </span>
-                                <span className="text-red-500">
-                                  {rank.losses}패
-                                </span>
-                                <span className="text-gray-500">
-                                  {rank.draws}무
-                                </span>
+                  <>
+                    <div className="space-y-2">
+                      {rankingComponents[currentRankingIndex]
+                        ?.slice(currentPage * 10, (currentPage + 1) * 10)
+                        .map((rank, index) => {
+                          const actualIndex = currentPage * 10 + index;
+                          return (
+                            <Link
+                              href={`/u/${rank.userId}`}
+                              key={rank.userId}
+                              className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-900 rounded-lg
+                                       hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
+                            >
+                              <div className="flex items-center gap-3 min-w-[100px] flex-shrink">
+                                <div className="w-6 text-center font-medium shrink-0">
+                                  {getRankIcon(actualIndex)}
+                                </div>
+                                <div className="truncate">{rank.name}</div>
                               </div>
-                            ) : (
-                              <div className="flex gap-1 sm:gap-2 whitespace-nowrap">
-                                <span className="text-blue-500">
-                                  {rank.winRate?.toFixed(1)}%
-                                </span>
-                                <span className="text-gray-500 hidden sm:inline">
-                                  ({rank.wins}/
-                                  {rank.wins + rank.losses + rank.draws})
-                                </span>
+                              <div className="text-sm flex-shrink-0 ml-4">
+                                {currentRankingIndex === 0 ? (
+                                  <span className="text-green-500 whitespace-nowrap">
+                                    ${formatNumber(Number(rank.vault))}
+                                  </span>
+                                ) : currentRankingIndex === 1 ? (
+                                  <div className="flex gap-1 sm:gap-2 whitespace-nowrap">
+                                    <span className="text-green-500">
+                                      {rank.wins}승
+                                    </span>
+                                    <span className="text-red-500">
+                                      {rank.losses}패
+                                    </span>
+                                    <span className="text-gray-500">
+                                      {rank.draws}무
+                                    </span>
+                                  </div>
+                                ) : (
+                                  <div className="flex gap-1 sm:gap-2 whitespace-nowrap">
+                                    <span className="text-blue-500">
+                                      {rank.winRate?.toFixed(1)}%
+                                    </span>
+                                    <span className="text-gray-500 hidden sm:inline">
+                                      ({rank.wins}/
+                                      {rank.wins + rank.losses + rank.draws})
+                                    </span>
+                                  </div>
+                                )}
                               </div>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                  </div>
+                            </Link>
+                          );
+                        })}
+                    </div>
+                    <div className="mt-4 flex items-center justify-between">
+                      <button
+                        onClick={handlePrevPage}
+                        disabled={currentPage === 0}
+                        className={`px-3 py-1 rounded ${
+                          currentPage === 0
+                            ? 'text-gray-400 cursor-not-allowed'
+                            : 'text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900'
+                        }`}
+                      >
+                        이전
+                      </button>
+                      <div className="text-sm text-gray-600 dark:text-gray-400">
+                        {currentPage + 1} / {Math.ceil((rankingComponents[currentRankingIndex]?.length || 0) / 10)}
+                      </div>
+                      <button
+                        onClick={handleNextPage}
+                        disabled={currentPage >= Math.floor((rankingComponents[currentRankingIndex]?.length || 0) / 10) - 1}
+                        className={`px-3 py-1 rounded ${
+                          currentPage >= Math.floor((rankingComponents[currentRankingIndex]?.length || 0) / 10) - 1
+                            ? 'text-gray-400 cursor-not-allowed'
+                            : 'text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900'
+                        }`}
+                      >
+                        다음
+                      </button>
+                    </div>
+                  </>
                 ) : (
                   <RankingSkeleton />
                 )}

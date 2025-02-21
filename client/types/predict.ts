@@ -26,3 +26,15 @@ export interface PredictResult {
   vault: number;
   isLiquidated: boolean;
 }
+
+export interface PredictStats {
+  wins: number;
+  losses: number;
+  draws: number;
+  longCount: number;
+  shortCount: number;
+  maxWinStreak: number;
+  maxLoseStreak: number;
+  currentWinStreak: number;
+  currentLoseStreak: number;
+}

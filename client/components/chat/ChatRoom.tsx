@@ -3,6 +3,7 @@ import ChatMessageList from "./ChatMessageList";
 import ChatInput from "./ChatInput";
 import clsx from "clsx";
 import { useChatRoom } from "@/hooks/useChat";
+import useAuthStore from "@/store/useAuthStore";
 
 interface ChatRoomProps {
   symbol: string;
@@ -22,6 +23,8 @@ export default function ChatRoom({ symbol, symbolKoreanName }: ChatRoomProps) {
     handleSendMessage,
     setIsNicknameModalOpen,
   } = useChatRoom(symbol);
+
+  const { user } = useAuthStore();
 
   return (
     <div className="bg-white dark:bg-gray-950 rounded-lg shadow">

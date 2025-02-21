@@ -97,28 +97,29 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
       const messageData = {
         ...data,
         symbol: baseSymbol,
-        userId: client.data.userId,
+        userId: data.userId,  // client.data.userId 대신 data.userId 사용
       };
 
-      this.logger.debug(
-        `Received coin message: ${JSON.stringify(messageData)}`,
-      );
+      this.logger.debug(`Received coin message: ${JSON.stringify(messageData)}`);
       await this.chatService.sendMessage(messageData);
-      this.logger.debug('Message saved to Redis');
-
-      // room에 join하지 않았기 때문에 전체 클라이언트에게 broadcast
       this.server.emit('coin-talk-message', messageData);
-      this.logger.debug('Message broadcasted to clients');
     } catch (error) {
       this.logger.error('Failed to handle coin message:', error);
     }
   }
 
   @SubscribeMessage('global-chat-message')
-  async handleGlobalMessage(client: any, data: GlobalChatMessageData) {
+  async handleGlobalChat(client: Socket, data: GlobalChatMessageData) {
     try {
-      await this.chatService.sendGlobalMessage(data);
-      this.server.emit('global-chat-message', data);
+      const messageData: GlobalChatMessageData = {
+        message: data.message,
+        nickname: data.nickname,
+        timestamp: data.timestamp,
+        userId: data.userId,
+      };
+
+      await this.chatService.sendGlobalMessage(messageData);
+      this.server.emit('global-chat-message', messageData);
     } catch (error) {
       this.logger.error('Failed to handle global message:', error);
     }
@@ -126,12 +127,12 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   @SubscribeMessage('sendMessage')
   async handleMessage(
-    @MessageBody() data: { message: string; symbol?: string },
+    @MessageBody() data: { message: string; symbol?: string; timestamp: number },
     @ConnectedSocket() client: Socket,
   ) {
     const messageData = {
       message: data.message,
-      timestamp: Date.now(),
+      timestamp: data.timestamp,
       nickname: client.data.nickname,
       userId: client.data.userId, // undefined 또는 사용자 ID
       ...(data.symbol && { symbol: data.symbol }),
