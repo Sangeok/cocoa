@@ -108,7 +108,7 @@ const ExternalLink = ({ href, icon, name }: ExternalLinkProps) => (
     className="inline-flex items-center gap-1 text-gray-500 dark:text-gray-400 hover:text-blue-500 dark:hover:text-blue-400"
   >
     <Image src={icon} alt={name} width={100} height={32} />
-    <span className="text-sm">{href}</span>
+    <span className="text-sm line-clamp-1 break-all">{href}</span>
   </a>
 );
 
@@ -160,7 +160,7 @@ export default function ContractPage({
         <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
           {contract.name}
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 break-all mb-2">
+        <p className="text-gray-500 dark:text-gray-400 line-clamp-1 break-all mb-2">
           {contract.contractDetails.address}
         </p>
         <div className="flex items-center gap-4">

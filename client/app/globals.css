@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html, body {
+  touch-action: manipulation;
+}
+
 /* 스크롤바 스타일링 */
 .custom-scrollbar::-webkit-scrollbar {
   height: 6px;
