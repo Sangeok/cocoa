@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { DrizzleClient } from '../database/database.module';
 import { Inject } from '@nestjs/common';
 import { guestbooks } from '../database/schema/guestbook';
@@ -15,10 +19,25 @@ export class GuestbookService {
     private readonly notificationService: NotificationService,
   ) {}
 
-  async createGuestbook(userId: number, targetUserId: number, content: string, isSecret: boolean = false) {
+  async getGuestbook(guestbookId: number) {
+    const [guestbook] = await this.db
+      .select()
+      .from(guestbooks)
+      .where(eq(guestbooks.id, guestbookId));
+    return guestbook;
+  }
+
+  async createGuestbook(
+    userId: number,
+    targetUserId: number,
+    content: string,
+    isSecret: boolean = false,
+  ) {
     // 자신의 방명록에는 비밀글을 쓸 수 없음
     if (userId === targetUserId && isSecret) {
-      throw new BadRequestException('Cannot write secret guestbook on your own profile');
+      throw new BadRequestException(
+        'Cannot write secret guestbook on your own profile',
+      );
     }
 
     const [guestbook] = await this.db
@@ -26,12 +45,13 @@ export class GuestbookService {
       .values({
         userId: targetUserId,
         authorId: userId,
+        targetUserId: targetUserId,
         content,
         isSecret,
       })
       .returning();
 
-    const authorAlias = alias(users, 'author');  // 별칭 테이블 정의
+    const authorAlias = alias(users, 'author'); // 별칭 테이블 정의
 
     // 생성된 방명록과 작성자 정보를 함께 조회
     const [guestbookWithUser] = await this.db
@@ -54,28 +74,26 @@ export class GuestbookService {
       })
       .from(guestbooks)
       .innerJoin(users, eq(users.id, guestbooks.userId))
-      .innerJoin(
-        authorAlias,
-        eq(authorAlias.id, guestbooks.authorId)
-      )
+      .innerJoin(authorAlias, eq(authorAlias.id, guestbooks.authorId))
       .where(eq(guestbooks.id, guestbook.id));
 
     // 방명록 작성 알림 생성 (자신의 방명록에 쓸 때는 제외)
     if (userId !== targetUserId) {
       console.log('Creating notification:', {
-        userId: targetUserId,    // 방명록 주인 (알림을 받을 사람)
-        senderId: userId,        // 방명록 작성자 (알림을 발생시킨 사람)
+        userId: targetUserId, // 방명록 주인 (알림을 받을 사람)
+        senderId: userId, // 방명록 작성자 (알림을 발생시킨 사람)
         type: 'NEW_GUESTBOOK',
         content: `새로운 방명록이 작성되었습니다: ${content.substring(0, 30)}...`,
         targetId: guestbook.id,
       });
-      
+
       await this.notificationService.create({
-        userId: targetUserId,    // 방명록 주인에게 알림이 가야 함
-        senderId: userId,        // 방명록 작성자가 발신자
+        userId: targetUserId, // 방명록 주인에게 알림이 가야 함
+        senderId: userId, // 방명록 작성자가 발신자
         type: 'NEW_GUESTBOOK',
         content: `새로운 방명록이 작성되었습니다: ${content.substring(0, 30)}...`,
         targetId: guestbook.id,
+        targetUserId: guestbook.targetUserId,
       });
     }
 
@@ -119,7 +137,10 @@ export class GuestbookService {
         .from(guestbooks)
         .innerJoin(users, eq(users.id, guestbooks.userId))
         .innerJoin(authorAlias, eq(authorAlias.id, guestbooks.authorId))
-        .leftJoin(guestbookComments, eq(guestbookComments.guestbookId, guestbooks.id))
+        .leftJoin(
+          guestbookComments,
+          eq(guestbookComments.guestbookId, guestbooks.id),
+        )
         .where(and(...whereConditions))
         .groupBy(guestbooks.id, users.id, authorAlias.id)
         .orderBy(desc(guestbooks.createdAt))
@@ -132,7 +153,7 @@ export class GuestbookService {
     ]);
 
     // 방명록 내용 처리
-    const processedItems = items.map(item => {
+    const processedItems = items.map((item) => {
       if (!item.isSecret) return item;
 
       // 비밀 방명록인 경우
@@ -140,11 +161,11 @@ export class GuestbookService {
         // 비로그인 사용자
         return {
           ...item,
-          content: "비공개 방명록입니다.",
+          content: '비공개 방명록입니다.',
           author: {
             ...item.author,
-            name: "비공개",
-          }
+            name: '비공개',
+          },
         };
       }
 
@@ -156,11 +177,11 @@ export class GuestbookService {
       // 그 외의 경우 내용 가림
       return {
         ...item,
-        content: "비공개 방명록입니다.",
+        content: '비공개 방명록입니다.',
         author: {
           ...item.author,
-          name: "비공개",
-        }
+          name: '비공개',
+        },
       };
     });
 
@@ -177,32 +198,12 @@ export class GuestbookService {
 
   async getGuestbookComments(
     guestbookId: number,
-    page: number = 1,
-    limit: number = 10,
-    viewerId?: number,
+    page: number,
+    limit: number,
+    userId?: number,
   ) {
     const offset = (page - 1) * limit;
     const mentionedUsers = alias(users, 'mentioned_users');
-
-    // 삭제된 댓글만 제외
-    const whereConditions = [
-      eq(guestbookComments.guestbookId, guestbookId),
-      eq(guestbookComments.isDeleted, false),
-    ];
-
-    // 방명록 소유자 정보 조회
-    const [guestbook] = await this.db
-      .select({
-        id: guestbooks.id,
-        userId: guestbooks.userId,
-      })
-      .from(guestbooks)
-      .where(eq(guestbooks.id, guestbookId))
-      .limit(1);
-
-    if (!guestbook) {
-      throw new NotFoundException('Guestbook not found');
-    }
 
     const [comments, total] = await Promise.all([
       this.db
@@ -210,7 +211,7 @@ export class GuestbookService {
           id: guestbookComments.id,
           content: guestbookComments.content,
           createdAt: guestbookComments.createdAt,
-          updatedAt: guestbookComments.updatedAt,
+          isSecret: guestbookComments.isSecret,
           user: {
             id: users.id,
             name: users.name,
@@ -219,137 +220,73 @@ export class GuestbookService {
             id: mentionedUsers.id,
             name: mentionedUsers.name,
           },
-          isSecret: guestbookComments.isSecret,
         })
         .from(guestbookComments)
         .innerJoin(users, eq(users.id, guestbookComments.userId))
         .leftJoin(
           mentionedUsers,
-          eq(guestbookComments.mentionedUserId, mentionedUsers.id),
+          eq(mentionedUsers.id, guestbookComments.mentionedUserId),
         )
-        .where(and(...whereConditions))
-        .orderBy(desc(guestbookComments.createdAt))
+        .where(eq(guestbookComments.guestbookId, guestbookId))
+        .orderBy(desc(guestbookComments.createdAt)) // 최신순으로 정렬
+        .offset(offset)
         .limit(limit)
-        .offset(offset),
+        .then((results) => results.reverse()), // 결과만 역순으로 변환
+
       this.db
         .select({ count: sql<number>`count(*)` })
         .from(guestbookComments)
-        .where(and(...whereConditions)),
+        .where(eq(guestbookComments.guestbookId, guestbookId)),
     ]);
 
-    // 댓글 내용 처리
-    const processedComments = comments.map(comment => {
-      if (!comment.isSecret) return comment;
-
-      // 비밀 댓글인 경우
-      if (!viewerId) {
-        return {
-          ...comment,
-          content: "비밀 댓글입니다.",
-          user: {
-            ...comment.user,
-            name: "비공개",
-          }
-        };
-      }
-
-      // 로그인 사용자가 방명록 주인이거나 댓글 작성자인 경우 원본 내용 유지
-      if (viewerId === guestbook.userId || viewerId === comment.user.id) {
-        return comment;
-      }
-
-      // 그 외의 경우 내용 가림
-      return {
-        ...comment,
-        content: "비밀 댓글입니다.",
-        user: {
-          ...comment.user,
-          name: "비공개",
-        }
-      };
-    });
-
     return {
-      items: processedComments,
+      items: comments,
       pagination: {
         total: total[0].count,
         page,
         limit,
-        totalPages: Math.ceil(total[0].count / limit),
+        hasMore: total[0].count > page * limit,
       },
     };
   }
 
-  async createComment(guestbookId: number, userId: number, content: string, isSecret: boolean = false) {
+  async createComment(
+    guestbookId: number,
+    userId: number,
+    content: string,
+    isSecret: boolean,
+  ) {
+    // 1. 방명록 정보 조회
     const [guestbook] = await this.db
       .select({
-        id: guestbooks.id,
-        userId: guestbooks.userId,
+        authorId: guestbooks.authorId, // 방명록 작성자
+        targetUserId: guestbooks.targetUserId, // 방명록 주인
       })
       .from(guestbooks)
-      .where(eq(guestbooks.id, guestbookId))
-      .limit(1);
+      .where(eq(guestbooks.id, guestbookId));
 
-    if (!guestbook) {
-      throw new NotFoundException('Guestbook not found');
-    }
+    if (!guestbook) throw new NotFoundException('Guestbook not found');
 
-    if (guestbook.userId !== userId) {
-      throw new Error('Only guestbook owner can comment');
-    }
-
-    // Extract mentioned username from content
-    const mentionMatch = content.match(/^@(\S+)\s/);
-    let mentionedUserId: number | null = null;
-
-    if (mentionMatch) {
-      const mentionedName = mentionMatch[1];
-      const [mentionedUser] = await this.db
-        .select()
-        .from(users)
-        .where(eq(users.name, mentionedName))
-        .limit(1);
-
-      if (mentionedUser) {
-        mentionedUserId = mentionedUser.id;
-        // Remove mention from content
-        content = content.replace(/^@\S+\s/, '');
-      }
-    }
-
+    // 2. 댓글 생성
     const [comment] = await this.db
       .insert(guestbookComments)
       .values({
         guestbookId,
         userId,
         content,
-        mentionedUserId,
         isSecret,
       })
       .returning();
 
-    // 댓글 작성자 정보 조회
-    const [commentWithUser] = await this.db
-      .select({
-        id: guestbookComments.id,
-        content: guestbookComments.content,
-        user: {
-          id: users.id,
-          name: users.name,
-        },
-      })
-      .from(guestbookComments)
-      .innerJoin(users, eq(users.id, guestbookComments.userId))
-      .where(eq(guestbookComments.id, comment.id));
-
-    // Create notification for mentioned user if exists
-    if (mentionedUserId) {
+    // 3. 알림 생성 - 방명록 작성자에게만 알림 발송 (자신의 방명록이 아닌 경우에만)
+    if (guestbook.authorId !== userId) {
       await this.notificationService.create({
-        userId: mentionedUserId,
-        senderId: userId,
+        userId: guestbook.authorId, // 알림 수신자 (방명록 작성자)
+        senderId: userId, // 알림 발신자 (댓글 작성자)
         type: 'NEW_COMMENT',
-        content: `${commentWithUser.user.name}님이 회원님을 멘션했습니다: ${content.substring(0, 30)}...`,
-        targetId: comment.id,
+        content: `방명록에 새로운 댓글이 달렸습니다.`,
+        targetId: guestbookId,
+        targetUserId: guestbook.targetUserId,
       });
     }
 
@@ -416,7 +353,7 @@ export class GuestbookService {
       await tx.execute(
         sql`UPDATE guestbooks 
             SET comment_count = comment_count - 1 
-            WHERE id = ${comment.guestbookId}`
+            WHERE id = ${comment.guestbookId}`,
       );
     });
 

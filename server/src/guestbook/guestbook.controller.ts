@@ -35,6 +35,14 @@ export class GuestbookController {
     };
   }
 
+  @Get('/get/:guestbookId')
+  async getGuestbook(@Param('guestbookId') guestbookId: string) {
+    return {
+      success: true,
+      data: await this.guestbookService.getGuestbook(parseInt(guestbookId)),
+    };
+  }
+
   @UseGuards(JwtAuthGuard)
   @Post()
   async createGuestbook(
@@ -120,4 +128,4 @@ export class GuestbookController {
       ),
     };
   }
-} 
+}

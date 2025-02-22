@@ -19,7 +19,7 @@ import useActiveUsersStore from "@/store/useActiveUsersStore";
 import useAuthStore from "@/store/useAuthStore";
 import useMarketStore from "@/store/useMarketStore";
 import NotificationModal from "../notification/NotificationModal";
-import useNotificationStore from "@/store/useNotificationStore";
+import { useNotificationStore } from "@/store/useNotificationStore";
 
 const navigation = [
   { name: "🔥 가격 예측", href: "/predict" },
@@ -38,7 +38,12 @@ export default function Navbar() {
   const { user, isAuthenticated } = useAuthStore();
   const { fetchExchangeRate } = useMarketStore();
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-  const { unreadCount, initializeSocket: notificationSocket, fetchNotifications, fetchUnreadCount } = useNotificationStore();
+  const {
+    unreadCount,
+    initializeSocket: notificationSocket,
+    fetchNotifications,
+    fetchUnreadCount,
+  } = useNotificationStore();
 
   useEffect(() => {
     initializeSocket();
@@ -48,7 +53,13 @@ export default function Navbar() {
       fetchNotifications();
       fetchUnreadCount();
     }
-  }, [initializeSocket, fetchExchangeRate, notificationSocket, fetchNotifications, fetchUnreadCount]);
+  }, [
+    initializeSocket,
+    fetchExchangeRate,
+    notificationSocket,
+    fetchNotifications,
+    fetchUnreadCount,
+  ]);
 
   return (
     <nav className="bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-900 relative z-30">
@@ -201,7 +212,7 @@ export default function Navbar() {
           </div>
         </div>
       </div>
-      <NotificationModal 
+      <NotificationModal
         isOpen={isNotificationOpen}
         onClose={() => setIsNotificationOpen(false)}
       />

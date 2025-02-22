@@ -2,14 +2,14 @@ import { create } from "zustand";
 import { socket } from "@/lib/socket";
 import { ClientAPICall } from "@/lib/axios";
 import { API_ROUTES } from "@/const/api";
-import { useEffect } from "react";
 
-interface Notification {
+export interface Notification {
   id: number;
   type: "NEW_GUESTBOOK" | "NEW_COMMENT";
   content: string;
   isRead: boolean;
   createdAt: string;
+  targetId: number;
   sender: {
     id: number;
     name: string;
@@ -36,7 +36,7 @@ interface NotificationStore {
   initializeSocket: () => void;
 }
 
-const useNotificationStore = create<NotificationStore>((set, get) => ({
+export const useNotificationStore = create<NotificationStore>((set, get) => ({
   notifications: [],
   unreadCount: 0,
   isLoading: false,
@@ -145,5 +145,3 @@ const useNotificationStore = create<NotificationStore>((set, get) => ({
     });
   },
 }));
-
-export default useNotificationStore;

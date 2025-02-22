@@ -132,6 +132,10 @@ export const API_ROUTES = {
     },
   },
   GUESTBOOK: {
+    GET_GUESTBOOK: {
+      url: "/guestbook/get/:guestbookId",
+      method: "GET",
+    },
     LIST: {
       url: "/guestbook",
       method: "GET",

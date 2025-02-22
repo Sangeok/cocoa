@@ -1,6 +1,9 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { DrizzleClient } from '../database/database.module';
-import { notifications, NotificationType } from '../database/schema/notification';
+import {
+  notifications,
+  NotificationType,
+} from '../database/schema/notification';
 import { users } from '../database/schema/user';
 import { eq, desc, and, sql } from 'drizzle-orm';
 import { AppGateway } from '../gateway/app.gateway';
@@ -11,6 +14,7 @@ interface CreateNotificationDto {
   type: NotificationType;
   content: string;
   targetId: number;
+  targetUserId: number;
 }
 
 @Injectable()
@@ -27,7 +31,9 @@ export class NotificationService {
       .returning();
 
     // 실시간 알림 전송
-    this.appGateway.server.to(`user:${data.userId}`).emit('notification', notification);
+    this.appGateway.server
+      .to(`user:${data.userId}`)
+      .emit('notification', notification);
 
     return notification;
   }
@@ -43,6 +49,7 @@ export class NotificationService {
           content: notifications.content,
           isRead: notifications.isRead,
           createdAt: notifications.createdAt,
+          targetId: notifications.targetId,
           sender: {
             id: users.id,
             name: users.name,
@@ -128,4 +135,4 @@ export class NotificationService {
         ),
       );
   }
-} 
+}

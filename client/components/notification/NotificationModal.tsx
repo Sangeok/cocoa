@@ -1,27 +1,53 @@
-import { Fragment } from 'react';
-import { Dialog, Transition } from '@headlessui/react';
-import { XMarkIcon } from '@heroicons/react/24/outline';
-import { useRouter } from 'next/navigation';
-import useNotificationStore from '@/store/useNotificationStore';
-import useAuthStore from '@/store/useAuthStore';
+import { Fragment } from "react";
+import { Dialog, Transition } from "@headlessui/react";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import { useRouter } from "next/navigation";
+import {
+  useNotificationStore,
+  Notification,
+} from "@/store/useNotificationStore";
+import { ClientAPICall } from "@/lib/axios";
+import { API_ROUTES } from "@/const/api";
+import useAuthStore from "@/store/useAuthStore";
 interface NotificationModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-export default function NotificationModal({ isOpen, onClose }: NotificationModalProps) {
+export default function NotificationModal({
+  isOpen,
+  onClose,
+}: NotificationModalProps) {
   const router = useRouter();
-  const { notifications, markAsRead, deleteNotification, markAllAsRead } = useNotificationStore();
   const { user } = useAuthStore();
+  const { notifications, markAsRead, deleteNotification, markAllAsRead } =
+    useNotificationStore();
 
-  const handleNotificationClick = async (notification: any) => {
+  const getGuestbook = async (guestbookId: number) => {
+    const response = await ClientAPICall.get(
+      API_ROUTES.GUESTBOOK.GET_GUESTBOOK.url.replace(
+        ":guestbookId",
+        guestbookId.toString()
+      )
+    );
+    return response.data;
+  };
+
+  const handleNotificationClick = async (notification: Notification) => {
     await markAsRead(notification.id);
-    console.log('notification', notification);
-    // 알림 타입에 따른 페이지 이동
-    if (notification.type === 'NEW_GUESTBOOK') {
-      router.push(`/u/${user?.id}`);
-    } else if (notification.type === 'NEW_COMMENT') {
-      router.push(`/u/${notification.userId}#guestbook-${notification.targetId}`);
+
+    // 내 페이지에 달린 새로운 방명록
+    if (notification.type === "NEW_GUESTBOOK") {
+      router.push(`/u/${user?.id}#guestbook-${notification.targetId}`);
+    } else if (notification.type === "NEW_COMMENT") {
+      const guestbook = await getGuestbook(notification.targetId);
+
+      if (guestbook.success) {
+        // targetId는 guestbookId
+        router.push(
+          `/u/${guestbook.data.userId}#guestbook-${notification.targetId}`
+        );
+      }
     }
     onClose();
   };
@@ -65,7 +91,10 @@ export default function NotificationModal({ isOpen, onClose }: NotificationModal
 
                 <div className="sm:flex sm:items-start">
                   <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left w-full">
-                    <Dialog.Title as="h3" className="text-lg font-semibold leading-6 text-gray-900 dark:text-white">
+                    <Dialog.Title
+                      as="h3"
+                      className="text-lg font-semibold leading-6 text-gray-900 dark:text-white"
+                    >
                       알림
                     </Dialog.Title>
                     <div className="mt-4 space-y-2">
@@ -83,11 +112,13 @@ export default function NotificationModal({ isOpen, onClose }: NotificationModal
                             <div
                               key={notification.id}
                               className={`p-3 rounded-lg cursor-pointer ${
-                                notification.isRead 
-                                  ? 'bg-gray-50 dark:bg-gray-800' 
-                                  : 'bg-blue-50 dark:bg-blue-900'
+                                notification.isRead
+                                  ? "bg-gray-50 dark:bg-gray-800"
+                                  : "bg-blue-50 dark:bg-blue-900"
                               }`}
-                              onClick={() => handleNotificationClick(notification)}
+                              onClick={() =>
+                                handleNotificationClick(notification)
+                              }
                             >
                               <div className="flex justify-between items-start">
                                 <div>
@@ -95,7 +126,9 @@ export default function NotificationModal({ isOpen, onClose }: NotificationModal
                                     {notification.content}
                                   </p>
                                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                    {new Date(notification.createdAt).toLocaleDateString()}
+                                    {new Date(
+                                      notification.createdAt
+                                    ).toLocaleDateString()}
                                   </p>
                                 </div>
                                 <button
@@ -126,4 +159,4 @@ export default function NotificationModal({ isOpen, onClose }: NotificationModal
       </Dialog>
     </Transition.Root>
   );
-} 
+}

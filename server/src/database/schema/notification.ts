@@ -9,10 +9,10 @@ export const notifications = pgTable('notifications', {
   id: serial('id').primaryKey(),
   userId: integer('user_id')
     .notNull()
-    .references(() => users.id),
+    .references(() => users.id), // 알림 수신자
   senderId: integer('sender_id')
     .notNull()
-    .references(() => users.id),
+    .references(() => users.id), // 알림 발신자
   type: varchar('type', { length: 20 }).notNull(), // NEW_GUESTBOOK 또는 NEW_COMMENT
   content: varchar('content', { length: 200 }).notNull(), // 알림 내용
   targetId: integer('target_id').notNull(), // 방명록 또는 댓글의 ID

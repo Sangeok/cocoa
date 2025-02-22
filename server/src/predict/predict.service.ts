@@ -141,7 +141,7 @@ export class PredictService {
       await this.db
         .update(predicts)
         .set({
-          ...(position === 'L' 
+          ...(position === 'L'
             ? { longCount: sql`${predicts.longCount} + 1` }
             : { shortCount: sql`${predicts.shortCount} + 1` }),
           vault: sql`${predicts.vault} - ${deposit}`,
@@ -241,24 +241,24 @@ export class PredictService {
                     maxLoseStreak: sql`GREATEST(${predicts.maxLoseStreak}, ${predicts.currentLoseStreak} + 1)`,
                   }
                 : priceChange === 0
-                ? {
-                    draws: sql`${predicts.draws} + 1`,
-                    currentWinStreak: 0,
-                    currentLoseStreak: 0,
-                  }
-                : isWin
-                ? {
-                    wins: sql`${predicts.wins} + 1`,
-                    currentWinStreak: sql`${predicts.currentWinStreak} + 1`,
-                    currentLoseStreak: 0,
-                    maxWinStreak: sql`GREATEST(${predicts.maxWinStreak}, ${predicts.currentWinStreak} + 1)`,
-                  }
-                : {
-                    losses: sql`${predicts.losses} + 1`,
-                    currentLoseStreak: sql`${predicts.currentLoseStreak} + 1`,
-                    currentWinStreak: 0,
-                    maxLoseStreak: sql`GREATEST(${predicts.maxLoseStreak}, ${predicts.currentLoseStreak} + 1)`,
-                  }),
+                  ? {
+                      draws: sql`${predicts.draws} + 1`,
+                      currentWinStreak: 0,
+                      currentLoseStreak: 0,
+                    }
+                  : isWin
+                    ? {
+                        wins: sql`${predicts.wins} + 1`,
+                        currentWinStreak: sql`${predicts.currentWinStreak} + 1`,
+                        currentLoseStreak: 0,
+                        maxWinStreak: sql`GREATEST(${predicts.maxWinStreak}, ${predicts.currentWinStreak} + 1)`,
+                      }
+                    : {
+                        losses: sql`${predicts.losses} + 1`,
+                        currentLoseStreak: sql`${predicts.currentLoseStreak} + 1`,
+                        currentWinStreak: 0,
+                        maxLoseStreak: sql`GREATEST(${predicts.maxLoseStreak}, ${predicts.currentLoseStreak} + 1)`,
+                      }),
               vault: sql`${predicts.vault} + ${vaultUpdate}`,
               lastPredictAt: new Date(),
             })
@@ -326,17 +326,19 @@ export class PredictService {
       .from(predicts)
       .where(eq(predicts.userId, userId));
 
-    return result[0] || {
-      wins: 0,
-      losses: 0,
-      draws: 0,
-      longCount: 0,
-      shortCount: 0,
-      maxWinStreak: 0,
-      maxLoseStreak: 0,
-      currentWinStreak: 0,
-      currentLoseStreak: 0,
-    };
+    return (
+      result[0] || {
+        wins: 0,
+        losses: 0,
+        draws: 0,
+        longCount: 0,
+        shortCount: 0,
+        maxWinStreak: 0,
+        maxLoseStreak: 0,
+        currentWinStreak: 0,
+        currentLoseStreak: 0,
+      }
+    );
   }
 
   async getMostWinsRanking() {
@@ -540,7 +542,7 @@ export class PredictService {
     await this.redisService.set(
       `predict-result-${userId}`,
       JSON.stringify(result),
-      5
+      5,
     );
     // WebSocket을 통해 emit
     this.appGateway.server.emit(`predict-result-${userId}`, result);
