@@ -11,17 +11,22 @@ import MarketData from "@/components/coin/MarketData";
 import PricePrediction from "@/components/coin/PricePrediction";
 import NicknameModal from "@/components/coin/NicknameModal";
 import { useChatRoom } from "@/hooks/useChat";
+import CoinTabs from "@/components/coin/CoinTabs";
 
 export default function CoinPageContent({ symbol }: { symbol: string }) {
   const { markets, fetchMarkets, getKoreanName } = useMarketsStore();
   const { coins } = useMarketStore();
+  const [selectedTab, setSelectedTab] = useState(0);
+  
   const {
     isNicknameModalOpen,
     newNickname,
     setIsNicknameModalOpen,
     setNewNickname,
     handleNicknameChange,
-  } = useChatRoom(symbol);
+    hasNewMessage,
+    messageType,
+  } = useChatRoom(symbol, selectedTab);
 
   const [isMarketLoading, setIsMarketLoading] = useState(true);
   const [isInitialized, setIsInitialized] = useState(false);
@@ -51,6 +56,27 @@ export default function CoinPageContent({ symbol }: { symbol: string }) {
   const koreanName = getKoreanName(symbol);
   const formattedSymbol = symbol.replace("-", "");
 
+  const renderLeftContent = () => {
+    switch (selectedTab) {
+      case 0: // 차트・호가
+        return (
+          <div className="bg-black rounded-lg overflow-hidden">
+            <TradingViewWidget symbol={formattedSymbol} />
+          </div>
+        );
+      case 1: // 종목정보
+        return <MarketData symbol={symbol} coins={coins} />;
+      case 2: // 커뮤니티
+        return (
+          <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800">
+            <ChatRoom symbol={symbol} symbolKoreanName={koreanName} />
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
   if (!mounted || !isInitialized || isMarketLoading) {
     return <CoinPageSkeleton />;
   }
@@ -61,21 +87,23 @@ export default function CoinPageContent({ symbol }: { symbol: string }) {
 
   return (
     <div className="w-full max-w-[2000px] mx-auto px-4 py-4">
-      <CoinHeader symbol={symbol} koreanName={koreanName} />
+      <CoinHeader 
+        symbol={symbol} 
+        koreanName={koreanName} 
+        coins={coins}
+      />
+      <CoinTabs 
+        selectedTab={selectedTab} 
+        onChange={setSelectedTab}
+        hasNewMessage={hasNewMessage}
+        messageType={messageType}
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-        <div className="lg:col-span-3 space-y-4">
-          <div className="bg-black rounded-lg shadow-lg overflow-hidden">
-            <TradingViewWidget symbol={formattedSymbol} />
-          </div>
-          <MarketData symbol={symbol} coins={coins} />
-        </div>
+        <div className="lg:col-span-3 space-y-4">{renderLeftContent()}</div>
 
         <div className="space-y-4">
           <PricePrediction symbol={symbol} coins={coins} />
-          <div className="bg-white dark:bg-gray-950 rounded-xl shadow-xl border border-gray-200 dark:border-gray-800">
-            <ChatRoom symbol={symbol} symbolKoreanName={koreanName} />
-          </div>
         </div>
       </div>
 

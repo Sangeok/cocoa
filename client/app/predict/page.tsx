@@ -55,7 +55,7 @@ const LongShortRatioSection = () => {
   }, [initializeSocket]);
 
   return (
-    <div className="bg-white dark:bg-gray-950 rounded-xl shadow-xl border border-gray-200 dark:border-gray-800 mt-6">
+    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 mt-6">
       <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-800">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
           실시간 롱/숏 포지션
@@ -274,7 +274,7 @@ export default function PredictPage() {
               </button>
             </div>
           </div>
-          <div className="bg-white dark:bg-gray-950 rounded-xl shadow-xl border border-gray-200 dark:border-gray-800">
+          <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800">
             {isAuthenticated && (
               <div className="p-4 border-b border-gray-200 dark:border-gray-800">
                 <div className="flex items-center justify-between">
@@ -398,8 +398,8 @@ export default function PredictPage() {
             <Link
               key={symbol}
               href={`/coin/${symbol}-KRW`}
-              className="bg-white dark:bg-gray-950 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800 
-                hover:shadow-md hover:scale-105 hover:border-green-500 dark:hover:border-green-500
+              className="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-200 dark:border-gray-800 
+                hover:border-green-500 dark:hover:border-green-500
                 transition-all duration-200 ease-in-out
                 flex items-center gap-2"
             >

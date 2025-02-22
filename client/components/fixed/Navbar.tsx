@@ -35,7 +35,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
   const { initializeSocket } = useActiveUsersStore();
-  const { user, isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated, logout } = useAuthStore();
   const { fetchExchangeRate } = useMarketStore();
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const {
@@ -148,11 +148,10 @@ export default function Navbar() {
               )}
 
               <Menu as="div" className="relative">
-                <Menu.Button className="p-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white">
-                  <Bars3Icon className="h-6 w-6" />
+                <Menu.Button className="p-2 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-lg">
+                  <Bars3Icon className="h-6 w-6 text-gray-600 dark:text-gray-400" />
                 </Menu.Button>
-
-                <Menu.Items className="absolute right-0 mt-2 w-48 rounded-md bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                <Menu.Items className="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                   {navigation.map((item) => (
                     <Menu.Item key={item.name}>
                       {({ active }) => (
@@ -160,8 +159,9 @@ export default function Navbar() {
                           href={item.href}
                           className={clsx(
                             "block px-4 py-2 text-sm",
-                            active || pathname === item.href
-                              ? "bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white"
+                            active ? "bg-gray-100 dark:bg-gray-700" : "",
+                            pathname === item.href
+                              ? "text-gray-900 dark:text-white font-medium"
                               : "text-gray-600 dark:text-gray-400"
                           )}
                         >
@@ -170,24 +170,64 @@ export default function Navbar() {
                       )}
                     </Menu.Item>
                   ))}
+                  
+                  <Menu.Item>
+                    {({ active }) => (
+                      <button
+                        onClick={toggleTheme}
+                        className={clsx(
+                          "w-full text-left px-4 py-2 text-sm flex items-center gap-2",
+                          active ? "bg-gray-100 dark:bg-gray-700" : "",
+                          "text-gray-600 dark:text-gray-400"
+                        )}
+                      >
+                        {theme === "dark" ? (
+                          <>
+                            <SunIcon className="h-5 w-5" />
+                            라이트 모드
+                          </>
+                        ) : (
+                          <>
+                            <MoonIcon className="h-5 w-5" />
+                            다크 모드
+                          </>
+                        )}
+                      </button>
+                    )}
+                  </Menu.Item>
 
                   <div className="border-t border-gray-200 dark:border-gray-700 mt-1 pt-1">
                     {isAuthenticated ? (
-                      <Menu.Item>
-                        {({ active }) => (
-                          <Link
-                            href={`/u/${user?.id}`}
-                            className={clsx(
-                              "block px-4 py-2 text-sm",
-                              active
-                                ? "bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white"
-                                : "text-gray-600 dark:text-gray-400"
-                            )}
-                          >
-                            프로필
-                          </Link>
-                        )}
-                      </Menu.Item>
+                      <>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <Link
+                              href={`/u/${user?.id}`}
+                              className={clsx(
+                                "block px-4 py-2 text-sm",
+                                active ? "bg-gray-100 dark:bg-gray-700" : "",
+                                "text-gray-600 dark:text-gray-400"
+                              )}
+                            >
+                              프로필
+                            </Link>
+                          )}
+                        </Menu.Item>
+                        <Menu.Item>
+                          {({ active }) => (
+                            <button
+                              onClick={logout}
+                              className={clsx(
+                                "w-full text-left px-4 py-2 text-sm",
+                                active ? "bg-gray-100 dark:bg-gray-700" : "",
+                                "text-red-600 dark:text-red-400"
+                              )}
+                            >
+                              로그아웃
+                            </button>
+                          )}
+                        </Menu.Item>
+                      </>
                     ) : (
                       <Menu.Item>
                         {({ active }) => (
@@ -195,9 +235,8 @@ export default function Navbar() {
                             href="/signin"
                             className={clsx(
                               "block px-4 py-2 text-sm",
-                              active
-                                ? "bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white"
-                                : "text-gray-600 dark:text-gray-400"
+                              active ? "bg-gray-100 dark:bg-gray-700" : "",
+                              "text-gray-600 dark:text-gray-400"
                             )}
                           >
                             로그인

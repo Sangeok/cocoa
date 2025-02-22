@@ -27,6 +27,41 @@ export class GuestbookService {
     return guestbook;
   }
 
+  async updateComment(commentId: number, content: string) {
+    const [comment] = await this.db
+      .update(guestbookComments)
+      .set({ content })
+      .where(eq(guestbookComments.id, commentId))
+      .returning({
+        id: guestbookComments.id,
+        content: guestbookComments.content,
+        createdAt: guestbookComments.createdAt,
+        isSecret: guestbookComments.isSecret,
+      });
+
+    if (!comment) {
+      throw new NotFoundException('Comment not found');
+    }
+
+    // 작성자 정보를 별도로 조회
+    const [commentWithUser] = await this.db
+      .select({
+        id: guestbookComments.id,
+        content: guestbookComments.content,
+        createdAt: guestbookComments.createdAt,
+        isSecret: guestbookComments.isSecret,
+        user: {
+          id: users.id,
+          name: users.name,
+        },
+      })
+      .from(guestbookComments)
+      .innerJoin(users, eq(users.id, guestbookComments.userId))
+      .where(eq(guestbookComments.id, commentId));
+
+    return commentWithUser;
+  }
+
   async createGuestbook(
     userId: number,
     targetUserId: number,
@@ -196,12 +231,7 @@ export class GuestbookService {
     };
   }
 
-  async getGuestbookComments(
-    guestbookId: number,
-    page: number,
-    limit: number,
-    userId?: number,
-  ) {
+  async getGuestbookComments(guestbookId: number, page: number, limit: number) {
     const offset = (page - 1) * limit;
     const mentionedUsers = alias(users, 'mentioned_users');
 

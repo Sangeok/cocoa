@@ -1,6 +1,6 @@
 import { formatKRW } from "./format";
 
-type MarketType = "KRW" | "USDT" | "BTC";
+export type MarketType = "KRW" | "USDT" | "BTC";
 
 export const getMarketType = (symbol: string): MarketType => {
   if (symbol.endsWith("-KRW")) return "KRW";

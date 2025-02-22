@@ -8,6 +8,7 @@ import {
   Param,
   UseGuards,
   Req,
+  Patch,
 } from '@nestjs/common';
 import { GuestbookService } from './guestbook.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -75,7 +76,6 @@ export class GuestbookController {
         parseInt(guestbookId),
         parseInt(page),
         parseInt(limit),
-        req.user?.id,
       ),
     };
   }
@@ -110,6 +110,21 @@ export class GuestbookController {
       data: await this.guestbookService.deleteGuestbook(
         req.user.id,
         parseInt(guestbookId),
+      ),
+    };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('comments/:commentId')
+  async updateComment(
+    @Param('commentId') commentId: string,
+    @Body('content') content: string,
+  ) {
+    return {
+      success: true,
+      data: await this.guestbookService.updateComment(
+        parseInt(commentId),
+        content,
       ),
     };
   }

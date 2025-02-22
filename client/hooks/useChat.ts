@@ -8,19 +8,18 @@ import { CoinTalkMessageData, GlobalChatMessageData } from "@/types/chat";
 import useChat from "@/store/useChat";
 import useAuthStore from "@/store/useAuthStore";
 
-export function useChatRoom(symbol: string) {
+export function useChatRoom(symbol: string, selectedTab: number) {
   const { getCurrentNickname, setNickname, validateNickname } = useChat();
-  const [globalMessages, setGlobalMessages] = useState<GlobalChatMessageData[]>(
-    []
-  );
+  const [globalMessages, setGlobalMessages] = useState<GlobalChatMessageData[]>([]);
   const [coinMessages, setCoinMessages] = useState<CoinTalkMessageData[]>([]);
-  const [pendingMessages, setPendingMessages] = useState<Set<number>>(
-    new Set()
-  );
+  const [pendingMessages, setPendingMessages] = useState<Set<number>>(new Set());
   const [inputMessage, setInputMessage] = useState("");
   const [selectedChat, setSelectedChat] = useState<"global" | "coin">("global");
   const [isNicknameModalOpen, setIsNicknameModalOpen] = useState(false);
   const [newNickname, setNewNickname] = useState(getCurrentNickname());
+  const [hasNewGlobalMessage, setHasNewGlobalMessage] = useState(false);
+  const [hasNewCoinMessage, setHasNewCoinMessage] = useState(false);
+  const [messageType, setMessageType] = useState<"global" | "coin">("global");
   const { user } = useAuthStore();
 
   useEffect(() => {
@@ -51,9 +50,11 @@ export function useChatRoom(symbol: string) {
           return newPending;
         });
         setCoinMessages((prev) => {
-          const exists = prev.some(
-            (msg) => msg.timestamp === message.timestamp
-          );
+          const exists = prev.some((msg) => msg.timestamp === message.timestamp);
+          if (!exists && message.userId !== user?.id && selectedTab !== 2) {
+            setHasNewCoinMessage(true);
+            setMessageType("coin");
+          }
           if (exists) return prev;
           return [message, ...prev];
         });
@@ -68,6 +69,10 @@ export function useChatRoom(symbol: string) {
       });
       setGlobalMessages((prev) => {
         const exists = prev.some((msg) => msg.timestamp === message.timestamp);
+        if (!exists && message.userId !== user?.id && selectedTab !== 2) {
+          setHasNewGlobalMessage(true);
+          setMessageType("global");
+        }
         if (exists) return prev;
         return [message, ...prev];
       });
@@ -77,7 +82,15 @@ export function useChatRoom(symbol: string) {
       socket.off("coin-talk-message");
       socket.off("global-chat-message");
     };
-  }, [symbol]);
+  }, [symbol, user?.id, selectedTab]);
+
+  // 탭 변경 시 알림 초기화
+  useEffect(() => {
+    if (selectedTab === 2) {
+      setHasNewGlobalMessage(false);
+      setHasNewCoinMessage(false);
+    }
+  }, [selectedTab]);
 
   const handleSendMessage = (message: string) => {
     if (!message.trim() || !socket) return;
@@ -129,5 +142,7 @@ export function useChatRoom(symbol: string) {
     setNewNickname,
     handleSendMessage,
     handleNicknameChange,
+    hasNewMessage: messageType === "global" ? hasNewGlobalMessage : hasNewCoinMessage,
+    messageType,
   };
 }

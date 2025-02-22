@@ -60,13 +60,13 @@ export default function ChatInput({
             className="flex-1 rounded-lg px-3 py-2 bg-gray-50 dark:bg-gray-950 
                    border border-gray-300 dark:border-gray-800
                    focus:outline-none focus:ring-2 focus:ring-green-500
-                   text-gray-900 dark:text-white text-sm"
+                   text-gray-900 dark:text-white"
             maxLength={MAX_MESSAGE_LENGTH}
           />
           <button
             type="submit"
-            className="px-4 py-2 bg-green-600 hover:bg-green-700 
-                   text-white rounded-lg text-sm font-medium
+            className="px-6 py-2 bg-green-600 hover:bg-green-700 
+                   text-white rounded-lg font-medium
                    transition-colors duration-200"
           >
             전송

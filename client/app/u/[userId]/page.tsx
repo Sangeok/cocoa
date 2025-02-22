@@ -601,234 +601,242 @@ export default function UserProfilePage() {
     <div className="container mx-auto px-4 py-8">
       <div className="lg:flex lg:gap-8">
         <div className="lg:w-1/3">
-          <div className="bg-white dark:bg-gray-950 rounded-xl shadow-xl p-6 mb-8 lg:mb-4">
-            <h1 className="text-2xl font-bold mb-4">{profile.name}</h1>
-            <h2 className="text-sm text-gray-500 dark:text-gray-400 mb-4">
-              {profile.bio}
-            </h2>
-
-            {isOwnProfile && (
-              <div className="mb-4 pb-4 border-b border-gray-200 dark:border-gray-800">
-                <div className="flex flex-col">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600 dark:text-gray-400">
-                      코코아 머니
-                    </span>
-                    <span className="font-bold">
-                      {formatDollar(profile?.predict?.vault ?? 0)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
-                    <span>원화</span>
-                    <span>
-                      ≈{" "}
-                      {exchangeRate
-                        ? (
-                            user?.predict.vault * exchangeRate.rate
-                          ).toLocaleString()
-                        : "---"}
-                      원
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {rankings && (
-              <div className="mb-4 flex items-center gap-4 text-sm">
-                <div className="flex items-center gap-2 shrink-0">
-                  <span className="text-blue-600 dark:text-blue-400">
-                    자산 순위
-                  </span>
-                  <span className="font-bold text-blue-600 dark:text-blue-400">
-                    {getUserRanking()?.vault}위
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <span className="text-green-600 dark:text-green-400">
-                    승리 순위
-                  </span>
-                  <span className="font-bold text-green-600 dark:text-green-400">
-                    {getUserRanking()?.wins}위
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <span className="text-purple-600 dark:text-purple-400">
-                    승률 순위
-                  </span>
-                  <span className="font-bold text-purple-600 dark:text-purple-400">
-                    {getUserRanking()?.winRate}위
-                  </span>
-                </div>
-              </div>
-            )}
-            <div className="space-y-4">
-              <div className="flex items-center gap-4">
-                <span className="text-gray-600 dark:text-gray-400">⚔️</span>
-                <div className="flex items-center gap-2">
-                  <span className="text-green-500">
-                    {profile.predict.wins}승
-                  </span>
-                  <span className="text-gray-400">
-                    {profile.predict.draws}무
-                  </span>
-                  <span className="text-red-500">
-                    {profile.predict.losses}패
-                  </span>
-                </div>
-              </div>
-              <div className="flex items-center gap-4">
-                <span className="text-gray-600 dark:text-gray-400">🚀</span>
-                <span>최대: {profile.predict.maxWinStreak}연승</span>
-              </div>
-              <div className="flex items-center gap-4">
-                <span className="text-gray-600 dark:text-gray-400">😢</span>
-                <span>최대: {profile.predict.maxLoseStreak}연패</span>
-              </div>
-              <div className="space-y-1">
-                <div className="flex items-center justify-between text-sm">
-                  <span>롱/숏</span>
-                  <span>
-                    {profile.predict.longCount}/{profile.predict.shortCount}
-                  </span>
-                </div>
-                <div className="h-2 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden flex">
-                  {(profile.predict.longCount > 0 ||
-                    profile.predict.shortCount > 0) && (
-                    <>
-                      <div
-                        className="h-full bg-green-500"
-                        style={{
-                          width: `${
-                            (profile.predict.longCount /
-                              (profile.predict.longCount +
-                                profile.predict.shortCount)) *
-                            100
-                          }%`,
-                        }}
-                      />
-                      <div
-                        className="h-full bg-red-500"
-                        style={{
-                          width: `${
-                            (profile.predict.shortCount /
-                              (profile.predict.longCount +
-                                profile.predict.shortCount)) *
-                            100
-                          }%`,
-                        }}
-                      />
-                    </>
-                  )}
-                </div>
-              </div>
+          <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 mb-8 lg:mb-4">
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-800">
+              <h1 className="text-2xl font-bold">{profile.name}</h1>
+              <h2 className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                {profile.bio}
+              </h2>
             </div>
 
-            {isAuthenticated && user?.id === parseInt(userId as string) && (
-              <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-800 space-y-2">
-                <button
-                  onClick={canCheckIn ? handleCheckIn : undefined}
-                  className={clsx(
-                    "w-full px-4 py-2 rounded-lg transition-colors",
-                    canCheckIn
-                      ? "bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white"
-                      : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-default"
-                  )}
-                >
-                  {canCheckIn ? "출석체크" : "출석 완료 (내일 다시 받기)"}
-                </button>
-                <Link
-                  href="/profile"
-                  className="w-full block text-center px-4 py-2 bg-gray-100 hover:bg-gray-200 
-                           dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 
-                           rounded-lg transition-colors"
-                >
-                  개인정보 관리
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="w-full px-4 py-2 bg-red-100 hover:bg-red-200 
-                           dark:bg-red-900/30 dark:hover:bg-red-900/50 
-                           text-red-600 dark:text-red-400
-                           rounded-lg transition-colors"
-                >
-                  로그아웃
-                </button>
+            <div className="px-6 py-4">
+              {isOwnProfile && (
+                <div className="mb-4 pb-4 border-b border-gray-200 dark:border-gray-800">
+                  <div className="flex flex-col">
+                    <div className="flex items-center justify-between">
+                      <span className="text-gray-600 dark:text-gray-400">
+                        코코아 머니
+                      </span>
+                      <span className="font-bold">
+                        {formatDollar(profile?.predict?.vault ?? 0)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+                      <span>원화</span>
+                      <span>
+                        ≈{" "}
+                        {exchangeRate
+                          ? (
+                              user?.predict.vault * exchangeRate.rate
+                            ).toLocaleString()
+                          : "---"}
+                        원
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {rankings && (
+                <div className="mb-4 flex items-center gap-4 text-sm">
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-blue-600 dark:text-blue-400">
+                      자산 순위
+                    </span>
+                    <span className="font-bold text-blue-600 dark:text-blue-400">
+                      {getUserRanking()?.vault}위
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-green-600 dark:text-green-400">
+                      승리 순위
+                    </span>
+                    <span className="font-bold text-green-600 dark:text-green-400">
+                      {getUserRanking()?.wins}위
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-purple-600 dark:text-purple-400">
+                      승률 순위
+                    </span>
+                    <span className="font-bold text-purple-600 dark:text-purple-400">
+                      {getUserRanking()?.winRate}위
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              <div className="space-y-4">
+                <div className="flex items-center gap-4">
+                  <span className="text-gray-600 dark:text-gray-400">⚔️</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-green-500">
+                      {profile.predict.wins}승
+                    </span>
+                    <span className="text-gray-400">
+                      {profile.predict.draws}무
+                    </span>
+                    <span className="text-red-500">
+                      {profile.predict.losses}패
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className="text-gray-600 dark:text-gray-400">🚀</span>
+                  <span>최대: {profile.predict.maxWinStreak}연승</span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className="text-gray-600 dark:text-gray-400">😢</span>
+                  <span>최대: {profile.predict.maxLoseStreak}연패</span>
+                </div>
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between text-sm">
+                    <span>롱/숏</span>
+                    <span>
+                      {profile.predict.longCount}/{profile.predict.shortCount}
+                    </span>
+                  </div>
+                  <div className="h-2 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden flex">
+                    {(profile.predict.longCount > 0 ||
+                      profile.predict.shortCount > 0) && (
+                      <>
+                        <div
+                          className="h-full bg-green-500"
+                          style={{
+                            width: `${
+                              (profile.predict.longCount /
+                                (profile.predict.longCount +
+                                  profile.predict.shortCount)) *
+                              100
+                            }%`,
+                          }}
+                        />
+                        <div
+                          className="h-full bg-red-500"
+                          style={{
+                            width: `${
+                              (profile.predict.shortCount /
+                                (profile.predict.longCount +
+                                  profile.predict.shortCount)) *
+                              100
+                            }%`,
+                          }}
+                        />
+                      </>
+                    )}
+                  </div>
+                </div>
               </div>
-            )}
+
+              {isAuthenticated && user?.id === parseInt(userId as string) && (
+                <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-800 space-y-2">
+                  <button
+                    onClick={canCheckIn ? handleCheckIn : undefined}
+                    className={clsx(
+                      "w-full px-4 py-2 rounded-lg transition-colors",
+                      canCheckIn
+                        ? "bg-green-600 hover:bg-green-700 dark:bg-green-500 dark:hover:bg-green-600 text-white"
+                        : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-default"
+                    )}
+                  >
+                    {canCheckIn ? "출석체크" : "출석 완료 (내일 다시 받기)"}
+                  </button>
+                  <Link
+                    href="/profile"
+                    className="w-full block text-center px-4 py-2 bg-gray-100 hover:bg-gray-200 
+                             dark:bg-gray-800 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 
+                             rounded-lg transition-colors"
+                  >
+                    개인정보 관리
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full px-4 py-2 bg-red-100 hover:bg-red-200 
+                             dark:bg-red-900/30 dark:hover:bg-red-900/50 
+                             text-red-600 dark:text-red-400
+                             rounded-lg transition-colors"
+                  >
+                    로그아웃
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
         <div className="lg:flex-1">
-          <div className="bg-white dark:bg-gray-950 rounded-xl shadow-xl p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold">방명록</h2>
-              <div className="text-sm text-gray-500">
-                <span className="mr-4">
-                  오늘 방문자: {stats?.todayVisits || 0}
-                </span>
-                <span>총 방문자: {stats?.totalVisits || 0}</span>
+          <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800">
+            <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-800">
+              <div className="flex justify-between items-center">
+                <h2 className="text-xl font-bold">방명록</h2>
+                <div className="text-sm text-gray-500">
+                  <span className="mr-4">
+                    오늘 방문자: {stats?.todayVisits || 0}
+                  </span>
+                  <span>총 방문자: {stats?.totalVisits || 0}</span>
+                </div>
               </div>
+
+              {isAuthenticated && (
+                <form onSubmit={handleSubmitGuestbook} className="mt-4">
+                  <div className="space-y-2">
+                    <Field>
+                      <Textarea
+                        value={newMessage}
+                        onChange={(e) => setNewMessage(e.target.value)}
+                        className={clsx(
+                          "mt-2 block w-full resize-none rounded-lg",
+                          "border border-gray-200 dark:border-none",
+                          "bg-white dark:bg-gray-800 py-2 px-3",
+                          "text-gray-900 dark:text-white text-sm/6",
+                          "focus:outline-none focus:ring-2 focus:ring-teal-500/25 dark:focus:ring-teal-400/25",
+                          "placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                        )}
+                        rows={3}
+                        maxLength={200}
+                        placeholder="방명록을 작성해주세요 (최대 200자)"
+                      />
+                    </Field>
+                    <div className="flex items-center justify-between">
+                      {!isOwnProfile ? (
+                        <label className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+                          <Checkbox
+                            checked={isSecretGuestbook}
+                            onChange={setIsSecretGuestbook}
+                            className={clsx(
+                              "group size-5 rounded",
+                              "bg-white dark:bg-gray-800",
+                              "ring-1 ring-gray-300 dark:ring-gray-600",
+                              "data-[checked]:bg-teal-600 dark:data-[checked]:bg-teal-500",
+                              "data-[checked]:ring-0"
+                            )}
+                          >
+                            <CheckIcon className="hidden size-4 text-white group-data-[checked]:block" />
+                          </Checkbox>
+                          <span>비밀 방명록</span>
+                        </label>
+                      ) : (
+                        <div />
+                      )}
+                      <Button type="submit" size="lg" variant="primary">
+                        작성
+                      </Button>
+                    </div>
+                  </div>
+                </form>
+              )}
             </div>
 
-            {isAuthenticated && (
-              <form onSubmit={handleSubmitGuestbook} className="mb-6">
-                <div className="space-y-2">
-                  <Field>
-                    <Textarea
-                      value={newMessage}
-                      onChange={(e) => setNewMessage(e.target.value)}
-                      className={clsx(
-                        "mt-2 block w-full resize-none rounded-lg border-none",
-                        "bg-white/5 dark:bg-gray-800 py-2 px-3",
-                        "text-gray-900 dark:text-white text-sm/6",
-                        "focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2",
-                        "data-[focus]:outline-teal-500/25 dark:data-[focus]:outline-teal-400/25",
-                        "placeholder:text-gray-500 dark:placeholder:text-gray-400"
-                      )}
-                      rows={3}
-                      maxLength={200}
-                      placeholder="방명록을 작성해주세요 (최대 200자)"
-                    />
-                  </Field>
-                  <div className="flex items-center justify-between">
-                    {!isOwnProfile ? (
-                      <label className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
-                        <Checkbox
-                          checked={isSecretGuestbook}
-                          onChange={setIsSecretGuestbook}
-                          className={clsx(
-                            "group size-5 rounded",
-                            "bg-white dark:bg-gray-800",
-                            "ring-1 ring-gray-300 dark:ring-gray-600",
-                            "data-[checked]:bg-teal-600 dark:data-[checked]:bg-teal-500",
-                            "data-[checked]:ring-0"
-                          )}
-                        >
-                          <CheckIcon className="hidden size-4 text-white group-data-[checked]:block" />
-                        </Checkbox>
-                        <span>비밀 방명록</span>
-                      </label>
-                    ) : (
-                      <div />
-                    )}
-                    <Button type="submit" size="lg" variant="primary">
-                      작성
-                    </Button>
-                  </div>
-                </div>
-              </form>
-            )}
-
-            <div className="space-y-4">
+            <div className="divide-y divide-gray-100 dark:divide-gray-800">
               {guestbooks.map((guestbook) => (
                 <div
                   key={guestbook.id}
                   id={`guestbook-${guestbook.id}`}
                   className={clsx(
-                    'bg-white dark:bg-gray-950 rounded-xl shadow-xl p-6 mb-4',
+                    'p-6 bg-white dark:bg-gray-900 transition-colors',
+                    'hover:bg-gray-50 dark:hover:bg-gray-800/50',
                     selectedGuestbookId === guestbook.id.toString() && 
-                    'ring-2 ring-blue-500 dark:ring-blue-400'
+                    'bg-blue-50/50 dark:bg-blue-900/20 ring-1 ring-blue-500/20 dark:ring-blue-400/20'
                   )}
                 >
                   <div className="flex justify-between items-start mb-2">
@@ -990,21 +998,61 @@ export default function UserProfilePage() {
                                   )}
                               </div>
                             </div>
-                            <p
-                              className={clsx(
-                                "whitespace-pre-wrap",
-                                comment.isSecret
-                                  ? "text-gray-600 dark:text-gray-400 text-sm mt-1"
-                                  : "text-sm mt-1"
-                              )}
-                            >
-                              {comment.mentionedUser && (
-                                <span className="text-teal-600">
-                                  @{comment.mentionedUser.name}{" "}
-                                </span>
-                              )}
-                              {comment.content}
-                            </p>
+                            {editingCommentId === comment.id ? (
+                              <div className="mt-2 space-y-2">
+                                <Field>
+                                  <Textarea
+                                    value={editCommentContent}
+                                    onChange={(e) => setEditCommentContent(e.target.value)}
+                                    className={clsx(
+                                      "block w-full resize-none rounded-lg",
+                                      "border border-gray-200 dark:border-none",
+                                      "bg-white dark:bg-gray-800 py-2 px-3",
+                                      "text-gray-900 dark:text-white text-sm/6",
+                                      "focus:outline-none focus:ring-2 focus:ring-teal-500/25 dark:focus:ring-teal-400/25",
+                                      "placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                                    )}
+                                    rows={2}
+                                    maxLength={200}
+                                  />
+                                </Field>
+                                <div className="flex justify-end gap-2">
+                                  <Button
+                                    size="sm"
+                                    variant="secondary"
+                                    onClick={() => {
+                                      setEditingCommentId(null);
+                                      setEditCommentContent("");
+                                    }}
+                                  >
+                                    취소
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="primary"
+                                    onClick={() => handleEditComment(guestbook.id, comment.id)}
+                                  >
+                                    수정
+                                  </Button>
+                                </div>
+                              </div>
+                            ) : (
+                              <p
+                                className={clsx(
+                                  "whitespace-pre-wrap",
+                                  comment.isSecret
+                                    ? "text-gray-600 dark:text-gray-400 text-sm mt-1"
+                                    : "text-sm mt-1"
+                                )}
+                              >
+                                {comment.mentionedUser && (
+                                  <span className="text-teal-600">
+                                    @{comment.mentionedUser.name}{" "}
+                                  </span>
+                                )}
+                                {comment.content}
+                              </p>
+                            )}
                           </div>
                         ))}
 
@@ -1024,11 +1072,11 @@ export default function UserProfilePage() {
                                   handleCommentKeyPress(e, guestbook.id)
                                 }
                                 className={clsx(
-                                  "mt-2 block w-full resize-none rounded-lg border-none",
-                                  "bg-white/5 dark:bg-gray-800 py-2 px-3",
+                                  "mt-2 block w-full resize-none rounded-lg",
+                                  "border border-gray-200 dark:border-none",
+                                  "bg-white dark:bg-gray-800 py-2 px-3",
                                   "text-gray-900 dark:text-white text-sm/6",
-                                  "focus:outline-none data-[focus]:outline-2 data-[focus]:-outline-offset-2",
-                                  "data-[focus]:outline-teal-500/25 dark:data-[focus]:outline-teal-400/25",
+                                  "focus:outline-none focus:ring-2 focus:ring-teal-500/25 dark:focus:ring-teal-400/25",
                                   "placeholder:text-gray-500 dark:placeholder:text-gray-400",
                                   "min-h-[60px]"
                                 )}

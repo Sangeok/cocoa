@@ -24,7 +24,7 @@ export default function CoinPageSkeleton() {
           />
 
           {/* Market Data Skeleton */}
-          <div className="bg-white dark:bg-gray-950 rounded-xl shadow-xl border border-gray-200 dark:border-gray-800">
+          <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800">
             <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-800">
               <div className="h-6 w-32 bg-gray-200 dark:bg-gray-800 rounded" />
             </div>
@@ -52,7 +52,7 @@ export default function CoinPageSkeleton() {
         {/* Right Column */}
         <div className="space-y-4">
           {/* Price Prediction Skeleton */}
-          <div className="bg-white dark:bg-gray-950 rounded-xl shadow-xl border border-gray-200 dark:border-gray-800 p-4">
+          <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-4">
             <div className="h-6 w-32 bg-gray-200 dark:bg-gray-800 rounded mb-4" />
             <div className="space-y-4">
               <div className="h-8 w-full bg-gray-200 dark:bg-gray-800 rounded" />
@@ -64,7 +64,7 @@ export default function CoinPageSkeleton() {
           </div>
 
           {/* Chat Skeleton */}
-          <div className="bg-white dark:bg-gray-950 rounded-xl shadow-xl border border-gray-200 dark:border-gray-800">
+          <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800">
             <div className="p-4">
               <div className="h-[400px] bg-gray-200 dark:bg-gray-800 rounded mb-4" />
               <div className="h-10 bg-gray-200 dark:bg-gray-800 rounded" />

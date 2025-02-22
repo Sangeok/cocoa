@@ -20,6 +20,7 @@ import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import { ClientAPICall } from "@/lib/axios";
 import { API_ROUTES } from "@/const/api";
 import useLongShortStore from "@/store/useLongShort";
+import { useCurrentPrice } from "@/hooks/useCurrentPrice";
 
 interface PricePredictionProps {
   symbol: string;
@@ -76,34 +77,10 @@ export default function PricePrediction({
   symbol,
   coins,
 }: PricePredictionProps) {
+  const { price: currentPrice, exchange: currentExchange } = useCurrentPrice(symbol, coins);
   const marketType = getMarketType(symbol);
   const priorityExchanges = getPriorityExchanges(marketType);
   const { user, updateVault } = useAuthStore();
-  // Get current price from priority exchanges
-  const getCurrentPrice = (): { price: number; exchange: string } => {
-    if (!coins || !symbol) {
-      return { price: 0, exchange: priorityExchanges[0] };
-    }
-
-    for (const exchange of priorityExchanges) {
-      const coinData = coins[symbol];
-      if (!coinData) {
-        return { price: 0, exchange: priorityExchanges[0] };
-      }
-
-      const exchangeData = coinData[exchange as keyof typeof coinData];
-      if (exchangeData?.price) {
-        return { price: exchangeData.price, exchange };
-      }
-    }
-    return { price: 0, exchange: priorityExchanges[0] };
-  };
-
-  const { price: currentPrice, exchange: currentExchange } = getCurrentPrice();
-
-  const [selectedDuration, setSelectedDuration] = useState<15 | 30 | 60 | 180>(
-    30
-  );
   const {
     activePredict,
     isLoading,
@@ -115,6 +92,10 @@ export default function PricePrediction({
     lastResult,
   } = usePredict();
   const exchangeRate = useMarketStore((state) => state.exchangeRate?.rate);
+
+  const [selectedDuration, setSelectedDuration] = useState<15 | 30 | 60 | 180>(
+    30
+  );
 
   const [remainingTimeDisplay, setRemainingTimeDisplay] = useState(0);
   const [depositRatio, setDepositRatio] = useState<number>(10);
@@ -269,7 +250,7 @@ export default function PricePrediction({
   }, [currentPrice, activePredict, lastResult]);
 
   return (
-    <div className="relative bg-white dark:bg-gray-950 rounded-xl shadow-xl border border-gray-200 dark:border-gray-800">
+    <div className="relative bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800">
       {/* Login Overlay */}
       {!useAuthStore.getState().isAuthenticated && (
         <div className="absolute inset-0 bg-black/50 backdrop-blur-sm rounded-xl flex items-center justify-center">
