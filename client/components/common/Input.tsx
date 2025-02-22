@@ -61,7 +61,7 @@ export default function Input({
           isInvalid 
             ? 'border-red-500 dark:border-red-500' 
             : 'border-gray-300 dark:border-none',
-          'bg-white dark:bg-white/5 py-1.5 px-3 text-sm/6',
+          'bg-white dark:bg-white/5 py-1.5 px-3',
           'text-gray-900 dark:text-white',
           'focus:outline-none focus:ring-2',
           isInvalid 
