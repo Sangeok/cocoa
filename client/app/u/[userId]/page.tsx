@@ -843,15 +843,18 @@ export default function UserProfilePage() {
                 >
                   <div className="flex justify-between items-start mb-2">
                     <div className="flex items-center gap-2">
-                      <span
-                        className={clsx(
-                          "font-bold",
-                          guestbook.author.name === "비공개" &&
-                            "text-gray-500 dark:text-gray-400 italic"
-                        )}
-                      >
-                        {guestbook.author.name}
-                      </span>
+                      {guestbook.author.name === "비공개" ? (
+                        <span className="font-bold text-gray-500 dark:text-gray-400 italic">
+                          {guestbook.author.name}
+                        </span>
+                      ) : (
+                        <Link
+                          href={`/u/${guestbook.author.id}`}
+                          className="font-bold hover:text-teal-500 dark:hover:text-teal-400 transition-colors"
+                        >
+                          {guestbook.author.name}
+                        </Link>
+                      )}
                       {guestbook.isSecret && (
                         <span className="text-xs px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded">
                           비밀
@@ -925,15 +928,18 @@ export default function UserProfilePage() {
                           <div key={comment.id} className="pl-4">
                             <div className="flex justify-between items-start">
                               <div className="flex items-center gap-2">
-                                <span
-                                  className={clsx(
-                                    "font-medium",
-                                    comment.user.name === "비공개" &&
-                                      "text-gray-500 dark:text-gray-400 italic"
-                                  )}
-                                >
-                                  {comment.user.name}
-                                </span>
+                                {comment.user.name === "비공개" ? (
+                                  <span className="font-medium text-gray-500 dark:text-gray-400 italic">
+                                    {comment.user.name}
+                                  </span>
+                                ) : (
+                                  <Link
+                                    href={`/u/${comment.user.id}`}
+                                    className="font-medium hover:text-teal-500 dark:hover:text-teal-400 transition-colors"
+                                  >
+                                    {comment.user.name}
+                                  </Link>
+                                )}
                                 {comment.isSecret && (
                                   <span className="text-xs px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded">
                                     비밀

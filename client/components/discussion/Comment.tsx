@@ -2,6 +2,7 @@ import { Menu, Field, Textarea } from "@headlessui/react";
 import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
 import Button from "@/components/common/Button";
 import clsx from "clsx";
+import Link from "next/link";
 
 interface CommentProps {
   comment: any;
@@ -34,7 +35,12 @@ export default function Comment({
     <div key={comment.id} className="pl-4 ">
       <div className="flex justify-between items-start">
         <div className="flex items-center gap-2">
-          <span className="font-medium">{comment.user.name}</span>
+          <Link
+            href={`/u/${comment.user.id}`}
+            className="font-medium hover:text-teal-500 dark:hover:text-teal-400 transition-colors"
+          >
+            {comment.user.name}
+          </Link>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-500 dark:text-gray-400">

@@ -4,6 +4,7 @@ import Button from "@/components/common/Button";
 import Comment from "./Comment";
 import clsx from "clsx";
 import { useState, useRef, useEffect } from "react";
+import Link from "next/link";
 
 interface DiscussionItemProps {
   discussion: any;
@@ -62,7 +63,12 @@ export default function DiscussionItem({
       {/* 토론글 헤더 */}
       <div className="flex justify-between items-start mb-2">
         <div className="flex items-center gap-2">
-          <span className="font-bold">{discussion.author.name}</span>
+          <Link
+            href={`/u/${discussion.author.id}`}
+            className="font-bold hover:text-teal-500 dark:hover:text-teal-400 transition-colors"
+          >
+            {discussion.author.name}
+          </Link>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-sm text-gray-500 dark:text-gray-400">
