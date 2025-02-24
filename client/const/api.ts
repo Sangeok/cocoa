@@ -22,6 +22,10 @@ export const API_ROUTES = {
       url: "/exchange/usd-price",
       method: "GET",
     },
+    GLOBAL_METRICS: {
+      url: "/exchange/global-metrics",
+      method: "GET",
+    },
   },
   WITHDRAW: {
     PATH: {

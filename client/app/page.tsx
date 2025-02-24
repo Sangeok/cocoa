@@ -6,6 +6,8 @@ import { API_ROUTES } from "@/const/api";
 import NewsCard from "@/components/news/NewsCard";
 import NewsCardSkeleton from "@/components/news/NewsCardSkeleton";
 import PremiumTable from "@/components/premium/PremiumTable";
+import GlobalMetric from "@/components/metrics/GlobalMetric";
+import { globalMetricAPI } from "@/lib/api/globalMetric";
 import Link from "next/link";
 import EventBanner from "@/components/event/EventBanner";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
@@ -15,6 +17,8 @@ export default function Home() {
   const [recentNews, setRecentNews] = useState<NewsListResponse>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentNewsIndex, setCurrentNewsIndex] = useState(0);
+  const [globalMetrics, setGlobalMetrics] = useState<any>(null);
+  const [isMetricsLoading, setIsMetricsLoading] = useState(true);
 
   const handlers = useSwipeable({
     onSwipedLeft: () => handleNext(),
@@ -57,9 +61,33 @@ export default function Home() {
     fetchRecentNews();
   }, []);
 
+  useEffect(() => {
+    async function fetchGlobalMetrics() {
+      try {
+        const response = await globalMetricAPI.getGlobalMetrics();
+        setGlobalMetrics(response);
+      } catch (err) {
+        console.error("Failed to fetch global metrics:", err);
+      } finally {
+        setIsMetricsLoading(false);
+      }
+    }
+
+    fetchGlobalMetrics();
+  }, []);
+
   return (
     <main>
       <div className="container mx-auto px-4 py-8">
+        {/* Global Metrics Section */}
+        {isMetricsLoading ? (
+          <div className="h-32 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse mb-6" />
+        ) : (
+          <div className="mb-6">
+            <GlobalMetric metric={globalMetrics} />
+          </div>
+        )}
+
         <div className="flex lg:flex-row flex-col gap-6 mb-6">
           <div className="lg:w-2/3 w-full">
             <div className="flex items-center justify-between mb-4">
