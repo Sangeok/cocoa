@@ -1,7 +1,7 @@
 "use client";
 
 import { WithdrawPathResult } from "@/dto/withdraw.dto";
-import { formatKRW, formatCrypto, formatUSD } from "@/lib/format";
+import { formatKRW, formatCrypto, formatDollar } from "@/lib/format";
 import { clsx } from "clsx";
 import Image from "next/image";
 import { UPBIT_STATIC_IMAGE_URL } from "@/const";
@@ -11,7 +11,7 @@ interface WithdrawPathCardProps {
 
 export default function WithdrawPathCard({ path }: WithdrawPathCardProps) {
   function formatPrice(price: number, isKRW: boolean) {
-    return isKRW ? formatKRW(price) : formatUSD(price);
+    return isKRW ? formatKRW(price) : formatDollar(price);
   }
 
   return (

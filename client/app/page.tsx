@@ -7,7 +7,7 @@ import NewsCard from "@/components/news/NewsCard";
 import NewsCardSkeleton from "@/components/news/NewsCardSkeleton";
 import PremiumTable from "@/components/premium/PremiumTable";
 import GlobalMetric from "@/components/metrics/GlobalMetric";
-import { globalMetricAPI } from "@/lib/api/globalMetric";
+import { globalMetricAPI, GlobalMetricData } from "@/lib/api/globalMetric";
 import Link from "next/link";
 import EventBanner from "@/components/event/EventBanner";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
@@ -17,7 +17,9 @@ export default function Home() {
   const [recentNews, setRecentNews] = useState<NewsListResponse>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentNewsIndex, setCurrentNewsIndex] = useState(0);
-  const [globalMetrics, setGlobalMetrics] = useState<any>(null);
+  const [globalMetrics, setGlobalMetrics] = useState<GlobalMetricData | null>(
+    null
+  );
   const [isMetricsLoading, setIsMetricsLoading] = useState(true);
 
   const handlers = useSwipeable({
@@ -80,7 +82,7 @@ export default function Home() {
     <main>
       <div className="container mx-auto px-4 py-8">
         {/* Global Metrics Section */}
-        {isMetricsLoading ? (
+        {isMetricsLoading || !globalMetrics ? (
           <div className="h-32 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse mb-6" />
         ) : (
           <div className="mb-6">

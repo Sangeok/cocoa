@@ -1,35 +1,9 @@
 import React from "react";
+import Link from "next/link";
+import { formatCurrency } from "@/lib/format";
+import { GlobalMetricData } from "@/lib/api/globalMetric";
 
-interface GlobalMetricProps {
-  active_cryptocurrencies: number;
-  total_cryptocurrencies: number;
-  active_market_pairs: number;
-  active_exchanges: number;
-  eth_dominance: number;
-  btc_dominance: number;
-  eth_dominance_24h_percentage_change: number;
-  btc_dominance_24h_percentage_change: number;
-  quote: {
-    USD: {
-      total_market_cap: number;
-      total_volume_24h: number;
-      total_market_cap_yesterday_percentage_change: number;
-      total_volume_24h_yesterday_percentage_change: number;
-    };
-  };
-}
-
-const formatNumber = (num: number): string => {
-  if (num >= 1000000000) {
-    return `${(num / 1000000000).toFixed(2)}B`;
-  }
-  if (num >= 1000000) {
-    return `${(num / 1000000).toFixed(2)}M`;
-  }
-  return num.toLocaleString();
-};
-
-const GlobalMetric: React.FC<{ metric: GlobalMetricProps }> = ({ metric }) => {
+const GlobalMetric: React.FC<{ metric: GlobalMetricData }> = ({ metric }) => {
   if (!metric) {
     return <></>;
   }
@@ -37,14 +11,18 @@ const GlobalMetric: React.FC<{ metric: GlobalMetricProps }> = ({ metric }) => {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
       <MetricCard
         title="총 시가총액"
-        value={`$${formatNumber(metric.quote.USD.total_market_cap)}`}
+        value={`${formatCurrency(metric.quote.USD.total_market_cap)}`}
         change={metric.quote.USD.total_market_cap_yesterday_percentage_change}
+        href="https://coinmarketcap.com/charts/"
+        target="_blank"
       />
 
       <MetricCard
         title="24시간 거래량"
-        value={`$${formatNumber(metric.quote.USD.total_volume_24h)}`}
+        value={`${formatCurrency(metric.quote.USD.total_volume_24h)}`}
         change={metric.quote.USD.total_volume_24h_yesterday_percentage_change}
+        href="https://coinmarketcap.com/charts/"
+        target="_blank"
       />
 
       <MetricCard
@@ -52,6 +30,7 @@ const GlobalMetric: React.FC<{ metric: GlobalMetricProps }> = ({ metric }) => {
         title="BTC 도미넌스"
         value={`${metric.btc_dominance.toFixed(2)}%`}
         change={metric.btc_dominance_24h_percentage_change}
+        href="/coin/BTC-KRW"
       />
 
       <MetricCard
@@ -59,6 +38,7 @@ const GlobalMetric: React.FC<{ metric: GlobalMetricProps }> = ({ metric }) => {
         title="ETH 도미넌스"
         value={`${metric.eth_dominance.toFixed(2)}%`}
         change={metric.eth_dominance_24h_percentage_change}
+        href="/coin/ETH-KRW"
       />
 
       {/* <MetricCard
@@ -90,6 +70,8 @@ interface MetricCardProps {
   value: string | number;
   change?: number;
   subtitle?: string;
+  href: string;
+  target?: string;
 }
 
 const MetricCard: React.FC<MetricCardProps> = ({
@@ -98,9 +80,15 @@ const MetricCard: React.FC<MetricCardProps> = ({
   value,
   change,
   subtitle,
+  href,
+  target,
 }) => {
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-gray-200 dark:border-gray-800">
+    <Link
+      href={href}
+      target={target}
+      className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-gray-200 dark:border-gray-800"
+    >
       <div className="flex items-center mb-2">
         {iconSrc && (
           <div className="w-8 h-8 mr-2 flex items-center justify-center">
@@ -128,7 +116,7 @@ const MetricCard: React.FC<MetricCardProps> = ({
           {subtitle}
         </div>
       )}
-    </div>
+    </Link>
   );
 };
 

@@ -1,4 +1,5 @@
 import { CoinData } from "@/store/useMarketStore";
+import { Exchange } from "@/types/exchange";
 
 /**
  * 숫자를 한국 원화 형식으로 포맷팅합니다.
@@ -54,18 +55,6 @@ export function formatCrypto(amount: number): string {
   return amount.toFixed(8);
 }
 
-/**
- * 숫자를 USD 형식으로 포맷팅합니다.
- * @param amount 포맷팅할 금액
- * @returns 포맷팅된 달러 문자열 (예: $1,234.56)
- */
-export function formatUSD(amount: number): string {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(amount);
-}
-
 export function formatCurrency(value: number): string {
   const absValue = Math.abs(value);
 
@@ -87,7 +76,7 @@ export function formatCurrency(value: number): string {
 type QuoteToken = "KRW" | "USDT" | "BTC";
 
 interface Market {
-  exchange: "upbit" | "bithumb" | "binance" | "coinone" | "okx";
+  exchange: Exchange;
   symbol: string;
   price: number;
   volume: number;
@@ -95,9 +84,9 @@ interface Market {
 }
 
 export type ExchangePair = {
-  from: "upbit" | "bithumb" | "binance" | "coinone" | "okx";
+  from: Exchange;
   fromBase: string;
-  to: "upbit" | "bithumb" | "binance" | "coinone" | "okx";
+  to: Exchange;
   toBase: string;
 };
 
