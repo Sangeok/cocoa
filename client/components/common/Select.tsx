@@ -36,7 +36,7 @@ export default function Select({
   const selectedOption = options.find((option) => option.value === value);
 
   const renderOptionContent = (option: SelectOption) => (
-    <div className="flex items-center gap-2 whitespace-nowrap">
+    <div className="flex items-center gap-1.5 sm:gap-2 whitespace-nowrap">
       {option.image && (
         <Image
           src={
@@ -49,19 +49,19 @@ export default function Select({
           alt={option.label}
           width={20}
           height={20}
-          className="w-5 h-5 flex-shrink-0"
+          className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0"
         />
       )}
-      <span className="truncate">{option.label}</span>
+      <span className="truncate text-sm sm:text-base">{option.label}</span>
     </div>
   );
 
   return (
     <Listbox value={value} onChange={onChange} disabled={disabled}>
       {() => (
-        <div className="space-y-1">
+        <div className="space-y-0.5 sm:space-y-1">
           {label && (
-            <Listbox.Label className="block text-sm font-medium text-gray-900 dark:text-white">
+            <Listbox.Label className="block text-xs sm:text-sm font-medium text-gray-900 dark:text-white">
               {label}
               {required && <span className="text-red-500 ml-1">*</span>}
             </Listbox.Label>
@@ -70,7 +70,8 @@ export default function Select({
           <div className="relative">
             <Listbox.Button
               className={clsx(
-                "relative w-full min-w-[135px] sm:min-w-[100px] cursor-default rounded-lg py-2.5 pl-3 pr-10 text-left",
+                "relative w-full min-w-[120px] sm:min-w-[135px] cursor-default rounded-lg",
+                "py-2 sm:py-2.5 pl-2 sm:pl-3 pr-8 sm:pr-10 text-left text-sm sm:text-base",
                 "bg-gray-100 dark:bg-gray-800",
                 "hover:bg-gray-200 dark:hover:bg-gray-700",
                 "focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500 dark:focus-visible:ring-white/25",

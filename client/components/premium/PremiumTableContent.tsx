@@ -79,9 +79,9 @@ export default function PremiumTableContent() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white dark:bg-gray-950 rounded-lg p-4 sm:p-6 border border-gray-200 dark:border-gray-900">
-        <div className="flex flex-col sm:flex-row gap-4 justify-between items-end">
-          <div className="flex flex-wrap items-center gap-4">
+      <div className="bg-white dark:bg-gray-950 rounded-lg p-2 sm:p-4 lg:p-6 border border-gray-200 dark:border-gray-900">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 justify-between items-end">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4">
             <div className="flex items-center gap-2">
               <Select
                 label="시작 거래소"
