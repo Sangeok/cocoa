@@ -12,7 +12,7 @@ interface MarketDataProps {
 
 const getExchangeMarketUrl = (exchange: Exchange, symbol: string) => {
   const [base, quote] = symbol.split("-");
-  
+
   switch (exchange) {
     case "upbit":
       return `https://upbit.com/exchange?code=CRIX.UPBIT.${quote}-${base}`;
@@ -289,7 +289,7 @@ const MarketSection = ({
 
         {/* 24시간 변동 */}
         <div>
-          <div className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+          <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 mb-2">
             전일 대비 가격(%)
           </div>
           <div className="grid grid-cols-3 gap-2 sm:gap-4">
