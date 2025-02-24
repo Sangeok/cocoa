@@ -8,7 +8,7 @@ const GlobalMetric: React.FC<{ metric: GlobalMetricData }> = ({ metric }) => {
     return <></>;
   }
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 lg:gap-4 mb-12">
       <MetricCard
         title="총 시가총액"
         value={`${formatCurrency(metric.quote.USD.total_market_cap)}`}
@@ -40,26 +40,6 @@ const GlobalMetric: React.FC<{ metric: GlobalMetricData }> = ({ metric }) => {
         change={metric.eth_dominance_24h_percentage_change}
         href="/coin/ETH-KRW"
       />
-
-      {/* <MetricCard
-        iconSrc="/images/metrics/coins.png"
-        title="활성 암호화폐"
-        value={formatNumber(metric.active_cryptocurrencies)}
-        subtitle={`총 ${formatNumber(metric.total_cryptocurrencies)}개`}
-      />
-
-      <MetricCard
-        iconSrc="/images/metrics/exchange.png"
-        title="활성 거래소"
-        value={formatNumber(metric.active_exchanges)}
-        subtitle={`총 ${formatNumber(metric.active_exchanges)}개`}
-      />
-
-      <MetricCard
-        iconSrc="/images/metrics/trading-pair.png"
-        title="활성 거래쌍"
-        value={formatNumber(metric.active_market_pairs)}
-      /> */}
     </div>
   );
 };
