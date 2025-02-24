@@ -7,7 +7,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "${PORT:-3000}:3000"
+      - "3000:3000"
     environment:
       - NODE_ENV=${NODE_ENV:-development}
       - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/cocoa_dev
@@ -17,6 +17,9 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
       - POSTGRES_DB=${POSTGRES_DB:-cocoa_dev}
       - NODE_OPTIONS="--max-old-space-size=1024"
+      - COINMARKETCAP_API_KEY=${COINMARKETCAP_API_KEY:-}
+    env_file:
+      - .env
     volumes:
       - .:/app
       - /app/node_modules
