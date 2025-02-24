@@ -13,7 +13,7 @@ export function UsdtPremiumBox() {
 
   return (
     <div className="bg-white dark:bg-gray-950 rounded-lg p-4 sm:p-6 border border-gray-200 dark:border-gray-900">
-      <div className="flex flex-wrap items-center gap-4">
+      <div className="flex flex-wrap items-center gap-2 lg:gap-4">
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2">
             <Image
@@ -23,7 +23,7 @@ export function UsdtPremiumBox() {
               height={24}
             />
             <div>
-              <div className="text-base font-medium">테더</div>
+              <div className="text-sm font-medium">테더</div>
               <div className="text-xs text-gray-500 dark:text-gray-400">
                 USDT
               </div>
@@ -39,7 +39,7 @@ export function UsdtPremiumBox() {
               />
               업비트
             </div>
-            <div className="text-base font-medium text-right">
+            <div className="text-sm font-medium text-right">
               ₩{formatNumber(usdtUpbit)}
             </div>
           </div>
@@ -53,13 +53,13 @@ export function UsdtPremiumBox() {
               />
               빗썸
             </div>
-            <div className="text-base font-medium text-right">
+            <div className="text-sm font-medium text-right">
               ₩{formatNumber(usdtBithumb)}
             </div>
           </div>
           <div className="text-sm text-gray-500 dark:text-gray-400">
             <div className="text-sm text-gray-500 dark:text-gray-400">환율</div>
-            <div className="text-base font-medium">₩{formatNumber(Math.round(rate))}</div>
+            <div className="text-sm font-medium">₩{formatNumber(Math.round(rate))}</div>
           </div>
         </div>
         <div className="flex items-center gap-6">
@@ -68,7 +68,7 @@ export function UsdtPremiumBox() {
               프리미엄
             </div>
             <div
-              className={`text-base font-medium ${
+              className={`text-sm font-medium ${
                 premium > 0
                   ? "text-green-500"
                   : premium < 0
