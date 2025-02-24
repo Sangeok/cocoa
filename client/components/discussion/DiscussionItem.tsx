@@ -55,7 +55,10 @@ export default function DiscussionItem({
   }, [discussion.content]);
 
   return (
-    <div className="p-6 bg-white dark:bg-gray-900 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50">
+    <div 
+      id={`stock-discussion-${discussion.id}`}
+      className="p-6 bg-white dark:bg-gray-900 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50"
+    >
       {/* 토론글 헤더 */}
       <div className="flex justify-between items-start mb-2">
         <div className="flex items-center gap-2">

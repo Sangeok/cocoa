@@ -33,11 +33,27 @@ export default function NotificationModal({
     return response.data;
   };
 
+  const getStockDiscussion = async (discussionId: number) => {
+    const response = await ClientAPICall.get(
+      API_ROUTES.STOCK_DISCUSSION.GET.url.replace(
+        ":discussionId",
+        discussionId.toString()
+      )
+    );
+    return response.data;
+  };
+
   const handleNotificationClick = async (notification: Notification) => {
     await markAsRead(notification.id);
 
-    // 내 페이지에 달린 새로운 방명록
-    if (notification.type === "NEW_GUESTBOOK") {
+    if (notification.type === "NEW_COMMENT_STOCK_DISCUSSION") {
+      const stockDiscussion = await getStockDiscussion(notification.targetId);
+      if (stockDiscussion.success) {
+        router.push(
+          `/coin/${stockDiscussion.data.symbol}?tab=community#stock-discussion-${notification.targetId}`
+        );
+      }
+    } else if (notification.type === "NEW_GUESTBOOK") {
       router.push(`/u/${user?.id}#guestbook-${notification.targetId}`);
     } else if (notification.type === "NEW_COMMENT") {
       const guestbook = await getGuestbook(notification.targetId);

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import TradingViewWidget from "@/components/chart/TradingViewWidget";
 import useMarketsStore from "@/store/useMarketsStore";
 import useMarketStore from "@/store/useMarketStore";
@@ -17,6 +18,9 @@ import StockDiscussion from "./StockDiscussion";
 export default function CoinPageContent({ symbol }: { symbol: string }) {
   const { markets, fetchMarkets, getKoreanName } = useMarketsStore();
   const { coins } = useMarketStore();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const [selectedTab, setSelectedTab] = useState(0);
 
   const {
@@ -53,6 +57,61 @@ export default function CoinPageContent({ symbol }: { symbol: string }) {
 
     initializeData();
   }, [markets, fetchMarkets]);
+
+  // URL 파라미터에 따른 탭 전환
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    switch (tab) {
+      case 'chart':
+        setSelectedTab(0);
+        break;
+      case 'info':
+        setSelectedTab(1);
+        break;
+      case 'community':
+        setSelectedTab(2);
+        break;
+      default:
+        // 기본값은 차트 탭
+        if (tab !== null) {
+          const newSearchParams = new URLSearchParams(searchParams);
+          newSearchParams.set('tab', 'chart');
+          router.replace(`${pathname}?${newSearchParams.toString()}`);
+        }
+        setSelectedTab(0);
+    }
+  }, [searchParams, pathname, router]);
+
+  // 탭 변경 시 URL 업데이트
+  const handleTabChange = (index: number) => {
+    const newSearchParams = new URLSearchParams(searchParams);
+    switch (index) {
+      case 0:
+        newSearchParams.set('tab', 'chart');
+        break;
+      case 1:
+        newSearchParams.set('tab', 'info');
+        break;
+      case 2:
+        newSearchParams.set('tab', 'community');
+        break;
+    }
+    router.replace(`${pathname}?${newSearchParams.toString()}`);
+    setSelectedTab(index);
+  };
+
+  // 토론글 ID로 스크롤
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash && hash.startsWith('#stock-discussion-')) {
+      setTimeout(() => {
+        const element = document.querySelector(hash);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 500); // 컴포넌트 렌더링 후 스크롤하기 위해 약간의 딜레이 추가
+    }
+  }, [selectedTab]); // selectedTab이 변경될 때마다 체크
 
   const koreanName = getKoreanName(symbol);
   const formattedSymbol = symbol.replace("-", "");
@@ -92,7 +151,7 @@ export default function CoinPageContent({ symbol }: { symbol: string }) {
       <CoinHeader symbol={symbol} koreanName={koreanName} coins={coins} />
       <CoinTabs
         selectedTab={selectedTab}
-        onChange={setSelectedTab}
+        onChange={handleTabChange}
         hasNewMessage={hasNewMessage}
         messageType={messageType}
       />
