@@ -67,9 +67,10 @@ export default function DiscussionItem({
             href={part.text}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 hover:underline"
+            title={part.text}
+            className="text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 hover:underline break-all"
           >
-            {part.text}
+            {part.displayText || part.text}
           </a>
         );
       }
