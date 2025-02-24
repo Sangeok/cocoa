@@ -79,10 +79,10 @@ export default function PremiumTableContent() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white dark:bg-gray-950 rounded-lg p-2 sm:p-4 lg:p-6 border border-gray-200 dark:border-gray-900">
-        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 justify-between items-end">
-          <div className="flex flex-wrap items-center gap-2 sm:gap-4">
-            <div className="flex items-center gap-2">
+      <div className="bg-white dark:bg-gray-950 rounded-lg p-1 sm:p-2 lg:p-6 border border-gray-200 dark:border-gray-900">
+        <div className="flex flex-col sm:flex-row gap-1 sm:gap-2 lg:gap-4 justify-between items-end">
+          <div className="flex flex-wrap items-center gap-1 sm:gap-2 lg:gap-4">
+            <div className="flex items-center gap-1 sm:gap-2">
               <Select
                 label="시작 거래소"
                 value={exchangePair.from}
@@ -108,7 +108,7 @@ export default function PremiumTableContent() {
                 options={BASE_TOKEN_OPTIONS[exchangePair.from]}
               />
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 sm:gap-2">
               <Select
                 label="비교 거래소"
                 value={exchangePair.to}
