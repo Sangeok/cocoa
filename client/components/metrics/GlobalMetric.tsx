@@ -67,32 +67,28 @@ const MetricCard: React.FC<MetricCardProps> = ({
     <Link
       href={href}
       target={target}
-      className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-gray-200 dark:border-gray-800"
+      className="bg-white dark:bg-gray-900 rounded-lg p-2 sm:p-3 lg:p-4 border border-gray-200 dark:border-gray-800"
     >
-      <div className="flex items-center mb-2">
+      <div className="flex items-center mb-1 sm:mb-2">
         {iconSrc && (
-          <div className="w-8 h-8 mr-2 flex items-center justify-center">
-            <img src={iconSrc} alt={title} className="w-6 h-6 object-contain" />
+          <div className="w-6 h-6 sm:w-8 sm:h-8 mr-1.5 sm:mr-2 flex items-center justify-center">
+            <img src={iconSrc} alt={title} className="w-4 h-4 sm:w-6 sm:h-6 object-contain" />
           </div>
         )}
-        <h3 className="text-gray-700 dark:text-gray-200 font-medium">
+        <h3 className="text-xs sm:text-sm text-gray-700 dark:text-gray-200 font-medium">
           {title}
         </h3>
       </div>
-      <div className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+      <div className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white mb-0.5 sm:mb-1">
         {value}
       </div>
       {change !== undefined && (
-        <div
-          className={`text-sm ${
-            change >= 0 ? "text-green-500" : "text-red-500"
-          }`}
-        >
+        <div className={`text-xs sm:text-sm ${change >= 0 ? "text-green-500" : "text-red-500"}`}>
           {change >= 0 ? "↑" : "↓"} {Math.abs(change).toFixed(2)}%
         </div>
       )}
       {subtitle && (
-        <div className="text-sm text-gray-500 dark:text-gray-400">
+        <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
           {subtitle}
         </div>
       )}
