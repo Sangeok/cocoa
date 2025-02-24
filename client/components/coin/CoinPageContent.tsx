@@ -12,13 +12,13 @@ import PricePrediction from "@/components/coin/PricePrediction";
 import NicknameModal from "@/components/coin/NicknameModal";
 import { useChatRoom } from "@/hooks/useChat";
 import CoinTabs from "@/components/coin/CoinTabs";
-import StockDiscussion from './StockDiscussion';
+import StockDiscussion from "./StockDiscussion";
 
 export default function CoinPageContent({ symbol }: { symbol: string }) {
   const { markets, fetchMarkets, getKoreanName } = useMarketsStore();
   const { coins } = useMarketStore();
   const [selectedTab, setSelectedTab] = useState(0);
-  
+
   const {
     isNicknameModalOpen,
     newNickname,
@@ -71,9 +71,7 @@ export default function CoinPageContent({ symbol }: { symbol: string }) {
         return (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <StockDiscussion symbol={symbol} symbolKoreanName={koreanName} />
-            <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800">
-              <ChatRoom symbol={symbol} symbolKoreanName={koreanName} />
-            </div>
+            <ChatRoom symbol={symbol} symbolKoreanName={koreanName} />
           </div>
         );
       default:
@@ -91,13 +89,9 @@ export default function CoinPageContent({ symbol }: { symbol: string }) {
 
   return (
     <div className="w-full max-w-[2000px] mx-auto px-4 py-4">
-      <CoinHeader 
-        symbol={symbol} 
-        koreanName={koreanName} 
-        coins={coins}
-      />
-      <CoinTabs 
-        selectedTab={selectedTab} 
+      <CoinHeader symbol={symbol} koreanName={koreanName} coins={coins} />
+      <CoinTabs
+        selectedTab={selectedTab}
         onChange={setSelectedTab}
         hasNewMessage={hasNewMessage}
         messageType={messageType}

@@ -1,4 +1,4 @@
-import { pgTable, serial, integer, varchar, timestamp, boolean } from 'drizzle-orm/pg-core';
+import { pgTable, serial, integer, text, varchar, timestamp, boolean } from 'drizzle-orm/pg-core';
 import { users } from './user';
 import { relations } from 'drizzle-orm';
 
@@ -13,9 +13,10 @@ export const notifications = pgTable('notifications', {
   senderId: integer('sender_id')
     .notNull()
     .references(() => users.id), // 알림 발신자
-  type: varchar('type', { length: 20 }).notNull(), // NEW_GUESTBOOK 또는 NEW_COMMENT
-  content: varchar('content', { length: 200 }).notNull(), // 알림 내용
+  type: varchar('type', { length: 30 }).notNull(), // NEW_GUESTBOOK 또는 NEW_COMMENT
+  content: varchar('content', { length: 200 }).notNull(), // 알림 내용 (길이 200 유지)
   targetId: integer('target_id').notNull(), // 방명록 또는 댓글의 ID
+  targetUserId: integer('target_user_id'),
   isRead: boolean('is_read').notNull().default(false),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   isDeleted: boolean('is_deleted').notNull().default(false),

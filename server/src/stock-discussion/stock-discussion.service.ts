@@ -1,7 +1,6 @@
 import {
   Injectable,
   NotFoundException,
-  BadRequestException,
 } from '@nestjs/common';
 import { DrizzleClient } from '../database/database.module';
 import { Inject } from '@nestjs/common';
@@ -216,19 +215,34 @@ export class StockDiscussionService {
       })
       .returning();
 
-    // 3. 알림 생성 - 토론글 작성자에게만 알림 발송 (자신의 글이 아닌 경우에만)
+    // 3. 생성된 댓글과 user 정보를 함께 조회
+    const [commentWithUser] = await this.db
+      .select({
+        id: stockDiscussionComments.id,
+        content: stockDiscussionComments.content,
+        createdAt: stockDiscussionComments.createdAt,
+        user: {
+          id: users.id,
+          name: users.name,
+        },
+      })
+      .from(stockDiscussionComments)
+      .innerJoin(users, eq(stockDiscussionComments.userId, users.id))
+      .where(eq(stockDiscussionComments.id, comment.id));
+
+    // 4. 알림 생성 - 토론글 작성자에게만 알림 발송 (자신의 글이 아닌 경우에만)
     if (discussion.authorId !== userId) {
       await this.notificationService.create({
         userId: discussion.authorId,
         senderId: userId,
         type: 'NEW_COMMENT_STOCK_DISCUSSION',
-        content: `토론글에 새로운 댓글이 달렸습니다: ${content.substring(0, 30)}...`,
+        content: '새 댓글이 달렸습니다',
         targetId: discussionId,
         targetUserId: discussion.authorId,
       });
     }
 
-    return comment;
+    return commentWithUser;
   }
 
   async deleteDiscussion(userId: number, discussionId: number) {

@@ -176,7 +176,9 @@ export default function UserProfilePage() {
   const [commentPages, setCommentPages] = useState<{ [key: number]: number }>(
     {}
   );
-  const [selectedGuestbookId, setSelectedGuestbookId] = useState<string | null>(null);
+  const [selectedGuestbookId, setSelectedGuestbookId] = useState<string | null>(
+    null
+  );
 
   useEffect(() => {
     let isMounted = true;
@@ -252,14 +254,14 @@ export default function UserProfilePage() {
   useEffect(() => {
     // URL 해시값에서 guestbook ID 추출
     const hash = window.location.hash;
-    if (hash.startsWith('#guestbook-')) {
-      const id = hash.replace('#guestbook-', '');
+    if (hash.startsWith("#guestbook-")) {
+      const id = hash.replace("#guestbook-", "");
       setSelectedGuestbookId(id);
-      
+
       // 해당 요소로 스크롤
       const element = document.getElementById(`guestbook-${id}`);
       if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
+        element.scrollIntoView({ behavior: "smooth" });
       }
     }
   }, []);
@@ -493,7 +495,7 @@ export default function UserProfilePage() {
       winRate: winRateIndex === -1 ? "100+" : `${winRateIndex + 1}`,
     };
   };
-  
+
   const canCheckIn = isOwnProfile
     ? new Date(user?.predict?.lastCheckInAt).toDateString() !==
       new Date().toDateString()
@@ -833,10 +835,10 @@ export default function UserProfilePage() {
                   key={guestbook.id}
                   id={`guestbook-${guestbook.id}`}
                   className={clsx(
-                    'p-6 bg-white dark:bg-gray-900 transition-colors',
-                    'hover:bg-gray-50 dark:hover:bg-gray-800/50',
-                    selectedGuestbookId === guestbook.id.toString() && 
-                    'bg-blue-50/50 dark:bg-blue-900/20 ring-1 ring-blue-500/20 dark:ring-blue-400/20'
+                    "p-6 bg-white dark:bg-gray-900 transition-colors",
+                    "hover:bg-gray-50 dark:hover:bg-gray-800/50",
+                    selectedGuestbookId === guestbook.id.toString() &&
+                      "bg-blue-50/50 dark:bg-blue-900/20 ring-1 ring-blue-500/20 dark:ring-blue-400/20"
                   )}
                 >
                   <div className="flex justify-between items-start mb-2">
@@ -920,7 +922,7 @@ export default function UserProfilePage() {
                           </button>
                         )}
                         {guestbook.comments?.map((comment) => (
-                          <div key={comment.id} className="pl-4 border-l-2">
+                          <div key={comment.id} className="pl-4">
                             <div className="flex justify-between items-start">
                               <div className="flex items-center gap-2">
                                 <span
@@ -1003,7 +1005,9 @@ export default function UserProfilePage() {
                                 <Field>
                                   <Textarea
                                     value={editCommentContent}
-                                    onChange={(e) => setEditCommentContent(e.target.value)}
+                                    onChange={(e) =>
+                                      setEditCommentContent(e.target.value)
+                                    }
                                     className={clsx(
                                       "block w-full resize-none rounded-lg",
                                       "border border-gray-200 dark:border-none",
@@ -1030,7 +1034,12 @@ export default function UserProfilePage() {
                                   <Button
                                     size="sm"
                                     variant="primary"
-                                    onClick={() => handleEditComment(guestbook.id, comment.id)}
+                                    onClick={() =>
+                                      handleEditComment(
+                                        guestbook.id,
+                                        comment.id
+                                      )
+                                    }
                                   >
                                     수정
                                   </Button>

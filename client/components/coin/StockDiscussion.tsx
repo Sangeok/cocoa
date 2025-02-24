@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import { stockDiscussionAPI } from "@/lib/api/stockDiscussion";
 import useAuthStore from "@/store/useAuthStore";
 import Button from "@/components/common/Button";
-import { Menu, Field, Textarea } from "@headlessui/react";
-import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
+import { Field, Textarea } from "@headlessui/react";
 import clsx from "clsx";
+import DiscussionItem from "../discussion/DiscussionItem";
 
 interface StockDiscussionProps {
   symbol: string;
@@ -47,40 +47,48 @@ export default function StockDiscussion({
 
   // 댓글 토글
   const toggleComments = async (discussionId: number) => {
-    const updatedDiscussions = discussions.map((discussion) => {
-      if (discussion.id === discussionId) {
-        return {
-          ...discussion,
-          isCommentsOpen: !discussion.isCommentsOpen,
-        };
-      }
-      return discussion;
-    });
-    setDiscussions(updatedDiscussions);
-
-    // 댓글이 열릴 때만 댓글 목록 조회
-    const discussion = updatedDiscussions.find((d) => d.id === discussionId);
-    if (discussion?.isCommentsOpen && !discussion.comments) {
-      try {
-        const response = await stockDiscussionAPI.getComments(discussionId);
-        if (response.success) {
-          setDiscussions(
-            discussions.map((d) => {
-              if (d.id === discussionId) {
-                return {
-                  ...d,
-                  comments: response.data.items,
-                  hasMoreComments: response.data.pagination.total > page * 10,
-                };
-              }
-              return d;
-            })
-          );
+    // 먼저 현재 discussions의 최신 상태를 사용
+    setDiscussions((prevDiscussions) => {
+      const updatedDiscussions = prevDiscussions.map((discussion) => {
+        if (discussion.id === discussionId) {
+          return {
+            ...discussion,
+            isCommentsOpen: !discussion.isCommentsOpen,
+          };
         }
-      } catch (error) {
-        console.error("Failed to fetch comments:", error);
+        return discussion;
+      });
+
+      // 댓글이 열릴 때만 댓글 목록 조회
+      const discussion = updatedDiscussions.find((d) => d.id === discussionId);
+      if (discussion?.isCommentsOpen && !discussion.comments) {
+        // 비동기 호출을 즉시 실행
+        (async () => {
+          try {
+            const response = await stockDiscussionAPI.getComments(discussionId);
+            if (response.success) {
+              setDiscussions((currentDiscussions) =>
+                currentDiscussions.map((d) => {
+                  if (d.id === discussionId) {
+                    return {
+                      ...d,
+                      comments: response.data.items,
+                      hasMoreComments:
+                        response.data.pagination.total > page * 10,
+                    };
+                  }
+                  return d;
+                })
+              );
+            }
+          } catch (error) {
+            console.error("Failed to fetch comments:", error);
+          }
+        })();
       }
-    }
+
+      return updatedDiscussions;
+    });
   };
 
   // 토론글 작성
@@ -119,7 +127,7 @@ export default function StockDiscussion({
               return {
                 ...d,
                 comments: [...(d.comments || []), response.data],
-                commentCount: (d.commentCount || 0) + 1,
+                commentCount: Number(d.commentCount || 0) + 1,
               };
             }
             return d;
@@ -158,7 +166,7 @@ export default function StockDiscussion({
               return {
                 ...d,
                 comments: d.comments.filter((c: any) => c.id !== commentId),
-                commentCount: d.commentCount - 1,
+                commentCount: Number(d.commentCount) - 1,
               };
             }
             return d;
@@ -219,8 +227,8 @@ export default function StockDiscussion({
   }, [page]);
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 h-[600px] overflow-y-auto">
-      <div className="p-4">
+    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800">
+      <div className="p-4 min-h-[600px]">
         <h2 className="text-lg font-semibold mb-4">
           {symbolKoreanName} 토론방
         </h2>
@@ -253,210 +261,49 @@ export default function StockDiscussion({
         )}
 
         <div className="divide-y divide-gray-100 dark:divide-gray-800">
-          {discussions.map((discussion) => (
-            <div
-              key={discussion.id}
-              className="p-6 bg-white dark:bg-gray-900 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50"
-            >
-              <div className="flex justify-between items-start mb-2">
-                <div className="flex items-center gap-2">
-                  <span className="font-bold">{discussion.author.name}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
-                    {new Date(discussion.createdAt).toLocaleDateString()}
-                  </span>
-                  {isAuthenticated && user?.id === discussion.author.id && (
-                    <Menu as="div" className="relative">
-                      <Menu.Button className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full">
-                        <EllipsisHorizontalIcon className="h-5 w-5 text-gray-500 dark:text-gray-400" />
-                      </Menu.Button>
-                      <Menu.Items className="absolute right-0 mt-1 w-32 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
-                        <Menu.Item>
-                          {({ active }) => (
-                            <button
-                              onClick={() =>
-                                handleDeleteDiscussion(discussion.id)
-                              }
-                              className={`${
-                                active ? "bg-gray-100 dark:bg-gray-700" : ""
-                              } text-red-600 dark:text-red-400 w-full text-left px-4 py-2 text-sm`}
-                            >
-                              삭제
-                            </button>
-                          )}
-                        </Menu.Item>
-                      </Menu.Items>
-                    </Menu>
-                  )}
-                </div>
-              </div>
-              <p className="whitespace-pre-wrap">{discussion.content}</p>
-
-              <div className="mt-2">
-                <button
-                  onClick={() => toggleComments(discussion.id)}
-                  className="text-sm text-gray-500 mt-2 cursor-pointer hover:text-gray-700"
-                >
-                  댓글 {discussion.commentCount}개
-                </button>
-
-                {discussion.isCommentsOpen && (
-                  <div className="mt-4 space-y-3">
-                    {discussion.comments?.map((comment: any) => (
-                      <div key={comment.id} className="pl-4 border-l-2">
-                        <div className="flex justify-between items-start">
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium">
-                              {comment.user.name}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm text-gray-500 dark:text-gray-400">
-                              {new Date(comment.createdAt).toLocaleDateString()}
-                            </span>
-                            {isAuthenticated &&
-                              user?.id === comment.user.id && (
-                                <Menu as="div" className="relative">
-                                  <Menu.Button className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full">
-                                    <EllipsisHorizontalIcon className="h-5 w-5 text-gray-500 dark:text-gray-400" />
-                                  </Menu.Button>
-                                  <Menu.Items className="absolute right-0 mt-1 w-32 bg-white dark:bg-gray-800 rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <button
-                                          onClick={() => {
-                                            setEditingCommentId(comment.id);
-                                            setEditCommentContent(
-                                              comment.content
-                                            );
-                                          }}
-                                          className={`${
-                                            active
-                                              ? "bg-gray-100 dark:bg-gray-700"
-                                              : ""
-                                          } w-full text-left px-4 py-2 text-sm`}
-                                        >
-                                          수정
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                    <Menu.Item>
-                                      {({ active }) => (
-                                        <button
-                                          onClick={() =>
-                                            handleDeleteComment(
-                                              discussion.id,
-                                              comment.id
-                                            )
-                                          }
-                                          className={`${
-                                            active
-                                              ? "bg-gray-100 dark:bg-gray-700"
-                                              : ""
-                                          } text-red-600 dark:text-red-400 w-full text-left px-4 py-2 text-sm`}
-                                        >
-                                          삭제
-                                        </button>
-                                      )}
-                                    </Menu.Item>
-                                  </Menu.Items>
-                                </Menu>
-                              )}
-                          </div>
-                        </div>
-                        {editingCommentId === comment.id ? (
-                          <div className="mt-2 space-y-2">
-                            <Field>
-                              <Textarea
-                                value={editCommentContent}
-                                onChange={(
-                                  e: React.ChangeEvent<HTMLTextAreaElement>
-                                ) => setEditCommentContent(e.target.value)}
-                                className={clsx(
-                                  "block w-full resize-none rounded-lg",
-                                  "border border-gray-200 dark:border-none",
-                                  "bg-white dark:bg-gray-800 py-2 px-3",
-                                  "text-gray-900 dark:text-white text-sm/6",
-                                  "focus:outline-none focus:ring-2 focus:ring-teal-500/25 dark:focus:ring-teal-400/25",
-                                  "placeholder:text-gray-500 dark:placeholder:text-gray-400"
-                                )}
-                                rows={2}
-                                maxLength={200}
-                              />
-                            </Field>
-                            <div className="flex justify-end gap-2">
-                              <Button
-                                size="sm"
-                                variant="secondary"
-                                onClick={() => {
-                                  setEditingCommentId(null);
-                                  setEditCommentContent("");
-                                }}
-                              >
-                                취소
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="primary"
-                                onClick={() =>
-                                  handleEditComment(discussion.id, comment.id)
-                                }
-                              >
-                                수정
-                              </Button>
-                            </div>
-                          </div>
-                        ) : (
-                          <p className="text-sm mt-1 whitespace-pre-wrap">
-                            {comment.content}
-                          </p>
-                        )}
-                      </div>
-                    ))}
-
-                    {isAuthenticated && (
-                      <div className="mt-4">
-                        <Field>
-                          <Textarea
-                            value={newComment[discussion.id] || ""}
-                            onChange={(
-                              e: React.ChangeEvent<HTMLTextAreaElement>
-                            ) => {
-                              setNewComment((prev) => ({
-                                ...prev,
-                                [discussion.id]: e.target.value,
-                              }));
-                            }}
-                            className={clsx(
-                              "block w-full resize-none rounded-lg",
-                              "border border-gray-200 dark:border-none",
-                              "bg-white dark:bg-gray-800 py-2 px-3",
-                              "text-gray-900 dark:text-white text-sm/6",
-                              "focus:outline-none focus:ring-2 focus:ring-teal-500/25 dark:focus:ring-teal-400/25",
-                              "placeholder:text-gray-500 dark:placeholder:text-gray-400"
-                            )}
-                            rows={2}
-                            maxLength={200}
-                            placeholder="댓글을 입력하세요"
-                          />
-                        </Field>
-                        <div className="flex justify-end mt-2">
-                          <Button
-                            size="sm"
-                            variant="primary"
-                            onClick={() => handleSubmitComment(discussion.id)}
-                          >
-                            작성
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
+          {discussions.length === 0 ? (
+            <div className="py-12 text-center">
+              <p className="text-gray-500 dark:text-gray-400 mb-2">
+                아직 작성된 토론글이 없습니다.
+              </p>
+              {isAuthenticated ? (
+                <p className="text-gray-500 dark:text-gray-400">
+                  첫 번째 의견을 남겨보세요!
+                </p>
+              ) : (
+                <p className="text-gray-500 dark:text-gray-400">
+                  로그인하고 첫 번째 의견을 남겨보세요!
+                </p>
+              )}
             </div>
-          ))}
+          ) : (
+            discussions.map((discussion) => (
+              <DiscussionItem
+                key={discussion.id}
+                discussion={discussion}
+                isAuthenticated={isAuthenticated}
+                userId={user?.id}
+                editingCommentId={editingCommentId}
+                editCommentContent={editCommentContent}
+                newComment={newComment}
+                onToggleComments={toggleComments}
+                onDeleteDiscussion={handleDeleteDiscussion}
+                onSubmitComment={handleSubmitComment}
+                onEditComment={handleEditComment}
+                onDeleteComment={handleDeleteComment}
+                onEditCommentStart={(commentId, content) => {
+                  setEditingCommentId(commentId);
+                  setEditCommentContent(content);
+                }}
+                onEditCommentCancel={() => {
+                  setEditingCommentId(null);
+                  setEditCommentContent("");
+                }}
+                setEditCommentContent={setEditCommentContent}
+                setNewComment={setNewComment}
+              />
+            ))
+          )}
         </div>
 
         {hasMore && (

@@ -93,9 +93,9 @@ export default function PricePrediction({
   } = usePredict();
   const exchangeRate = useMarketStore((state) => state.exchangeRate?.rate);
 
-  const [selectedDuration, setSelectedDuration] = useState<15 | 30 | 60 | 180>(
-    30
-  );
+  const [selectedDuration, setSelectedDuration] = useState<15 | 30 | 60 | 180>(30);
+  const warningTime = process.env.NEXT_PUBLIC_SYSTEM_WARNING_TIME;
+  const isSystemMaintenance = warningTime ? new Date().getTime() < new Date(warningTime).getTime() : false;
 
   const [remainingTimeDisplay, setRemainingTimeDisplay] = useState(0);
   const [depositRatio, setDepositRatio] = useState<number>(10);
@@ -508,23 +508,25 @@ export default function PricePrediction({
         <div className="grid grid-cols-2 gap-4">
           <button
             onClick={() => handlePredict("L", selectedDuration)}
-            disabled={!canPredict || isLoading}
+            disabled={!canPredict || isLoading || isSystemMaintenance}
             className={clsx(
               "px-4 py-3 rounded-lg font-semibold text-white transition-colors",
-              canPredict ? "bg-green-500 hover:bg-green-600" : "bg-green-500/50"
+              canPredict && !isSystemMaintenance ? "bg-green-500 hover:bg-green-600" : "bg-green-500/50"
             )}
           >
             롱 (Long)
+            {isSystemMaintenance && <span className="block text-xs">시스템 점검 중</span>}
           </button>
           <button
             onClick={() => handlePredict("S", selectedDuration)}
-            disabled={!canPredict || isLoading}
+            disabled={!canPredict || isLoading || isSystemMaintenance}
             className={clsx(
               "px-4 py-3 rounded-lg font-semibold text-white transition-colors",
-              canPredict ? "bg-red-500 hover:bg-red-600" : "bg-red-500/50"
+              canPredict && !isSystemMaintenance ? "bg-red-500 hover:bg-red-600" : "bg-red-500/50"
             )}
           >
             숏 (Short)
+            {isSystemMaintenance && <span className="block text-xs">시스템 점검 중</span>}
           </button>
         </div>
 

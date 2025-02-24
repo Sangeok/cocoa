@@ -183,6 +183,13 @@
       "when": 1740390148440,
       "tag": "0025_wise_komodo",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1740392882769,
+      "tag": "0026_lethal_garia",
+      "breakpoints": true
     }
   ]
 }

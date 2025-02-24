@@ -3,7 +3,6 @@ import ChatMessageList from "./ChatMessageList";
 import ChatInput from "./ChatInput";
 import clsx from "clsx";
 import { useChatRoom } from "@/hooks/useChat";
-import useAuthStore from "@/store/useAuthStore";
 
 interface ChatRoomProps {
   symbol: string;
@@ -24,10 +23,8 @@ export default function ChatRoom({ symbol, symbolKoreanName }: ChatRoomProps) {
     setIsNicknameModalOpen,
   } = useChatRoom(symbol, 2);
 
-  const { user } = useAuthStore();
-
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-lg">
+    <div className="bg-white dark:bg-gray-900 rounded-lg h-fit">
       <Tab.Group
         selectedIndex={selectedChat === "global" ? 0 : 1}
         onChange={(index) => setSelectedChat(index === 0 ? "global" : "coin")}
