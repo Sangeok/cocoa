@@ -14,7 +14,7 @@ export function UsdtPremiumBox() {
   return (
     <div className="bg-white dark:bg-gray-950 rounded-lg p-4 sm:p-6 border border-gray-200 dark:border-gray-900">
       <div className="flex flex-wrap items-center gap-1 sm:gap-2 lg:gap-4">
-        <div className="flex items-center gap-2 sm:gap-4 lg:gap-6">
+        <div className="flex items-center gap-3 sm:gap-4 lg:gap-6">
           <div className="flex items-center gap-2">
             <Image
               src={`${UPBIT_STATIC_IMAGE_URL}/USDT.png`}
@@ -64,7 +64,7 @@ export function UsdtPremiumBox() {
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-2 sm:gap-4 lg:gap-6">
+        <div className="flex items-center gap-3 sm:gap-4 lg:gap-6">
           <div>
             <div className="text-sm text-gray-500 dark:text-gray-400">
               프리미엄
