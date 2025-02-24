@@ -5,6 +5,7 @@ import Comment from "./Comment";
 import clsx from "clsx";
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import { findUrls } from "@/lib/utils";
 
 interface DiscussionItemProps {
   discussion: any;
@@ -55,10 +56,31 @@ export default function DiscussionItem({
     }
   }, [discussion.content]);
 
+  // URL을 감지하고 링크로 변환하는 함수
+  const renderContent = (text: string) => {
+    const parts = findUrls(text);
+    return parts.map((part, index) => {
+      if (part.type === 'url') {
+        return (
+          <a
+            key={index}
+            href={part.text}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 hover:underline"
+          >
+            {part.text}
+          </a>
+        );
+      }
+      return part.text;
+    });
+  };
+
   return (
     <div 
       id={`stock-discussion-${discussion.id}`}
-      className="p-6 bg-white dark:bg-gray-900 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50"
+      className="p-4 sm:p-6 bg-white dark:bg-gray-900 transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50 border-b border-gray-200 dark:border-gray-800"
     >
       {/* 토론글 헤더 */}
       <div className="flex justify-between items-start mb-2">
@@ -107,7 +129,7 @@ export default function DiscussionItem({
             !isExpanded && needsExpansion && "line-clamp-4"
           )}
         >
-          {discussion.content}
+          {renderContent(discussion.content)}
         </p>
         {needsExpansion && (
           <button

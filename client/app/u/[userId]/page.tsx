@@ -13,6 +13,7 @@ import Button from "@/components/common/Button";
 import { toast } from "react-hot-toast";
 import useMarketStore from "@/store/useMarketStore";
 import { formatDollar } from "@/lib/format";
+import { findUrls } from "@/lib/utils";
 
 interface PublicProfile {
   id: number;
@@ -571,6 +572,26 @@ export default function UserProfilePage() {
     }
   };
 
+  const renderContent = (text: string) => {
+    const parts = findUrls(text);
+    return parts.map((part, index) => {
+      if (part.type === 'url') {
+        return (
+          <a
+            key={index}
+            href={part.text}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 hover:underline"
+          >
+            {part.text}
+          </a>
+        );
+      }
+      return part.text;
+    });
+  };
+
   if (isLoading) return <ProfileSkeleton />;
   if (!profile) {
     return (
@@ -907,7 +928,7 @@ export default function UserProfilePage() {
                         : ""
                     )}
                   >
-                    {guestbook.content}
+                    {renderContent(guestbook.content)}
                   </p>
 
                   <div className="mt-2">
@@ -1067,10 +1088,10 @@ export default function UserProfilePage() {
                               >
                                 {comment.mentionedUser && (
                                   <span className="text-teal-600">
-                                    @{comment.mentionedUser.name}{" "}
+                                    @{comment.mentionedUser.name}
                                   </span>
                                 )}
-                                {comment.content}
+                                {renderContent(comment.content)}
                               </p>
                             )}
                           </div>

@@ -3,6 +3,7 @@ import { EllipsisHorizontalIcon } from "@heroicons/react/24/outline";
 import Button from "@/components/common/Button";
 import clsx from "clsx";
 import Link from "next/link";
+import { findUrls } from "@/lib/utils";
 
 interface CommentProps {
   comment: any;
@@ -31,6 +32,26 @@ export default function Comment({
   onEditCancel,
   setEditCommentContent,
 }: CommentProps) {
+  const renderContent = (text: string) => {
+    const parts = findUrls(text);
+    return parts.map((part, index) => {
+      if (part.type === 'url') {
+        return (
+          <a
+            key={index}
+            href={part.text}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-teal-600 dark:text-teal-400 hover:text-teal-700 dark:hover:text-teal-300 hover:underline"
+          >
+            {part.text}
+          </a>
+        );
+      }
+      return part.text;
+    });
+  };
+
   return (
     <div key={comment.id} className="pl-4 ">
       <div className="flex justify-between items-start">
@@ -113,7 +134,9 @@ export default function Comment({
           </div>
         </div>
       ) : (
-        <p className="text-sm mt-1 whitespace-pre-wrap">{comment.content}</p>
+        <p className="text-sm mt-1 whitespace-pre-wrap">
+          {renderContent(comment.content)}
+        </p>
       )}
     </div>
   );
