@@ -100,7 +100,7 @@ const MetricCard: React.FC<MetricCardProps> = ({
   subtitle,
 }) => {
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-lg p-4 shadow-md">
+    <div className="bg-white dark:bg-gray-900 rounded-lg p-4 border border-gray-200 dark:border-gray-800">
       <div className="flex items-center mb-2">
         {iconSrc && (
           <div className="w-8 h-8 mr-2 flex items-center justify-center">
