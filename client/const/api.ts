@@ -187,4 +187,38 @@ export const API_ROUTES = {
       method: "DELETE",
     },
   },
+  STOCK_DISCUSSION: {
+    LIST: {
+      url: "/stock-discussion",
+      method: "GET",
+    },
+    GET: {
+      url: "/stock-discussion/get/:discussionId",
+      method: "GET",
+    },
+    CREATE: {
+      url: "/stock-discussion",
+      method: "POST",
+    },
+    DELETE: {
+      url: "/stock-discussion/:discussionId",
+      method: "DELETE",
+    },
+    GET_COMMENTS: {
+      url: "/stock-discussion/:discussionId/comments",
+      method: "GET",
+    },
+    CREATE_COMMENT: {
+      url: "/stock-discussion/:discussionId/comments",
+      method: "POST",
+    },
+    UPDATE_COMMENT: {
+      url: "/stock-discussion/comments/:commentId",
+      method: "PATCH",
+    },
+    DELETE_COMMENT: {
+      url: "/stock-discussion/comments/:commentId",
+      method: "DELETE",
+    },
+  },
 } as const;

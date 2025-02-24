@@ -17,6 +17,7 @@ import { YieldModule } from './yield/yield.module';
 import { GuestbookModule } from './guestbook/guestbook.module';
 import { ProfileStatsModule } from './profile-stats/profile-stats.module';
 import { NotificationModule } from './notification/notification.module';
+import { StockDiscussionModule } from './stock-discussion/stock-discussion.module';
 @Module({
   imports: [
     ConfigModule,
@@ -34,7 +35,8 @@ import { NotificationModule } from './notification/notification.module';
     YieldModule,
     GuestbookModule,
     ProfileStatsModule,
-    NotificationModule
+    NotificationModule,
+    StockDiscussionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

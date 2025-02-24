@@ -15,4 +15,5 @@ export default {
     database: process.env.POSTGRES_DB || 'cocoa_dev',
     ssl: false,
   },
+  strict: true,
 } satisfies Config;

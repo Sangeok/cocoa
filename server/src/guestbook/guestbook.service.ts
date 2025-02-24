@@ -63,8 +63,8 @@ export class GuestbookService {
   }
 
   async createGuestbook(
-    userId: number,
-    targetUserId: number,
+    userId: number, // 방명록을 작성한 사용자 아이디
+    targetUserId: number, // 방명록의 대상이 되는 사용자 아이디
     content: string,
     isSecret: boolean = false,
   ) {

@@ -3,7 +3,7 @@ import { users } from './user';
 import { relations } from 'drizzle-orm';
 
 // 알림 타입 정의
-export type NotificationType = 'NEW_GUESTBOOK' | 'NEW_COMMENT';
+export type NotificationType = 'NEW_GUESTBOOK' | 'NEW_COMMENT' | 'NEW_COMMENT_STOCK_DISCUSSION';
 
 export const notifications = pgTable('notifications', {
   id: serial('id').primaryKey(),

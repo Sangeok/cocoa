@@ -169,6 +169,20 @@
       "when": 1740190806231,
       "tag": "0023_dashing_true_believers",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1740388896761,
+      "tag": "0024_tiresome_blade",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1740390148440,
+      "tag": "0025_wise_komodo",
+      "breakpoints": true
     }
   ]
 }

@@ -12,6 +12,7 @@ import PricePrediction from "@/components/coin/PricePrediction";
 import NicknameModal from "@/components/coin/NicknameModal";
 import { useChatRoom } from "@/hooks/useChat";
 import CoinTabs from "@/components/coin/CoinTabs";
+import StockDiscussion from './StockDiscussion';
 
 export default function CoinPageContent({ symbol }: { symbol: string }) {
   const { markets, fetchMarkets, getKoreanName } = useMarketsStore();
@@ -68,8 +69,11 @@ export default function CoinPageContent({ symbol }: { symbol: string }) {
         return <MarketData symbol={symbol} coins={coins} />;
       case 2: // 커뮤니티
         return (
-          <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800">
-            <ChatRoom symbol={symbol} symbolKoreanName={koreanName} />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <StockDiscussion symbol={symbol} symbolKoreanName={koreanName} />
+            <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800">
+              <ChatRoom symbol={symbol} symbolKoreanName={koreanName} />
+            </div>
           </div>
         );
       default:

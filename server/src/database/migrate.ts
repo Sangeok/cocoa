@@ -2,11 +2,24 @@ import { drizzle } from 'drizzle-orm/node-postgres';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import { Pool } from 'pg';
 import { Logger } from '@nestjs/common';
+import * as dotenv from 'dotenv';
+
+// 환경 변수 로드
+dotenv.config();
 
 const logger = new Logger('DatabaseMigration');
 
 async function main() {
   logger.log('Starting database migration...');
+
+  // 환경 변수 검증
+  const requiredEnvVars = ['POSTGRES_HOST', 'POSTGRES_USER', 'POSTGRES_PASSWORD', 'POSTGRES_DB'];
+  const missingEnvVars = requiredEnvVars.filter(envVar => !process.env[envVar]);
+  
+  if (missingEnvVars.length > 0) {
+    logger.error(`Missing required environment variables: ${missingEnvVars.join(', ')}`);
+    process.exit(1);
+  }
 
   const pool = new Pool({
     host: process.env.POSTGRES_HOST,
@@ -21,7 +34,7 @@ async function main() {
 
   try {
     await migrate(db, {
-      migrationsFolder: 'drizzle',
+      migrationsFolder: './drizzle/migrations',
       migrationsTable: 'migrations',
     });
     logger.log('Migration completed successfully');
