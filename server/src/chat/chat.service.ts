@@ -5,7 +5,6 @@ import { CoinTalkMessageData, GlobalChatMessageData } from './chat.type';
 @Injectable()
 export class ChatService {
   private readonly logger = new Logger(ChatService.name);
-  private readonly MESSAGE_TTL = 3600 * 24; // 24시간
   private readonly MAX_MESSAGES = 1000; // 최대 메시지 수
   private readonly GLOBAL_CHAT_KEY = 'chat:global';
 
@@ -34,7 +33,6 @@ export class ChatService {
       await this.redisService.set(
         this.GLOBAL_CHAT_KEY,
         JSON.stringify(newMessages),
-        this.MESSAGE_TTL,
       );
     } catch (error) {
       this.logger.error('Failed to send global message:', error);
