@@ -189,10 +189,15 @@ export default function UserProfilePage() {
         const [profileRes, statsRes, guestbookRes, rankingsRes] =
           await Promise.all([
             ClientAPICall.get(
-              API_ROUTES.USER.PUBLIC_PROFILE.url.replace(
-                ":userId",
-                userId as string
-              )
+              isAuthenticated
+                ? API_ROUTES.USER.PUBLIC_PROFILE.url.replace(
+                    ":userId",
+                    userId as string
+                  )
+                : API_ROUTES.USER.PROFILE.url.replace(
+                    ":userId",
+                    userId as string
+                  )
             ),
             ClientAPICall.get(
               API_ROUTES.PROFILE_STATS.GET.url.replace(
