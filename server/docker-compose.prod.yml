@@ -2,13 +2,39 @@ version: '3.8'
 
 services:
   api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=${DATABASE_URL}
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=${POSTGRES_PORT:-5432}
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-cocoa_dev}
+      - REDIS_HOST=redis
+    env_file:
+      - .env
+    volumes: []
     command: npm run start:prod
-    restart: unless-stopped
-
-  collector:
-    command: npm run collect:prod
-    restart: unless-stopped
+    networks:
+      - cocoa-network
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   postgres:
     image: postgres:15-alpine
-    restart: unless-stopped 
+    restart: unless-stopped
+    networks:
+      - cocoa-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  cocoa-network:
+    driver: bridge

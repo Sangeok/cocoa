@@ -10,7 +10,7 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=${NODE_ENV:-development}
-      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/cocoa_dev
+      - DATABASE_URL=${DATABASE_URL}
       - POSTGRES_HOST=postgres
       - POSTGRES_PORT=${POSTGRES_PORT:-5432}
       - POSTGRES_USER=${POSTGRES_USER:-postgres}
@@ -44,39 +44,6 @@ services:
         reservations:
           cpus: '0.5'
           memory: 1G
-
-  collector:
-    container_name: cocoa-collector
-    build:
-      context: .
-      dockerfile: Dockerfile
-    environment:
-      - NODE_ENV=${NODE_ENV:-development}
-      - POSTGRES_HOST=postgres
-      - POSTGRES_PORT=${POSTGRES_PORT:-5432}
-      - POSTGRES_USER=${POSTGRES_USER:-postgres}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
-      - POSTGRES_DB=${POSTGRES_DB:-cocoa_dev}
-      - NODE_OPTIONS="--max-old-space-size=1024"
-    volumes:
-      - .:/app
-      - /app/node_modules
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    networks:
-      - cocoa-network
-    command: npm run collect:dev  # 개발 환경용 명령어
-    deploy:
-      resources:
-        limits:
-          cpus: '0.8'
-          memory: 1G
-        reservations:
-          cpus: '0.3'
-          memory: 512M
 
   postgres:
     container_name: cocoa-postgres

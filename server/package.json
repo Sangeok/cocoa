@@ -11,7 +11,7 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
+    "start:prod": "node dist/src/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
@@ -22,7 +22,9 @@
     "db:migrate": "ts-node src/database/migrate.ts",
     "db:push": "drizzle-kit push",
     "db:drop": "drizzle-kit drop",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "docker:prod:api": "docker-compose -f docker-compose.prod.yml up -d --build api",
+    "docker:prod:api:logs": "docker-compose -f docker-compose.prod.yml logs -f api"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.2.16",
