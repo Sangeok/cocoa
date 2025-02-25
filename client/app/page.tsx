@@ -80,7 +80,7 @@ export default function Home() {
 
   return (
     <main>
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-2 sm:px-4 py-8">
         <div className="flex xl:flex-row flex-col gap-6">
           <div className="xl:w-1/2 w-full">
             <div className="flex items-center justify-between mb-1.5">

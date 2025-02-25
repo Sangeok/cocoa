@@ -24,11 +24,11 @@ import {
 } from "@heroicons/react/24/outline";
 
 const TriangleUp = () => (
-  <div className="w-0 h-0 border-x-[4px] border-x-transparent border-b-[6px] border-b-current" />
+  <div className="w-0 h-0 border-x-[2px] border-b-[4px] sm:border-x-[4px] border-x-transparent sm:border-b-[6px] border-b-current" />
 );
 
 const TriangleDown = () => (
-  <div className="w-0 h-0 border-x-[4px] border-x-transparent border-t-[6px] border-t-current" />
+  <div className="w-0 h-0 border-x-[2px] border-t-[4px] sm:border-x-[4px] border-x-transparent sm:border-t-[6px] border-t-current" />
 );
 
 function ImageWithFallback({ symbol }: { symbol: string }) {
@@ -108,7 +108,7 @@ export default function PremiumTableContent() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white dark:bg-gray-950 rounded-lg p-1 sm:p-2 lg:p-6 border border-gray-200 dark:border-gray-900">
+      <div className="bg-white dark:bg-gray-950 rounded-lg p-2 sm:p-3 lg:p-6 border border-gray-200 dark:border-gray-900">
         <div className="flex flex-col gap-1 sm:gap-2 lg:gap-4">
           <div className="flex items-end justify-between sm:justify-start gap-0.5 sm:gap-2 lg:gap-4">
             <Select
@@ -276,7 +276,7 @@ export default function PremiumTableContent() {
                       className="flex items-center justify-end gap-1 whitespace-nowrap w-full"
                     >
                       <div className="flex flex-col items-end gap-0.5 sm:gap-1">
-                        <div>일일 거래량</div>
+                        <div>거래량</div>
                         <span className="text-[8px] sm:text-xs text-gray-500 dark:text-gray-400 block">
                           (시작거래소)
                         </span>
@@ -308,7 +308,7 @@ export default function PremiumTableContent() {
                         <div className="flex items-center">
                           <ImageWithFallback symbol={market.symbol} />
                           <div className="text-gray-900 dark:text-white">
-                            <div className="text-[12px] sm:text-[16px] lg:text-[17px] font-bold">
+                            <div className="text-[12px] sm:text-[16px] lg:text-[17px] font-medium">
                               <span className="hidden sm:block">
                                 {getKoreanName(market.symbol)}
                               </span>
@@ -328,7 +328,7 @@ export default function PremiumTableContent() {
                     <td className="px-1 sm:px-3 py-1.5 sm:py-3 xl:py-4 text-right whitespace-nowrap">
                       <span
                         className={clsx(
-                          "font-bold flex items-center justify-end gap-0.5 text-[11px] sm:text-base xl:text-lg",
+                          "font-medium flex items-center justify-end gap-0.5 text-xs sm:text-base xl:text-lg",
                           market.priceGapPercent === 0
                             ? "text-gray-400 dark:text-gray-500"
                             : market.priceGapPercent > 0
@@ -349,7 +349,7 @@ export default function PremiumTableContent() {
                         exchangePair.fromBase === "USDT") && (
                         <span className="hidden sm:inline">₩</span>
                       )}
-                      <span className="font-bold text-[10px] sm:text-base xl:text-lg">
+                      <span className="font-medium text-xs md:text-[14px] sm:text-base xl:text-lg">
                         {formatExchangePrice(
                           market.fromPrice,
                           exchangePair.fromBase,
@@ -359,7 +359,7 @@ export default function PremiumTableContent() {
                       </span>
                       <div
                         className={clsx(
-                          "text-[7px] sm:text-sm xl:text-base flex items-center justify-end gap-0.5 font-bold",
+                          "text-[11px] sm:text-sm xl:text-base flex items-center justify-end gap-0.5 font-medium mt-0.5 sm:mt-1",
                           market.fromPriceChange24h > 0
                             ? "text-green-600 dark:text-green-500"
                             : market.fromPriceChange24h < 0
@@ -375,12 +375,12 @@ export default function PremiumTableContent() {
                         {Math.abs(market.fromPriceChange24h).toFixed(2)}%
                       </div>
                     </td>
-                    <td className="px-1 sm:px-3 py-1.5 sm:py-3 xl:py-4 text-right font-medium whitespace-nowrap text-gray-900 dark:text-white">
+                    <td className="px-0 sm:px-3 py-1.5 sm:py-3 xl:py-4 text-right font-medium whitespace-nowrap text-gray-900 dark:text-white">
                       {(exchangePair.toBase === "KRW" ||
                         exchangePair.toBase === "USDT") && (
                         <span className="hidden sm:inline">₩</span>
                       )}
-                      <span className="font-bold text-[10px] sm:text-base xl:text-lg">
+                      <span className="font-medium text-[13px] md:text-[14px] sm:text-base xl:text-lg">
                         {formatExchangePrice(
                           market.toPrice,
                           exchangePair.toBase,
@@ -390,7 +390,7 @@ export default function PremiumTableContent() {
                       </span>
                       <div
                         className={clsx(
-                          "text-[7px] sm:text-sm xl:text-base flex items-center justify-end gap-0.5 font-bold",
+                          "text-[11px] sm:text-sm xl:text-base flex items-center justify-end gap-0.5 font-medium mt-0.5 sm:mt-1",
                           market.toPriceChange24h > 0
                             ? "text-green-600 dark:text-green-500"
                             : market.toPriceChange24h < 0
@@ -406,7 +406,7 @@ export default function PremiumTableContent() {
                         {Math.abs(market.toPriceChange24h).toFixed(2)}%
                       </div>
                     </td>
-                    <td className="px-1 sm:px-3 py-1.5 sm:py-3 xl:py-4 text-right text-gray-500 dark:text-gray-400 font-bold text-[9px] sm:text-base xl:text-lg">
+                    <td className="pr-0.5 sm:px-3 py-1.5 sm:py-3 xl:py-4 text-right text-gray-500 dark:text-gray-400 font-medium text-[11px] sm:text-base xl:text-lg">
                       {exchangePair.fromBase === "KRW"
                         ? formatKRWWithUnit(market.volume, false)
                         : formatCryptoToKRWWithUnit(
