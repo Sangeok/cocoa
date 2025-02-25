@@ -10,6 +10,7 @@ interface SelectOption {
   value: string;
   label: string;
   image?: boolean;
+  imageUrl?: string;
 }
 
 interface SelectProps {
@@ -21,6 +22,7 @@ interface SelectProps {
   disabled?: boolean;
   required?: boolean;
   placeholder?: string;
+  imageUrl?: string;
 }
 
 export default function Select({
@@ -44,6 +46,8 @@ export default function Select({
             option.value === "USDT" ||
             option.value === "BTC"
               ? `${UPBIT_STATIC_IMAGE_URL}/${option.value}.png`
+              : option.imageUrl
+              ? `/exchanges/${option.imageUrl}.svg`
               : `/exchanges/${option.value}.svg`
           }
           alt={option.label}

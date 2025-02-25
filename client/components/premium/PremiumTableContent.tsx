@@ -18,12 +18,25 @@ import { useState } from "react";
 import { UPBIT_STATIC_IMAGE_URL } from "@/const";
 import Link from "next/link";
 import { UsdtPremiumBox } from "./UsdtPremiumBox";
+import {
+  MagnifyingGlassIcon,
+  ArrowsRightLeftIcon,
+} from "@heroicons/react/24/outline";
+
+const TriangleUp = () => (
+  <div className="w-0 h-0 border-x-[4px] border-x-transparent border-b-[6px] border-b-current" />
+);
+
+const TriangleDown = () => (
+  <div className="w-0 h-0 border-x-[4px] border-x-transparent border-t-[6px] border-t-current" />
+);
+
 function ImageWithFallback({ symbol }: { symbol: string }) {
   const [showImage, setShowImage] = useState(true);
 
   if (!showImage) {
     return (
-      <div className="w-5 h-5 sm:w-6 sm:h-6 mr-2 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-xs">
+      <div className="w-3.5 h-3.5 sm:w-5 sm:h-5 lg:w-6 lg:h-6 mr-1 sm:mr-2 bg-gray-200 dark:bg-gray-800 rounded-full flex items-center justify-center text-xs">
         {symbol.charAt(0)}
       </div>
     );
@@ -35,11 +48,27 @@ function ImageWithFallback({ symbol }: { symbol: string }) {
       alt={symbol.split("-")[0]}
       width={20}
       height={20}
-      className="mr-2 sm:w-6 sm:h-6"
+      className="w-3.5 h-3.5 sm:w-5 sm:h-5 lg:w-6 lg:h-6 mr-1 sm:mr-2"
       onError={() => setShowImage(false)}
     />
   );
 }
+
+function truncateKoreanName(name: string, maxLength: number = 6): string {
+  return name.length > maxLength ? name.slice(0, maxLength) + "..." : name;
+}
+
+// 거래소와 마켓을 조합한 옵션 생성
+const COMBINED_EXCHANGE_OPTIONS = [
+  ...EXCHANGE_OPTIONS.flatMap((exchange) =>
+    BASE_TOKEN_OPTIONS[exchange.value].map((market) => ({
+      value: `${exchange.value}:${market.value}`,
+      label: `${exchange.label} ${market.value}`,
+      image: true,
+      imageUrl: exchange.value,
+    }))
+  ),
+];
 
 export default function PremiumTableContent() {
   const {
@@ -53,7 +82,7 @@ export default function PremiumTableContent() {
   } = useMarketData();
 
   const [sortState, setSortState] = useState<SortState>({
-    field: "fromPrice",
+    field: "volume",
     direction: "desc",
   });
 
@@ -80,287 +109,317 @@ export default function PremiumTableContent() {
   return (
     <div className="space-y-6">
       <div className="bg-white dark:bg-gray-950 rounded-lg p-1 sm:p-2 lg:p-6 border border-gray-200 dark:border-gray-900">
-        <div className="flex flex-col sm:flex-row gap-1 sm:gap-2 lg:gap-4 justify-between items-end">
-          <div className="flex flex-wrap items-center gap-1 sm:gap-2 lg:gap-4">
-            <div className="flex items-center gap-1 sm:gap-2">
-              <Select
-                label="시작 거래소"
-                value={exchangePair.from}
-                onChange={(value) => {
-                  const newFrom = value as Exchange;
-                  setExchangePair((prev) => ({
-                    ...prev,
-                    from: newFrom,
-                    fromBase: BASE_TOKEN_OPTIONS[newFrom][0].value,
-                  }));
-                }}
-                options={EXCHANGE_OPTIONS}
-              />
-              <Select
-                label="마켓"
-                value={exchangePair.fromBase}
-                onChange={(value) => {
-                  setExchangePair((prev) => ({
-                    ...prev,
-                    fromBase: value as QuoteToken,
-                  }));
-                }}
-                options={BASE_TOKEN_OPTIONS[exchangePair.from]}
-              />
-            </div>
-            <div className="flex items-center gap-1 sm:gap-2">
-              <Select
-                label="비교 거래소"
-                value={exchangePair.to}
-                onChange={(value) => {
-                  const newTo = value as "upbit" | "binance";
-                  setExchangePair((prev) => ({
-                    ...prev,
-                    to: newTo,
-                    toBase: BASE_TOKEN_OPTIONS[newTo][0].value,
-                  }));
-                }}
-                options={EXCHANGE_OPTIONS}
-              />
-              <Select
-                label="마켓"
-                value={exchangePair.toBase}
-                onChange={(value) => {
-                  setExchangePair((prev) => ({
-                    ...prev,
-                    toBase: value as QuoteToken,
-                  }));
-                }}
-                options={BASE_TOKEN_OPTIONS[exchangePair.to]}
-              />
-            </div>
-          </div>
-          <div className="w-full sm:w-64">
-            <input
-              type="text"
-              placeholder="코인명 검색 (한글/영문)"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg 
-                     bg-white dark:bg-gray-900 text-gray-900 dark:text-white 
-                     focus:outline-none focus:ring-2 focus:ring-blue-500"
+        <div className="flex flex-col gap-1 sm:gap-2 lg:gap-4">
+          <div className="flex items-end justify-between sm:justify-start gap-0.5 sm:gap-2 lg:gap-4">
+            <Select
+              label="시작 거래소"
+              value={`${exchangePair.from}:${exchangePair.fromBase}`}
+              onChange={(value) => {
+                const [exchange, market] = value.split(":") as [Exchange, QuoteToken];
+                setExchangePair((prev) => ({
+                  ...prev,
+                  from: exchange,
+                  fromBase: market,
+                }));
+              }}
+              options={COMBINED_EXCHANGE_OPTIONS}
             />
+            <button
+              onClick={() => {
+                setExchangePair((prev) => ({
+                  from: prev.to,
+                  to: prev.from,
+                  fromBase: prev.toBase,
+                  toBase: prev.fromBase,
+                }));
+              }}
+              className="mb-1.5 p-1 sm:p-2 bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+              title="거래소 스왑"
+            >
+              <ArrowsRightLeftIcon className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 dark:text-gray-400" />
+            </button>
+            <Select
+              label="비교 거래소"
+              value={`${exchangePair.to}:${exchangePair.toBase}`}
+              onChange={(value) => {
+                const [exchange, market] = value.split(":") as [Exchange, QuoteToken];
+                setExchangePair((prev) => ({
+                  ...prev,
+                  to: exchange,
+                  toBase: market,
+                }));
+              }}
+              options={COMBINED_EXCHANGE_OPTIONS}
+            />
+          </div>
+          <div className="w-full relative mt-1 sm:mt-0">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="코인명 검색 (한글/영문)"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg 
+                         bg-white dark:bg-gray-900 text-gray-900 dark:text-white 
+                         focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <MagnifyingGlassIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            </div>
           </div>
         </div>
       </div>
       <UsdtPremiumBox />
 
-      {(sortedMarkets.length === 0 && searchTerm) ? (
+      {sortedMarkets.length === 0 && searchTerm ? (
         <div className="text-center py-8 text-gray-500 dark:text-gray-400">
           검색 결과가 없습니다
         </div>
       ) : (
         <div className="bg-white dark:bg-gray-950 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-900">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-900">
-            <thead>
-              <tr className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm">
-                <th
-                  className="px-2 sm:px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSort("name")}
-                >
-                  <div className="flex items-center gap-1">
-                    코인명
-                    <SortIcon
-                      direction={
-                        sortState.field === "name" ? sortState.direction : null
-                      }
-                    />
-                  </div>
-                </th>
-                <th className="px-2 sm:px-4 py-2 text-right">
-                  <button
-                    onClick={() => handleSort("premium")}
-                    className="flex items-center justify-end gap-1 whitespace-nowrap w-full"
-                  >
-                    프리미엄
-                    <SortIcon
-                      direction={
-                        sortState.field === "premium"
-                          ? sortState.direction
-                          : null
-                      }
-                    />
-                  </button>
-                </th>
-                <th className="px-2 sm:px-4 py-2 text-right">
-                  <button
-                    onClick={() => handleSort("fromPrice")}
-                    className="flex items-center justify-end gap-1 whitespace-nowrap w-full"
-                  >
-                    <div className="flex flex-col items-end gap-1">
-                      <div>
-                        {
-                          EXCHANGE_OPTIONS.find(
-                            (option) => option.value === exchangePair.from
-                          )?.label
-                        }{" "}
-                        가격
-                      </div>
-                      <span className="text-xs text-gray-500 dark:text-gray-400 block">
-                        전일대비(%)
-                      </span>
-                    </div>
-                    <SortIcon
-                      direction={
-                        sortState.field === "fromPrice"
-                          ? sortState.direction
-                          : null
-                      }
-                    />
-                  </button>
-                </th>
-                <th className="px-2 sm:px-4 py-2 text-right">
-                  <button
-                    onClick={() => handleSort("toPrice")}
-                    className="flex items-center justify-end gap-1 whitespace-nowrap w-full"
-                  >
-                    <div className="flex flex-col items-end gap-1">
-                      <div>
-                        {
-                          EXCHANGE_OPTIONS.find(
-                            (option) => option.value === exchangePair.to
-                          )?.label
-                        }{" "}
-                        가격
-                      </div>
-                      <span className="text-xs text-gray-500 dark:text-gray-400 block">
-                        전일대비(%)
-                      </span>
-                    </div>
-                    <SortIcon
-                      direction={
-                        sortState.field === "toPrice"
-                          ? sortState.direction
-                          : null
-                      }
-                    />
-                  </button>
-                </th>
-                <th className="px-2 sm:px-4 py-2 text-right">
-                  <button
-                    onClick={() => handleSort("volume")}
-                    className="flex items-center justify-end gap-1 whitespace-nowrap w-full"
-                  >
-                    <div className="flex flex-col items-end gap-1">
-                      <div>일일 거래량</div>
-                      <span className="text-xs text-gray-500 dark:text-gray-400 block">
-                        (시작거래소)
-                      </span>
-                    </div>
-                    <SortIcon
-                      direction={
-                        sortState.field === "volume"
-                          ? sortState.direction
-                          : null
-                      }
-                    />
-                  </button>
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-900">
-              {sortedMarkets.map((market) => (
-                <tr
-                  key={market.symbol}
-                  className="text-xs sm:text-sm hover:bg-gray-50 dark:hover:bg-gray-900"
-                >
-                  <td className="px-2 sm:px-4 py-2 sm:py-4 whitespace-nowrap">
-                    <Link
-                      href={`/coin/${market.symbol}`}
-                      className="text-gray-900 dark:text-white hover:underline"
+          <div className="overflow-x-auto">
+            <table className="w-full divide-y divide-gray-200 dark:divide-gray-900">
+              <thead>
+                <tr className="text-gray-500 dark:text-gray-400 text-[10px] sm:text-sm xl:text-base">
+                  <th className="w-[30%] px-0.5 sm:px-3 py-1 sm:py-3 text-right">
+                    <button
+                      onClick={() => handleSort("name")}
+                      className="flex items-center gap-1 whitespace-nowrap w-full text-left"
                     >
-                      <div className="flex items-center">
-                        <ImageWithFallback symbol={market.symbol} />
-                        <div className="text-gray-900 dark:text-white font-medium">
-                          <div>{getKoreanName(market.symbol)}</div>
-                          <div className="text-gray-500 dark:text-gray-400 text-xs">
-                            {market.symbol.split("-")[0]}
+                      <div className="flex flex-col items-start gap-1">
+                        <div>코인명</div>
+                      </div>
+                      <div className="hidden sm:block">
+                        <SortIcon
+                          direction={
+                            sortState.field === "name"
+                              ? sortState.direction
+                              : null
+                          }
+                        />
+                      </div>
+                    </button>
+                  </th>
+                  <th className="w-[15%] px-1 sm:px-3 py-1.5 sm:py-3 text-right">
+                    <button
+                      onClick={() => handleSort("premium")}
+                      className="flex items-center justify-end gap-1 whitespace-nowrap w-full"
+                    >
+                      프리미엄
+                      <div className="hidden sm:block">
+                        <SortIcon
+                          direction={
+                            sortState.field === "premium"
+                              ? sortState.direction
+                              : null
+                          }
+                        />
+                      </div>
+                    </button>
+                  </th>
+                  <th className="w-[20%] px-1 sm:px-3 py-1.5 sm:py-3 text-right">
+                    <button
+                      onClick={() => handleSort("fromPrice")}
+                      className="flex items-center justify-end gap-1 whitespace-nowrap w-full"
+                    >
+                      <div className="flex flex-col items-end gap-0.5 sm:gap-1">
+                        <div>
+                          {EXCHANGE_OPTIONS.find(
+                            (option) => option.value === exchangePair.from
+                          )?.label}{" "}
+                          가격
+                        </div>
+                        <span className="text-[8px] sm:text-xs text-gray-500 dark:text-gray-400 block">
+                          전일대비(%)
+                        </span>
+                      </div>
+                      <div className="hidden sm:block">
+                        <SortIcon
+                          direction={
+                            sortState.field === "fromPrice"
+                              ? sortState.direction
+                              : null
+                          }
+                        />
+                      </div>
+                    </button>
+                  </th>
+                  <th className="w-[20%] px-1 sm:px-3 py-1.5 sm:py-3 text-right">
+                    <button
+                      onClick={() => handleSort("toPrice")}
+                      className="flex items-center justify-end gap-1 whitespace-nowrap w-full"
+                    >
+                      <div className="flex flex-col items-end gap-0.5 sm:gap-1">
+                        <div>
+                          {EXCHANGE_OPTIONS.find(
+                            (option) => option.value === exchangePair.to
+                          )?.label}{" "}
+                          가격
+                        </div>
+                        <span className="text-[8px] sm:text-xs text-gray-500 dark:text-gray-400 block">
+                          전일대비(%)
+                        </span>
+                      </div>
+                      <div className="hidden sm:block">
+                        <SortIcon
+                          direction={
+                            sortState.field === "toPrice"
+                              ? sortState.direction
+                              : null
+                          }
+                        />
+                      </div>
+                    </button>
+                  </th>
+                  <th className="w-[15%] px-1 sm:px-3 py-1.5 sm:py-3 text-right">
+                    <button
+                      onClick={() => handleSort("volume")}
+                      className="flex items-center justify-end gap-1 whitespace-nowrap w-full"
+                    >
+                      <div className="flex flex-col items-end gap-0.5 sm:gap-1">
+                        <div>일일 거래량</div>
+                        <span className="text-[8px] sm:text-xs text-gray-500 dark:text-gray-400 block">
+                          (시작거래소)
+                        </span>
+                      </div>
+                      <div className="hidden sm:block">
+                        <SortIcon
+                          direction={
+                            sortState.field === "volume"
+                              ? sortState.direction
+                              : null
+                          }
+                        />
+                      </div>
+                    </button>
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-900">
+                {sortedMarkets.map((market) => (
+                  <tr
+                    key={market.symbol}
+                    className="text-xs sm:text-sm xl:text-base hover:bg-gray-50 dark:hover:bg-gray-900"
+                  >
+                    <td className="px-0.5 sm:px-3 py-1 sm:py-3 xl:py-4 whitespace-nowrap">
+                      <Link
+                        href={`/coin/${market.symbol}`}
+                        className="text-gray-900 dark:text-white hover:underline"
+                      >
+                        <div className="flex items-center">
+                          <ImageWithFallback symbol={market.symbol} />
+                          <div className="text-gray-900 dark:text-white">
+                            <div className="text-[12px] sm:text-[16px] lg:text-[17px] font-bold">
+                              <span className="hidden sm:block">
+                                {getKoreanName(market.symbol)}
+                              </span>
+                              <span className="sm:hidden">
+                                {truncateKoreanName(
+                                  getKoreanName(market.symbol)
+                                )}
+                              </span>
+                            </div>
+                            <div className="text-[10px] sm:text-sm text-gray-500 dark:text-gray-400">
+                              {market.symbol.split("-")[0]}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </Link>
-                  </td>
-                  <td className="px-2 sm:px-4 py-2 sm:py-4 text-right whitespace-nowrap">
-                    <span
-                      className={clsx(
-                        "font-medium",
-                        market.priceGapPercent === 0
-                          ? "text-gray-400 dark:text-gray-500"
-                          : market.priceGapPercent > 0
-                          ? "text-green-500 dark:text-green-400"
-                          : "text-red-500 dark:text-red-400"
+                      </Link>
+                    </td>
+                    <td className="px-1 sm:px-3 py-1.5 sm:py-3 xl:py-4 text-right whitespace-nowrap">
+                      <span
+                        className={clsx(
+                          "font-bold flex items-center justify-end gap-0.5 text-[11px] sm:text-base xl:text-lg",
+                          market.priceGapPercent === 0
+                            ? "text-gray-400 dark:text-gray-500"
+                            : market.priceGapPercent > 0
+                            ? "text-green-600 dark:text-green-500"
+                            : "text-red-500 dark:text-red-400"
+                        )}
+                      >
+                        {market.priceGapPercent > 0 ? (
+                          <TriangleUp />
+                        ) : market.priceGapPercent < 0 ? (
+                          <TriangleDown />
+                        ) : null}
+                        {formatPercent(Math.abs(market.priceGapPercent))}
+                      </span>
+                    </td>
+                    <td className="px-1 sm:px-3 py-1.5 sm:py-3 xl:py-4 text-right font-medium whitespace-nowrap text-gray-900 dark:text-white">
+                      {(exchangePair.fromBase === "KRW" ||
+                        exchangePair.fromBase === "USDT") && (
+                        <span className="hidden sm:inline">₩</span>
                       )}
-                    >
-                      {formatPercent(market.priceGapPercent)}
-                    </span>
-                  </td>
-                  <td className="px-2 sm:px-4 py-2 sm:py-4 text-right font-medium whitespace-nowrap text-gray-700 dark:text-gray-300">
-                    {(exchangePair.fromBase === "KRW" ||
-                      exchangePair.fromBase === "USDT") &&
-                      "₩"}
-                    {formatExchangePrice(
-                      market.fromPrice,
-                      exchangePair.fromBase,
-                      exchangeRate || { rate: 0 }
-                    )}
-                    {
+                      <span className="font-bold text-[10px] sm:text-base xl:text-lg">
+                        {formatExchangePrice(
+                          market.fromPrice,
+                          exchangePair.fromBase,
+                          exchangeRate || { rate: 0 },
+                          true
+                        )}
+                      </span>
                       <div
                         className={clsx(
-                          "text-xs",
+                          "text-[7px] sm:text-sm xl:text-base flex items-center justify-end gap-0.5 font-bold",
                           market.fromPriceChange24h > 0
-                            ? "text-green-500 dark:text-green-400"
+                            ? "text-green-600 dark:text-green-500"
                             : market.fromPriceChange24h < 0
                             ? "text-red-500 dark:text-red-400"
                             : "text-gray-500 dark:text-gray-400"
                         )}
                       >
-                        {market.fromPriceChange24h.toFixed(2)}%
+                        {market.fromPriceChange24h > 0 ? (
+                          <TriangleUp />
+                        ) : market.fromPriceChange24h < 0 ? (
+                          <TriangleDown />
+                        ) : null}
+                        {Math.abs(market.fromPriceChange24h).toFixed(2)}%
                       </div>
-                    }
-                  </td>
-                  <td className="px-2 sm:px-4 py-2 sm:py-4 text-right font-medium whitespace-nowrap text-gray-700 dark:text-gray-300">
-                    {(exchangePair.toBase === "KRW" ||
-                      exchangePair.toBase === "USDT") &&
-                      "₩"}
-                    {formatExchangePrice(
-                      market.toPrice,
-                      exchangePair.toBase,
-                      exchangeRate || { rate: 0 }
-                    )}
-                    {
+                    </td>
+                    <td className="px-1 sm:px-3 py-1.5 sm:py-3 xl:py-4 text-right font-medium whitespace-nowrap text-gray-900 dark:text-white">
+                      {(exchangePair.toBase === "KRW" ||
+                        exchangePair.toBase === "USDT") && (
+                        <span className="hidden sm:inline">₩</span>
+                      )}
+                      <span className="font-bold text-[10px] sm:text-base xl:text-lg">
+                        {formatExchangePrice(
+                          market.toPrice,
+                          exchangePair.toBase,
+                          exchangeRate || { rate: 0 },
+                          true
+                        )}
+                      </span>
                       <div
                         className={clsx(
-                          "text-xs",
+                          "text-[7px] sm:text-sm xl:text-base flex items-center justify-end gap-0.5 font-bold",
                           market.toPriceChange24h > 0
-                            ? "text-green-500 dark:text-green-400"
+                            ? "text-green-600 dark:text-green-500"
                             : market.toPriceChange24h < 0
                             ? "text-red-500 dark:text-red-400"
                             : "text-gray-500 dark:text-gray-400"
                         )}
                       >
-                        {market.toPriceChange24h.toFixed(2)}%
+                        {market.toPriceChange24h > 0 ? (
+                          <TriangleUp />
+                        ) : market.toPriceChange24h < 0 ? (
+                          <TriangleDown />
+                        ) : null}
+                        {Math.abs(market.toPriceChange24h).toFixed(2)}%
                       </div>
-                    }
-                  </td>
-                  <td className="px-2 sm:px-4 py-2 sm:py-4 text-right text-gray-500 dark:text-gray-400">
-                    {exchangePair.fromBase === "KRW"
-                      ? formatKRWWithUnit(market.volume)
-                      : formatCryptoToKRWWithUnit(
-                          market.volume,
-                          market.fromPrice,
-                          exchangeRate?.rate || 0
-                        )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    </td>
+                    <td className="px-1 sm:px-3 py-1.5 sm:py-3 xl:py-4 text-right text-gray-500 dark:text-gray-400 font-bold text-[9px] sm:text-base xl:text-lg">
+                      {exchangePair.fromBase === "KRW"
+                        ? formatKRWWithUnit(market.volume, false)
+                        : formatCryptoToKRWWithUnit(
+                            market.volume,
+                            market.fromPrice,
+                            exchangeRate?.rate || 0,
+                            false
+                          )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}

@@ -16,31 +16,33 @@ export function formatKRW(amount: number): string {
 /**
  * 숫자를 한국 원화의 양식으로 조, 억, 만, 천원 단위로 변환합니다.
  * @param amount 포맷팅할 금액
+ * @param showDecimals 소수점을 표시할지 여부
  * @returns 포맷팅된 원화 문자열 (예: ₩1,234,567)
  */
-export function formatKRWWithUnit(amount: number): string {
+export function formatKRWWithUnit(amount: number, showDecimals: boolean = true): string {
   if (amount === null || amount === undefined) {
     return "0";
   }
 
   if (amount >= 1_000_000_000_000) {
-    return `${(amount / 1_000_000_000_000).toFixed(2)}조`;
+    return `${showDecimals ? (amount / 1_000_000_000_000).toFixed(2) : Math.floor(amount / 1_000_000_000_000)}조`;
   }
   if (amount >= 100_000_000) {
-    return `${(amount / 100_000_000).toFixed(2)}억`;
+    return `${showDecimals ? (amount / 100_000_000).toFixed(2) : Math.floor(amount / 100_000_000)}억`;
   }
   if (amount >= 10_000) {
-    return `${(amount / 10_000).toFixed(2)}만`;
+    return `${showDecimals ? (amount / 10_000).toFixed(2) : Math.floor(amount / 10_000)}만`;
   }
-  return `${amount.toFixed(2)}`;
+  return `${showDecimals ? amount.toFixed(2) : Math.floor(amount)}`;
 }
 
 export function formatCryptoToKRWWithUnit(
   amount: number,
   price: number,
-  exchangeRate: number
+  exchangeRate: number,
+  showDecimals: boolean = true
 ): string {
-  return formatKRWWithUnit(amount * price * exchangeRate);
+  return formatKRWWithUnit(amount * price * exchangeRate, showDecimals);
 }
 
 /**
@@ -247,12 +249,29 @@ export function formatPercent(percent: number, decimals: number = 2): string {
 }
 
 /**
+ * 숫자를 한글 단위로 변환합니다.
+ */
+function formatToKoreanUnit(price: number): string {
+  if (price >= 1_000_000_000_000) {
+    return `${(price / 1_000_000_000_000).toFixed(3)}조`;
+  }
+  if (price >= 100_000_000) {
+    return `${(price / 100_000_000).toFixed(3)}억`;
+  }
+  if (price >= 10_000) {
+    return `${(price / 10_000).toFixed(2)}만`;
+  }
+  return price.toFixed(0);
+}
+
+/**
  * 거래소 가격을 포맷팅합니다.
  */
 export function formatExchangePrice(
   price: number,
   quoteToken: string,
-  exchangeRate: { rate: number }
+  exchangeRate: { rate: number },
+  isMobile: boolean = false
 ): string {
   let displayPrice = price;
   let suffix = "";
@@ -266,10 +285,26 @@ export function formatExchangePrice(
     displayPrice = price * (exchangeRate?.rate || 0);
   }
 
-  return (
-    new Intl.NumberFormat("ko-KR", {
-      maximumFractionDigits: quoteToken === "BTC" ? 8 : 0,
-      minimumFractionDigits: quoteToken === "BTC" ? 8 : 0,
-    }).format(displayPrice) + suffix
-  );
+  // BTC 마켓이거나 모바일이 아닌 경우 기존 로직 사용
+  if (quoteToken === "BTC" || !isMobile) {
+    let fractionDigits = 0;
+    if (quoteToken === "BTC") {
+      fractionDigits = 8;
+    } else if (displayPrice > 0 && displayPrice < 10) {
+      if (displayPrice < 1) {
+        const significantDigits = displayPrice.toFixed(8).match(/^0\.0*[1-9]/)?.[0].length || 1;
+        fractionDigits = Math.max(significantDigits - 1, 0);
+      } else {
+        fractionDigits = 2;
+      }
+    }
+
+    return new Intl.NumberFormat("ko-KR", {
+      maximumFractionDigits: fractionDigits,
+      minimumFractionDigits: fractionDigits,
+    }).format(displayPrice) + suffix;
+  }
+
+  // 모바일에서는 한글 단위 사용
+  return formatToKoreanUnit(displayPrice) + suffix;
 }
