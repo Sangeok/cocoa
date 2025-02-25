@@ -2,8 +2,7 @@ version: '3.8'
 
 services:
   api:
-    volumes: 
-      - /app/node_modules  # node_modules만 유지
+    volumes: []  # 모든 볼륨 마운트를 비활성화
     command: >
       sh -c "
         npm run db:migrate || true &&
