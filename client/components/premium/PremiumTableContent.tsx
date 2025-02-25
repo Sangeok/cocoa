@@ -70,6 +70,51 @@ const COMBINED_EXCHANGE_OPTIONS = [
   ),
 ];
 
+interface TableHeaderProps {
+  label: string;
+  sortField: SortField;
+  sortState: SortState;
+  handleSort: (field: SortField) => void;
+  className?: string;
+  children?: React.ReactNode;
+  align?: "left" | "right";
+}
+
+function TableHeader({
+  label,
+  sortField,
+  sortState,
+  handleSort,
+  className = "",
+  children,
+  align = "left",
+}: TableHeaderProps) {
+  return (
+    <th className={className}>
+      <button
+        onClick={() => handleSort(sortField)}
+        className={clsx(
+          "flex items-center gap-1 whitespace-nowrap w-full",
+          align === "right" ? "justify-end" : "justify-start"
+        )}
+      >
+        {children || (
+          <div className="flex flex-col items-start gap-1">
+            <div>{label}</div>
+          </div>
+        )}
+        <div className="hidden sm:block">
+          <SortIcon
+            direction={
+              sortState.field === sortField ? sortState.direction : null
+            }
+          />
+        </div>
+      </button>
+    </th>
+  );
+}
+
 export default function PremiumTableContent() {
   const {
     exchangeRate,
@@ -107,8 +152,8 @@ export default function PremiumTableContent() {
   const sortedMarkets = getSortedMarkets(sortState);
 
   return (
-    <div className="space-y-6">
-      <div className="bg-white dark:bg-gray-950 rounded-lg p-2 sm:p-3 lg:p-6 border border-gray-200 dark:border-gray-900">
+    <div className="space-y-2 sm:space-y-4 lg:space-y-6">
+      <div className="bg-white dark:bg-gray-950 sm:rounded-lg p-3 sm:p-4 lg:p-6 border border-gray-200 dark:border-gray-900">
         <div className="flex flex-col gap-1 sm:gap-2 lg:gap-4">
           <div className="flex items-end justify-between sm:justify-start gap-0.5 sm:gap-2 lg:gap-4">
             <Select
@@ -175,123 +220,81 @@ export default function PremiumTableContent() {
           검색 결과가 없습니다
         </div>
       ) : (
-        <div className="bg-white dark:bg-gray-950 rounded-lg overflow-hidden border border-gray-200 dark:border-gray-900">
+        <div className="bg-white dark:bg-gray-950 sm:rounded-lg overflow-hidden border border-gray-200 dark:border-gray-900">
           <div className="overflow-x-auto">
             <table className="w-full divide-y divide-gray-200 dark:divide-gray-900">
               <thead>
                 <tr className="text-gray-500 dark:text-gray-400 text-[10px] sm:text-sm xl:text-base">
-                  <th className="w-[30%] px-0.5 sm:px-3 py-1 sm:py-3 text-right">
-                    <button
-                      onClick={() => handleSort("name")}
-                      className="flex items-center gap-1 whitespace-nowrap w-full text-left"
-                    >
-                      <div className="flex flex-col items-start gap-1">
-                        <div>코인명</div>
+                  <TableHeader
+                    label="코인명"
+                    sortField="name"
+                    sortState={sortState}
+                    handleSort={handleSort}
+                    className="w-[30%] px-3 py-1 sm:py-3 text-center"
+                  />
+                  <TableHeader
+                    label="프리미엄"
+                    sortField="premium"
+                    sortState={sortState}
+                    handleSort={handleSort}
+                    className="w-[15%] px-1 sm:px-3 py-1.5 sm:py-3 text-center"
+                    align="right"
+                  />
+                  <TableHeader
+                    sortField="fromPrice"
+                    sortState={sortState}
+                    handleSort={handleSort}
+                    className="w-[20%] px-1 sm:px-3 py-1.5 sm:py-3 text-center"
+                    align="right"
+                    label=""
+                  >
+                    <div className="flex flex-col items-end gap-0.5 sm:gap-1">
+                      <div>
+                        {EXCHANGE_OPTIONS.find(
+                          (option) => option.value === exchangePair.from
+                        )?.label}{" "}
+                        가격
                       </div>
-                      <div className="hidden sm:block">
-                        <SortIcon
-                          direction={
-                            sortState.field === "name"
-                              ? sortState.direction
-                              : null
-                          }
-                        />
+                      <span className="text-[8px] sm:text-xs text-gray-500 dark:text-gray-400 block">
+                        전일대비(%)
+                      </span>
+                    </div>
+                  </TableHeader>
+                  <TableHeader
+                    sortField="toPrice"
+                    sortState={sortState}
+                    handleSort={handleSort}
+                    className="w-[20%] px-1 sm:px-3 py-1.5 sm:py-3 text-center"
+                    align="right"
+                    label=""
+                  >
+                    <div className="flex flex-col items-end gap-0.5 sm:gap-1">
+                      <div>
+                        {EXCHANGE_OPTIONS.find(
+                          (option) => option.value === exchangePair.to
+                        )?.label}{" "}
+                        가격
                       </div>
-                    </button>
-                  </th>
-                  <th className="w-[15%] px-1 sm:px-3 py-1.5 sm:py-3 text-right">
-                    <button
-                      onClick={() => handleSort("premium")}
-                      className="flex items-center justify-end gap-1 whitespace-nowrap w-full"
-                    >
-                      프리미엄
-                      <div className="hidden sm:block">
-                        <SortIcon
-                          direction={
-                            sortState.field === "premium"
-                              ? sortState.direction
-                              : null
-                          }
-                        />
-                      </div>
-                    </button>
-                  </th>
-                  <th className="w-[20%] px-1 sm:px-3 py-1.5 sm:py-3 text-right">
-                    <button
-                      onClick={() => handleSort("fromPrice")}
-                      className="flex items-center justify-end gap-1 whitespace-nowrap w-full"
-                    >
-                      <div className="flex flex-col items-end gap-0.5 sm:gap-1">
-                        <div>
-                          {EXCHANGE_OPTIONS.find(
-                            (option) => option.value === exchangePair.from
-                          )?.label}{" "}
-                          가격
-                        </div>
-                        <span className="text-[8px] sm:text-xs text-gray-500 dark:text-gray-400 block">
-                          전일대비(%)
-                        </span>
-                      </div>
-                      <div className="hidden sm:block">
-                        <SortIcon
-                          direction={
-                            sortState.field === "fromPrice"
-                              ? sortState.direction
-                              : null
-                          }
-                        />
-                      </div>
-                    </button>
-                  </th>
-                  <th className="w-[20%] px-1 sm:px-3 py-1.5 sm:py-3 text-right">
-                    <button
-                      onClick={() => handleSort("toPrice")}
-                      className="flex items-center justify-end gap-1 whitespace-nowrap w-full"
-                    >
-                      <div className="flex flex-col items-end gap-0.5 sm:gap-1">
-                        <div>
-                          {EXCHANGE_OPTIONS.find(
-                            (option) => option.value === exchangePair.to
-                          )?.label}{" "}
-                          가격
-                        </div>
-                        <span className="text-[8px] sm:text-xs text-gray-500 dark:text-gray-400 block">
-                          전일대비(%)
-                        </span>
-                      </div>
-                      <div className="hidden sm:block">
-                        <SortIcon
-                          direction={
-                            sortState.field === "toPrice"
-                              ? sortState.direction
-                              : null
-                          }
-                        />
-                      </div>
-                    </button>
-                  </th>
-                  <th className="w-[15%] px-1 sm:px-3 py-1.5 sm:py-3 text-right">
-                    <button
-                      onClick={() => handleSort("volume")}
-                      className="flex items-center justify-end gap-1 whitespace-nowrap w-full"
-                    >
-                      <div className="flex flex-col items-end gap-0.5 sm:gap-1">
-                        <div>거래량</div>
-                        <span className="text-[8px] sm:text-xs text-gray-500 dark:text-gray-400 block">
-                          (시작거래소)
-                        </span>
-                      </div>
-                      <div className="hidden sm:block">
-                        <SortIcon
-                          direction={
-                            sortState.field === "volume"
-                              ? sortState.direction
-                              : null
-                          }
-                        />
-                      </div>
-                    </button>
-                  </th>
+                      <span className="text-[8px] sm:text-xs text-gray-500 dark:text-gray-400 block">
+                        전일대비(%)
+                      </span>
+                    </div>
+                  </TableHeader>
+                  <TableHeader
+                    sortField="volume"
+                    sortState={sortState}
+                    handleSort={handleSort}
+                    className="w-[15%] pr-1 py-1.5 sm:py-3 text-center"
+                    align="right"
+                    label=""
+                  >
+                    <div className="flex flex-col items-end gap-0.5 sm:gap-1">
+                      <div>거래량</div>
+                      <span className="text-[8px] sm:text-xs text-gray-500 dark:text-gray-400 block">
+                        (시작거래소)
+                      </span>
+                    </div>
+                  </TableHeader>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 dark:divide-gray-900">
@@ -300,7 +303,7 @@ export default function PremiumTableContent() {
                     key={market.symbol}
                     className="text-xs sm:text-sm xl:text-base hover:bg-gray-50 dark:hover:bg-gray-900"
                   >
-                    <td className="px-0.5 sm:px-3 py-1 sm:py-3 xl:py-4 whitespace-nowrap">
+                    <td className="pl-2 sm:px-3 py-1 sm:py-3 xl:py-4 whitespace-nowrap">
                       <Link
                         href={`/coin/${market.symbol}`}
                         className="text-gray-900 dark:text-white hover:underline"
@@ -406,7 +409,7 @@ export default function PremiumTableContent() {
                         {Math.abs(market.toPriceChange24h).toFixed(2)}%
                       </div>
                     </td>
-                    <td className="pr-0.5 sm:px-3 py-1.5 sm:py-3 xl:py-4 text-right text-gray-500 dark:text-gray-400 font-medium text-[11px] sm:text-base xl:text-lg">
+                    <td className="pr-1 sm:px-3 py-1.5 sm:py-3 xl:py-4 text-right text-gray-500 dark:text-gray-400 font-medium text-[11px] sm:text-base xl:text-lg">
                       {exchangePair.fromBase === "KRW"
                         ? formatKRWWithUnit(market.volume, false)
                         : formatCryptoToKRWWithUnit(

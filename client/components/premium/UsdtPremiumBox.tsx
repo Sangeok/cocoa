@@ -12,7 +12,7 @@ export function UsdtPremiumBox() {
   const premium = rate > 0 ? (usdtUpbit / rate - 1) * 100 : 0;
 
   return (
-    <div className="bg-white dark:bg-gray-950 rounded-lg p-2 sm:p-4 lg:p-6 border border-gray-200 dark:border-gray-900">
+    <div className="bg-white dark:bg-gray-950 sm:rounded-lg p-2 sm:p-4 lg:p-6 border border-gray-200 dark:border-gray-900">
       <div className="flex items-center gap-1 sm:gap-2 lg:gap-4 justify-between">
         <div className="flex items-center gap-3 sm:gap-4 lg:gap-6">
           <div className="flex items-center gap-2">

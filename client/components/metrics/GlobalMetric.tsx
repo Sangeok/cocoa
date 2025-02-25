@@ -9,8 +9,8 @@ const GlobalMetric: React.FC<{ metric: GlobalMetricData }> = ({ metric }) => {
     return <></>;
   }
   return (
-    <div className="flex gap-4 mb-12 xl:w-1/2 w-full flex-col sm:flex-row">
-      <div className="grid grid-cols-2 gap-2 lg:gap-4 w-full">
+    <div className="flex gap-2 mb-12 xl:w-1/2 w-full flex-col sm:flex-row">
+      <div className="grid grid-cols-2 gap-2 w-full">
         <MetricCard
           title="총 시가총액"
           value={`${formatCurrency(metric.quote.USD.total_market_cap)}`}

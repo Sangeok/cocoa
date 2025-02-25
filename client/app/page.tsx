@@ -80,10 +80,10 @@ export default function Home() {
 
   return (
     <main>
-      <div className="container mx-auto px-2 sm:px-4 py-8">
-        <div className="flex xl:flex-row flex-col gap-6">
+      <div className="container mx-auto px-4 py-4 sm:py-8">
+        <div className="flex xl:flex-row flex-col gap-2 sm:gap-4">
           <div className="xl:w-1/2 w-full">
-            <div className="flex items-center justify-between mb-1.5">
+            <div className="flex items-center justify-between mb-3">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                 최신 뉴스
               </h2>
@@ -125,16 +125,8 @@ export default function Home() {
             <GlobalMetric metric={globalMetrics} />
           )}
         </div>
-        {/* Premium Table Section */}
-        <section>
-          <div className="mb-4">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-              실시간 김프
-            </h2>
-          </div>
-          <PremiumTable />
-        </section>
       </div>
+      <PremiumTable />
     </main>
   );
 }
