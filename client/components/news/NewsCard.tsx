@@ -19,9 +19,10 @@ export default function NewsCard({ news }: NewsCardProps) {
   return (
     <Link
       href={`/news/${news.id}`}
-      className="block bg-white dark:bg-gray-900 rounded-lg overflow-hidden hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+      className="block bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden 
+      transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50"
     >
-      <article className="p-4 space-y-3">
+      <article className="p-2 sm:p-4 space-y-3">
         {/* Header */}
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-2">
@@ -41,7 +42,7 @@ export default function NewsCard({ news }: NewsCardProps) {
         </div>
 
         {/* Content Preview */}
-        <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-4">
+        <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-3">
           {news.content.replace(/<h2>.*?<\/h2>/g, "")}
         </p>
 

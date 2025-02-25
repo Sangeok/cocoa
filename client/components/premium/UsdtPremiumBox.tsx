@@ -30,29 +30,13 @@ export function UsdtPremiumBox() {
             </div>
           </div>
           <div className="text-sm text-gray-500 dark:text-gray-400">
-            <div className="flex items-center gap-2">
-              <Image
-                src="/exchanges/upbit.svg"
-                alt="Upbit"
-                width={20}
-                height={20}
-              />
-              업비트
-            </div>
+            <div className="flex items-center gap-2">업비트</div>
             <div className="text-sm font-medium">
               ₩{formatNumber(usdtUpbit)}
             </div>
           </div>
           <div className="text-sm text-gray-500 dark:text-gray-400">
-            <div className="flex items-center gap-2">
-              <Image
-                src="/exchanges/bithumb.svg"
-                alt="Bithumb"
-                width={15}
-                height={20}
-              />
-              빗썸
-            </div>
+            <div className="flex items-center gap-2">빗썸</div>
             <div className="text-sm font-medium">
               ₩{formatNumber(usdtBithumb)}
             </div>

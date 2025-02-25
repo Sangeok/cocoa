@@ -21,12 +21,37 @@ export interface GlobalMetricData {
   };
 }
 
+export interface FearGreedIndexData {
+  value: number;
+  value_classification: string;
+  update_time: string;
+}
+
+export interface FearGreedIndexDataDTO {
+  data: FearGreedIndexData;
+  status: {
+    timestamp: string;
+    error_code: number;
+    error_message: string;
+    elapsed: number;
+    credit_count: number;
+    notice: string;
+  };
+}
+
 export const globalMetricAPI = {
   // 글로벌 메트릭 데이터 조회
   getGlobalMetrics: async () => {
     const response = await ClientAPICall.get<GlobalMetricData>(
       API_ROUTES.EXCHANGE.GLOBAL_METRICS.url
     );
+    return response.data;
+  },
+  getFearGreedIndex: async (): Promise<FearGreedIndexData | null> => {
+    const response = await ClientAPICall.get<FearGreedIndexData>(
+      API_ROUTES.EXCHANGE.FEAR_GREED_INDEX.url
+    );
+
     return response.data;
   },
 };

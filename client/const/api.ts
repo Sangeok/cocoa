@@ -26,6 +26,10 @@ export const API_ROUTES = {
       url: "/exchange/global-metrics",
       method: "GET",
     },
+    FEAR_GREED_INDEX: {
+      url: "/exchange/fear-greed-index",
+      method: "GET",
+    },
   },
   WITHDRAW: {
     PATH: {

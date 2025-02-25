@@ -55,7 +55,7 @@ const LongShortRatioSection = () => {
   }, [initializeSocket]);
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 mt-6">
+    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800">
       <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-800">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
           실시간 롱/숏 포지션
@@ -127,12 +127,14 @@ export default function PredictPage() {
   };
 
   const handlePrevPage = () => {
-    setCurrentPage(prev => Math.max(0, prev - 1));
+    setCurrentPage((prev) => Math.max(0, prev - 1));
   };
 
   const handleNextPage = () => {
-    const maxPage = Math.floor((rankingComponents[currentRankingIndex]?.length || 0) / 10) - 1;
-    setCurrentPage(prev => Math.min(maxPage, prev + 1));
+    const maxPage =
+      Math.floor((rankingComponents[currentRankingIndex]?.length || 0) / 10) -
+      1;
+    setCurrentPage((prev) => Math.min(maxPage, prev + 1));
   };
 
   useEffect(() => {
@@ -358,22 +360,38 @@ export default function PredictPage() {
                         disabled={currentPage === 0}
                         className={`px-3 py-1 rounded ${
                           currentPage === 0
-                            ? 'text-gray-400 cursor-not-allowed'
-                            : 'text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900'
+                            ? "text-gray-400 cursor-not-allowed"
+                            : "text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900"
                         }`}
                       >
                         이전
                       </button>
                       <div className="text-sm text-gray-600 dark:text-gray-400">
-                        {currentPage + 1} / {Math.ceil((rankingComponents[currentRankingIndex]?.length || 0) / 10)}
+                        {currentPage + 1} /{" "}
+                        {Math.ceil(
+                          (rankingComponents[currentRankingIndex]?.length ||
+                            0) / 10
+                        )}
                       </div>
                       <button
                         onClick={handleNextPage}
-                        disabled={currentPage >= Math.floor((rankingComponents[currentRankingIndex]?.length || 0) / 10) - 1}
+                        disabled={
+                          currentPage >=
+                          Math.floor(
+                            (rankingComponents[currentRankingIndex]?.length ||
+                              0) / 10
+                          ) -
+                            1
+                        }
                         className={`px-3 py-1 rounded ${
-                          currentPage >= Math.floor((rankingComponents[currentRankingIndex]?.length || 0) / 10) - 1
-                            ? 'text-gray-400 cursor-not-allowed'
-                            : 'text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900'
+                          currentPage >=
+                          Math.floor(
+                            (rankingComponents[currentRankingIndex]?.length ||
+                              0) / 10
+                          ) -
+                            1
+                            ? "text-gray-400 cursor-not-allowed"
+                            : "text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900"
                         }`}
                       >
                         다음
@@ -386,9 +404,11 @@ export default function PredictPage() {
               </div>
             </div>
           </div>
-          <LongShortRatioSection />
         </div>
-        <EventBanner />
+        <div className="flex flex-col gap-6">
+          <LongShortRatioSection />
+          <EventBanner />
+        </div>
       </section>
 
       <section>

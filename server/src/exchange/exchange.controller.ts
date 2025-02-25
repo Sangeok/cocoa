@@ -24,4 +24,9 @@ export class ExchangeController {
   async getGlobalMetricsSummary() {
     return this.exchangeService.getGlobalMetricsSummary();
   }
+
+  @Get('fear-greed-index')
+  async getFearGreedIndex() {
+    return this.exchangeService.getFearGreedIndex();
+  }
 }

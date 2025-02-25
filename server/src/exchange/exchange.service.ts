@@ -18,8 +18,10 @@ export class ExchangeService implements OnModuleInit {
   private readonly logger = new Logger(ExchangeService.name);
   private readonly PREMIUM_CACHE_KEY = 'coin-premium-data';
   private readonly GLOBAL_METRICS_KEY = 'global-metrics';
-  private readonly CMC_API_URL = 'https://pro-api.coinmarketcap.com/v1/global-metrics/quotes/latest';
-
+  private readonly CMC_API_URL =
+    'https://pro-api.coinmarketcap.com/v1/global-metrics/quotes/latest';
+  private readonly FEAR_GREED_INDEX_API_URL =
+    'https://pro-api.coinmarketcap.com/v3/fear-and-greed/latest';
   constructor(
     private readonly redisService: RedisService,
     private readonly appGateway: AppGateway,
@@ -30,16 +32,26 @@ export class ExchangeService implements OnModuleInit {
   async onModuleInit() {
     try {
       // Wait a bit to ensure Redis is ready
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
       // Check if global metrics data exists
       const existingData = await this.getGlobalMetrics();
       if (!existingData) {
-        this.logger.log('No cached global metrics found. Fetching initial data...');
+        this.logger.log(
+          'No cached global metrics found. Fetching initial data...',
+        );
         await this.fetchGlobalMetrics();
       }
+
+      const fearGreedIndex = await this.getFearGreedIndex();
+      if (!fearGreedIndex) {
+        this.logger.log(
+          'No cached fear and greed index found. Fetching initial data...',
+        );
+        await this.fetchFearGreedIndex();
+      }
     } catch (error) {
-      this.logger.warn('Failed to fetch initial global metrics data:', error.message);
+      this.logger.warn(error.message);
       // Schedule a retry after 5 seconds
       setTimeout(async () => {
         try {
@@ -217,13 +229,13 @@ export class ExchangeService implements OnModuleInit {
 
       if (response.data && response.data.data) {
         const metrics = response.data.data;
-        
+
         // Store the entire metrics data
         await this.redisService.set(
           this.GLOBAL_METRICS_KEY,
           JSON.stringify(metrics),
           // Cache for 24 hours + 1 hour buffer
-          25 * 60 * 60
+          25 * 60 * 60,
         );
 
         // Store individual important metrics separately for easier access
@@ -241,7 +253,7 @@ export class ExchangeService implements OnModuleInit {
         await this.redisService.set(
           'global-metrics-summary',
           JSON.stringify(keyMetrics),
-          25 * 60 * 60
+          25 * 60 * 60,
         );
 
         this.logger.log('Global metrics data successfully fetched and cached');
@@ -249,6 +261,32 @@ export class ExchangeService implements OnModuleInit {
     } catch (error) {
       this.logger.error('Error fetching global metrics:', error);
     }
+  }
+
+  @Cron('0 0 0 * * *') // Runs at midnight every day
+  async fetchFearGreedIndex() {
+    try {
+      const response = await axios.get(this.FEAR_GREED_INDEX_API_URL, {
+        headers: {
+          'X-CMC_PRO_API_KEY': process.env.COINMARKETCAP_API_KEY,
+        },
+      });
+
+      if (response.data && response.data.data) {
+        const fearGreedIndex = response.data.data;
+        await this.redisService.set(
+          'fear-greed-index',
+          JSON.stringify(fearGreedIndex),
+        );
+      }
+    } catch (error) {
+      this.logger.error('Error fetching fear and greed index:', error);
+    }
+  }
+
+  async getFearGreedIndex() {
+    const data = await this.redisService.get('fear-greed-index');
+    return data ? JSON.parse(data) : null;
   }
 
   // Helper method to get cached global metrics

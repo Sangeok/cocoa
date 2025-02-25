@@ -81,19 +81,10 @@ export default function Home() {
   return (
     <main>
       <div className="container mx-auto px-4 py-8">
-        {/* Global Metrics Section */}
-        {isMetricsLoading || !globalMetrics ? (
-          <div className="h-32 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse mb-6" />
-        ) : (
-          <div className="mb-6">
-            <GlobalMetric metric={globalMetrics} />
-          </div>
-        )}
-
-        <div className="flex lg:flex-row flex-col gap-6 mb-6">
-          <div className="lg:w-2/3 w-full">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <div className="flex xl:flex-row flex-col gap-6">
+          <div className="xl:w-1/2 w-full">
+            <div className="flex items-center justify-between mb-1.5">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                 최신 뉴스
               </h2>
               <div className="flex items-center gap-4">
@@ -102,13 +93,13 @@ export default function Home() {
                     onClick={handlePrev}
                     className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
                   >
-                    <ChevronLeftIcon className="w-6 h-6" />
+                    <ChevronLeftIcon className="w-5 h-5" />
                   </button>
                   <button
                     onClick={handleNext}
                     className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
                   >
-                    <ChevronRightIcon className="w-6 h-6" />
+                    <ChevronRightIcon className="w-5 h-5" />
                   </button>
                 </div>
                 <Link
@@ -127,7 +118,12 @@ export default function Home() {
               )}
             </div>
           </div>
-          <EventBanner />
+          {/* Global Metrics Section */}
+          {isMetricsLoading || !globalMetrics ? (
+            <div className="h-32 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse mb-6 xl:w-1/2 w-full" />
+          ) : (
+            <GlobalMetric metric={globalMetrics} />
+          )}
         </div>
         {/* Premium Table Section */}
         <section>
