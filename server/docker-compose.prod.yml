@@ -2,12 +2,7 @@ version: '3.8'
 
 services:
   api:
-    volumes: []  # 모든 볼륨 마운트를 비활성화
-    command: >
-      sh -c "
-        npm run db:migrate || true &&
-        npm run start:prod
-      "
+    command: npm run start:prod
     restart: unless-stopped
 
   collector:
