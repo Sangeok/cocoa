@@ -2,7 +2,13 @@ version: '3.8'
 
 services:
   api:
-    command: npm run start:prod
+    command: >
+      sh -c "
+        npm run build &&
+        npm run db:generate &&
+        npm run db:migrate || true &&
+        npm run start:prod
+      "
     restart: unless-stopped
 
   collector:
