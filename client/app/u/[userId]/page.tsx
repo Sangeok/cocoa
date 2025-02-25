@@ -502,8 +502,8 @@ export default function UserProfilePage() {
     };
   };
 
-  const canCheckIn = isOwnProfile
-    ? new Date(user?.predict?.lastCheckInAt).toDateString() !==
+  const canCheckIn = user?.predict?.lastCheckInAt
+    ? new Date(user.predict.lastCheckInAt).toDateString() !==
       new Date().toDateString()
     : false;
 
@@ -575,7 +575,7 @@ export default function UserProfilePage() {
   const renderContent = (text: string) => {
     const parts = findUrls(text);
     return parts.map((part, index) => {
-      if (part.type === 'url') {
+      if (part.type === "url") {
         return (
           <a
             key={index}

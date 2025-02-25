@@ -49,7 +49,7 @@ export default function ProfilePage() {
   const canCheckIn = user?.predict?.lastCheckInAt
     ? new Date(user.predict.lastCheckInAt).toDateString() !==
       new Date().toDateString()
-    : true;
+    : false;
   const [rankings, setRankings] = useState<Rankings | null>(null);
   const [bio, setBio] = useState(user?.bio || "");
   const [isEditingBio, setIsEditingBio] = useState(false);
