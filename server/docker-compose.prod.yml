@@ -5,6 +5,7 @@ services:
     volumes: []
     command: >
       sh -c "
+        rm -rf dist/ &&
         npm run build &&
         npm run db:generate &&
         npm run db:migrate || true &&
