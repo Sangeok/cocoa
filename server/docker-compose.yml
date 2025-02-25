@@ -34,7 +34,7 @@ services:
       sh -c "
         npm run db:generate &&
         npm run db:migrate || true &&
-        npm run start:prod
+        npm run start:dev
       "
     deploy:
       resources:
