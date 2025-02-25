@@ -104,7 +104,7 @@ export default function PredictPage() {
   const { user, isAuthenticated } = useAuthStore();
   const [currentPage, setCurrentPage] = useState(0);
 
-  const rankingTitles = ["현재 자산", "최다 적중", "최고 승률"];
+  const rankingTitles = ["통합 랭킹", "최다 적중", "최고 승률"];
   const rankingComponents = [
     rankings?.mostVault,
     rankings?.mostWins,
@@ -257,7 +257,7 @@ export default function PredictPage() {
     <div className="container mx-auto px-4 py-8">
       <section className="mb-12 flex gap-6 lg:flex-row flex-col">
         <div className="lg:w-2/3 w-full" {...handlers}>
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
             <h2 className="text-2xl font-bold">
               {rankingTitles[currentRankingIndex]}
             </h2>
@@ -300,10 +300,10 @@ export default function PredictPage() {
               </div>
             )}
             <div className="overflow-x-auto">
-              <div className="p-4">
+              <div className="sm:p-4">
                 {rankings ? (
                   <>
-                    <div className="space-y-2">
+                    <div className="space-y-1 sm:space-y-2">
                       {rankingComponents[currentRankingIndex]
                         ?.slice(currentPage * 10, (currentPage + 1) * 10)
                         .map((rank, index) => {
@@ -412,8 +412,8 @@ export default function PredictPage() {
       </section>
 
       <section>
-        <h2 className="text-2xl font-bold mb-6">인기 마켓</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+        <h2 className="text-2xl font-bold mb-4 sm:mb-6">인기 마켓</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4">
           {bestCoins.map((symbol) => (
             <Link
               key={symbol}

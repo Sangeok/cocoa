@@ -43,42 +43,72 @@ export default function FearGreedIndex() {
       </div>
       <div className="flex flex-col items-center sm:mb-5">
         <div className="relative w-56">
-          {/* 반원형 세그먼트들 */}
           <svg className="w-full h-40" viewBox="0 0 140 70">
-            <path
-              d="M10,70 A60,60 0 0,1 40,21"
-              fill="none"
-              stroke="#EF4444"
-              strokeWidth="6"
-            />
-            <path
-              d="M40,21 A60,60 0 0,1 70,14"
-              fill="none"
-              stroke="#F97316"
-              strokeWidth="6"
-            />
-            <path
-              d="M70,14 A60,60 0 0,1 100,21"
-              fill="none"
-              stroke="#EAB308"
-              strokeWidth="6"
-            />
-            <path
-              d="M100,21 A60,60 0 0,1 130,70"
-              fill="none"
-              stroke="#84CC16"
-              strokeWidth="6"
-            />
+            {/* 클립 패스 정의 */}
+            <defs>
+              <clipPath id="semicircle">
+                <rect x="0" y="0" width="140" height="70" />
+              </clipPath>
+            </defs>
+
+            {/* 4개의 원호 세그먼트 */}
+            <g clipPath="url(#semicircle)">
+              {/* 극도의 공포 (빨강) */}
+              <circle
+                cx="70"
+                cy="70"
+                r="60"
+                fill="none"
+                stroke="#EF4444"
+                strokeWidth="6"
+                strokeDasharray="94.2 282.6"
+                transform="rotate(-180 70 70)"
+              />
+              {/* 공포 (주황) */}
+              <circle
+                cx="70"
+                cy="70"
+                r="60"
+                fill="none"
+                stroke="#F97316"
+                strokeWidth="6"
+                strokeDasharray="94.2 282.6"
+                transform="rotate(-135 70 70)"
+              />
+              {/* 중립 (노랑) */}
+              <circle
+                cx="70"
+                cy="70"
+                r="60"
+                fill="none"
+                stroke="#EAB308"
+                strokeWidth="6"
+                strokeDasharray="94.2 282.6"
+                transform="rotate(-90 70 70)"
+              />
+              {/* 탐욕 (초록) */}
+              <circle
+                cx="70"
+                cy="70"
+                r="60"
+                fill="none"
+                stroke="#84CC16"
+                strokeWidth="6"
+                strokeDasharray="94.2 282.6"
+                transform="rotate(-45 70 70)"
+              />
+            </g>
 
             {/* 검은 점 (현재 값 표시) */}
             <circle
-              cx={71 + 60 * Math.cos((Math.PI * (1 - data.value / 100)))}
-              cy={71 - 60 * Math.sin((Math.PI * (1 - data.value / 100)))}
+              cx={70 + 60 * Math.cos((Math.PI * (1 - data.value / 100)))}
+              cy={70 - 60 * Math.sin((Math.PI * (1 - data.value / 100)))}
               r="7"
               fill="black"
               className="dark:invert"
             />
           </svg>
+          
           {/* 지표 값 */}
           <div className="absolute inset-0 flex flex-col items-center justify-center mt-16">
             <span className="text-4xl font-bold">{data.value}</span>

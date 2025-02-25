@@ -47,7 +47,7 @@ export default function NewsCard({ news }: NewsCardProps) {
         </p>
 
         {/* Market Data */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
+        <div className="grid grid-cols-3 gap-3 pt-2">
           <div>
             <MarketLabel>시세</MarketLabel>
             <p className="text-sm text-gray-900 dark:text-white">

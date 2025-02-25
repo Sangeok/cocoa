@@ -370,7 +370,7 @@ export default function PricePrediction({
 
         {/* Duration Tabs */}
         <div className="border-b border-gray-200 dark:border-gray-800">
-          <nav className="flex gap-4" aria-label="Tabs">
+          <nav className="grid grid-cols-4" aria-label="Tabs">
             {[15, 30, 60, 180].map((duration) => (
               <button
                 key={duration}
@@ -399,7 +399,7 @@ export default function PricePrediction({
             {formatPriceByMarket(currentPrice, marketType)}
           </div>
           {(activePredict || (resultDisplay?.show && resultDisplay.result)) && (
-            <div className="space-y-2 mt-4 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+            <div className="space-y-2 mt-4 bg-gray-50 dark:bg-gray-900 rounded-lg">
               <div className="text-sm text-gray-500 dark:text-gray-400 flex justify-between">
                 <div>
                   진입 가격:{" "}

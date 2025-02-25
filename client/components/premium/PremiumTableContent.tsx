@@ -154,7 +154,7 @@ export default function PremiumTableContent() {
   return (
     <div className="space-y-2 sm:space-y-4 lg:space-y-6">
       <div className="bg-white dark:bg-gray-950 sm:rounded-lg p-3 sm:p-4 lg:p-6 border border-gray-200 dark:border-gray-900">
-        <div className="flex flex-col gap-1 sm:gap-2 lg:gap-4">
+        <div className="flex flex-col sm:flex-row gap-1 sm:gap-2 lg:gap-4 sm:justify-between sm:items-end">
           <div className="flex items-end justify-between sm:justify-start gap-0.5 sm:gap-2 lg:gap-4">
             <Select
               label="시작 거래소"
@@ -197,7 +197,7 @@ export default function PremiumTableContent() {
               options={COMBINED_EXCHANGE_OPTIONS}
             />
           </div>
-          <div className="w-full relative mt-1 sm:mt-0">
+          <div className="relative mt-1 sm:mt-0">
             <div className="relative">
               <input
                 type="text"

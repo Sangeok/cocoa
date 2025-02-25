@@ -84,8 +84,8 @@ const MetricCard: React.FC<MetricCardProps> = ({
             />
           </div>
         )}
-        <div className="flex items-center justify-between">
-          <h2 className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-200">
+        <div className="flex items-center justify-between w-full">
+          <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-200">
             {title}
           </h2>
           <ChevronRightIcon className="w-5 h-5 text-gray-400" />
