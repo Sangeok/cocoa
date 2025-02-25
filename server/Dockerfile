@@ -11,6 +11,7 @@ COPY . .
 
 # Build the application
 RUN npm run build
+RUN npm run db:generate
 
 # Expose the port the app runs on
 EXPOSE 3000
