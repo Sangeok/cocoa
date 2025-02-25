@@ -24,7 +24,7 @@ export default function StockDiscussion({
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const [editCommentContent, setEditCommentContent] = useState("");
   const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
+  const [hasMore, setHasMore] = useState(false);
 
   // 토론글 목록 조회
   const fetchDiscussions = async () => {
