@@ -209,7 +209,7 @@ export class UserController {
     }
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAdminAuthGuard)
   @Get('admin/stats')
   async getUserStats() {
     try {

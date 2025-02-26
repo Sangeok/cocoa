@@ -31,11 +31,11 @@ export function Header() {
         <div className="relative">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Search..."
+            placeholder="검색..."
             className="w-[280px] pl-8"
           />
         </div>
-        <Button variant="ghost" size="icon">
+        <Button variant="ghost">
           <UserCircle className="h-5 w-5" />
         </Button>
       </div>

@@ -122,8 +122,16 @@ export class AdminService {
         secret: this.configService.get<string>('JWT_ADMIN_REFRESH_SECRET'),
       });
 
-      const accessToken = await this.generateAccessToken(payload.sub);
-      return { accessToken };
+      // 새로운 액세스 토큰과 리프레시 토큰을 모두 발급
+      const [accessToken, newRefreshToken] = await Promise.all([
+        this.generateAccessToken(payload.sub),
+        this.generateRefreshToken(payload.sub),
+      ]);
+
+      return { 
+        accessToken,
+        refreshToken: newRefreshToken,
+      };
     } catch {
       throw new UnauthorizedException('Invalid refresh token');
     }

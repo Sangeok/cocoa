@@ -10,11 +10,12 @@
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.1.2",
-    "@shadcn/ui": "^0.8.0",
+    "@shadcn/ui": "^0.0.4",
     "@tanstack/react-query": "^5.66.9",
     "@vercel/analytics": "^1.5.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
     "lucide-react": "^0.476.0",
     "next": "15.1.7",
     "next-auth": "^4.24.11",

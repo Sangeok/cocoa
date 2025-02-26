@@ -71,21 +71,21 @@ export const API_ROUTE = {
   },
   USER: {
     DETAIL_USER: {
-      url: "admin/detail/:userId",
+      url: "/user/admin/detail/:userId",
       method: "GET",
     },
     USER_LIST: {
-      url: "admin/list",
+      url: "/user/admin/list",
       method: "GET",
     },
     STATISTIC: {
-      url: "admin/stats",
+      url: "/user/admin/stats",
       method: "GET",
     },
   },
   PREDICT: {
     STATISTIC: {
-      url: "predict/admin/stats",
+      url: "/predict/admin/stats",
       method: "GET",
     },
   },
@@ -117,19 +117,32 @@ export const payloadMaker = ({
   method,
   url,
   body,
-  token,
+  params,
 }: {
   method: HttpMethod;
   url: string;
   body?: any;
-  token?: string;
+  params?: Record<string, string>;
 }) => {
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
   };
 
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
+  const accessToken = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith("access_token="))
+    ?.split("=")[1];
+
+  if (accessToken) {
+    headers.Authorization = `Bearer ${accessToken}`;
+  }
+
+  // URL 파라미터 처리
+  let finalUrl = url;
+  if (params) {
+    Object.entries(params).forEach(([key, value]) => {
+      finalUrl = finalUrl.replace(`:${key}`, value);
+    });
   }
 
   const config: RequestInit = {
@@ -143,7 +156,7 @@ export const payloadMaker = ({
   }
 
   return {
-    url: `${BASE_URL}${url}`,
+    url: `${BASE_URL}${finalUrl}`,
     config,
   };
 };

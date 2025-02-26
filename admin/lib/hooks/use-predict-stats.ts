@@ -3,24 +3,24 @@ import { API_ROUTE, ApiResponse, payloadMaker } from "../api";
 import { useAuth } from "../store/use-auth";
 import { fetchWithAuth } from "../fetch";
 
-interface UserStats {
-  totalUsers: number;
-  todayUsers: number;
+interface PredictStats {
+  totalPredicts: string;
+  todayPredicts: string;
   updatedAt: string;
 }
 
-export const userKeys = {
-  stats: ["user", "stats"] as const,
+export const predictKeys = {
+  stats: ["predict", "stats"] as const,
 };
 
-export function useUserStats() {
+export function usePredictStats() {
   const { accessToken, isAuthenticated } = useAuth();
 
-  return useQuery<UserStats, Error>({
-    queryKey: userKeys.stats,
+  return useQuery<PredictStats, Error>({
+    queryKey: predictKeys.stats,
     queryFn: async () => {
       const { url, config } = payloadMaker({
-        ...API_ROUTE.USER.STATISTIC,
+        ...API_ROUTE.PREDICT.STATISTIC,
       });
 
       const response = await fetchWithAuth(url, config);
@@ -28,11 +28,11 @@ export function useUserStats() {
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(
-          errorData.message || "사용자 통계를 가져오는데 실패했습니다"
+          errorData.message || "예측 통계를 가져오는데 실패했습니다"
         );
       }
 
-      const { data } = (await response.json()) as ApiResponse<UserStats>;
+      const { data } = (await response.json()) as ApiResponse<PredictStats>;
       return data;
     },
     enabled: !!isAuthenticated && !!accessToken,
