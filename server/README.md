@@ -84,7 +84,7 @@ docker-compose down -v
 ### 프로덕션 환경 실행
 
 ```bash
-docker-compose -f docker-compose.prod.yml up --build
+docker-compose -f docker-compose.prod.yml up -d --build
 docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build api
 ```
 

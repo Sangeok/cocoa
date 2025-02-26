@@ -1,10 +1,13 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { WebSocket } from 'ws';
 import { RedisService } from '../../redis/redis.service';
-import { AppGateway } from '../../gateway/app.gateway';
 import { MarketCodesService } from '../services/market-codes.service';
 import { UpbitTickerResponse } from '../types/upbit.types';
-import { createTickerKey, TickerData, parseUpbitMarket } from '../types/common.types';
+import {
+  createTickerKey,
+  TickerData,
+  parseUpbitMarket,
+} from '../types/common.types';
 
 @Injectable()
 export class UpbitWebsocketClient implements OnModuleInit {
@@ -12,11 +15,11 @@ export class UpbitWebsocketClient implements OnModuleInit {
   private ws: WebSocket;
   private readonly WEBSOCKET_URL = 'wss://api.upbit.com/websocket/v1';
   private reconnectAttempts = 0;
-  private readonly MAX_RECONNECT_ATTEMPTS = 5;
+  private heartbeatInterval: NodeJS.Timeout;
+  private isConnecting = false;
 
   constructor(
     private readonly redisService: RedisService,
-    private readonly appGateway: AppGateway,
     private readonly marketCodesService: MarketCodesService,
   ) {}
 
@@ -26,12 +29,28 @@ export class UpbitWebsocketClient implements OnModuleInit {
   }
 
   private async connectWebSocket() {
+    if (this.isConnecting) {
+      return;
+    }
+
     try {
+      this.isConnecting = true;
+
+      // 기존 연결 정리
+      if (this.ws) {
+        this.cleanup();
+      }
+
       this.ws = new WebSocket(this.WEBSOCKET_URL);
       this.setupWebSocketHandlers();
+
+      // Heartbeat 설정
+      this.setupHeartbeat();
     } catch (error) {
       this.logger.error('Failed to connect to Upbit WebSocket', error);
       this.handleReconnect();
+    } finally {
+      this.isConnecting = false;
     }
   }
 
@@ -46,7 +65,6 @@ export class UpbitWebsocketClient implements OnModuleInit {
       try {
         const tickerData = JSON.parse(data.toString()) as UpbitTickerResponse;
         await this.handleTickerData(tickerData);
-        // this.logger.debug(`Upbit ticker data: ${tickerData.code}`);
       } catch (error) {
         this.logger.error('Error processing ticker data', error);
       }
@@ -88,10 +106,9 @@ export class UpbitWebsocketClient implements OnModuleInit {
 
   private async handleTickerData(data: UpbitTickerResponse) {
     try {
-
       const { baseToken, quoteToken } = parseUpbitMarket(data.code);
       const redisKey = createTickerKey('upbit', baseToken, quoteToken);
-      
+
       const tickerData: TickerData = {
         exchange: 'upbit',
         baseToken,
@@ -103,7 +120,6 @@ export class UpbitWebsocketClient implements OnModuleInit {
       };
 
       await this.redisService.set(redisKey, JSON.stringify(tickerData));
-
     } catch (error) {
       this.logger.error(`Error handling ticker data: ${error.message}`, {
         data,
@@ -112,17 +128,48 @@ export class UpbitWebsocketClient implements OnModuleInit {
     }
   }
 
-  private handleReconnect() {
-    if (this.reconnectAttempts < this.MAX_RECONNECT_ATTEMPTS) {
-      this.reconnectAttempts++;
-      const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000);
-      
-      setTimeout(() => {
-        this.logger.log(`Attempting to reconnect... (${this.reconnectAttempts})`);
-        this.connectWebSocket();
-      }, delay);
-    } else {
-      this.logger.error('Max reconnection attempts reached');
+  private setupHeartbeat() {
+    if (this.heartbeatInterval) {
+      clearInterval(this.heartbeatInterval);
+    }
+
+    this.heartbeatInterval = setInterval(() => {
+      if (this.ws.readyState === WebSocket.OPEN) {
+        this.ws.ping();
+      } else {
+        this.logger.warn('WebSocket connection appears to be dead');
+        this.handleReconnect();
+      }
+    }, 30000); // 30초마다 체크
+  }
+
+  private cleanup() {
+    if (this.heartbeatInterval) {
+      clearInterval(this.heartbeatInterval);
+    }
+
+    if (this.ws) {
+      try {
+        this.ws.removeAllListeners();
+        if (this.ws.readyState === WebSocket.OPEN) {
+          this.ws.close();
+        }
+      } catch (error) {
+        this.logger.error('Error during cleanup', error);
+      }
     }
   }
-} 
+
+  private handleReconnect() {
+    // 무한 재시도로 변경 (MAX_RECONNECT_ATTEMPTS 제거)
+    const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000);
+    this.reconnectAttempts++;
+
+    setTimeout(() => {
+      this.logger.log(
+        `Attempting to reconnect upbit... (attempt ${this.reconnectAttempts})`,
+      );
+      this.connectWebSocket();
+    }, delay);
+  }
+}
