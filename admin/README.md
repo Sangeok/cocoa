@@ -14,3 +14,11 @@
 - UI: Shadcn UI
 - 분석 도구: Vercel Analytics
 - 범용 훅: React Haiku
+
+## 명령어
+
+```bash
+pnpm install
+pnpm build
+pnpm start
+```
