@@ -34,7 +34,6 @@ export class JwtAdminAuthGuard extends AuthGuard('jwt') {
         secret: this.configService.get<string>('JWT_ADMIN_ACCESS_SECRET'),
       });
 
-      // 관리자 승인 여부 확인
       const [admin] = await this.db
         .select({
           id: admins.id,
@@ -47,7 +46,7 @@ export class JwtAdminAuthGuard extends AuthGuard('jwt') {
         throw new UnauthorizedException('승인되지 않은 관리자입니다.');
       }
 
-      request['admin'] = payload;
+      request['admin'] = admin;
       return true;
     } catch {
       throw new UnauthorizedException();

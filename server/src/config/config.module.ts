@@ -38,6 +38,9 @@ const envSchema = z.object({
   // Chat
   CORS_ORIGIN: z.string(),
 
+  // Admin
+  ADMIN_ORIGIN: z.string(),
+
   // Google
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),
@@ -48,6 +51,8 @@ const envSchema = z.object({
 
   // JWT
   JWT_SECRET: z.string(),
+  JWT_ADMIN_ACCESS_SECRET: z.string(),
+  JWT_ADMIN_REFRESH_SECRET: z.string(),
 });
 
 @Global()

@@ -61,7 +61,7 @@ export class AdminService {
   }
 
   async getProfile(adminId: number) {
-    const admin = await this.db
+    const [admin] = await this.db
       .select()
       .from(admins)
       .where(eq(admins.id, adminId));
@@ -70,7 +70,7 @@ export class AdminService {
       throw new UnauthorizedException('Admin not found');
     }
 
-    const { passwordHash, passwordSalt, ...profile } = admin[0];
+    const { passwordHash, passwordSalt, ...profile } = admin;
     return profile;
   }
 

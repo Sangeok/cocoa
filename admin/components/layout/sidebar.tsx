@@ -1,24 +1,17 @@
-'use client'
+"use client";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  Home,
-  Package,
-  Users,
-  BarChart3,
-  Settings,
-  Menu,
-} from "lucide-react";
+import { Home, Package, Users, BarChart3, Settings, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/lib/store/use-sidebar";
-
+import Image from "next/image";
 const sidebarItems = [
-  { icon: Home, href: "/", label: "Dashboard" },
-  { icon: Package, href: "/products", label: "Products" },
-  { icon: Users, href: "/customers", label: "Customers" },
-  { icon: BarChart3, href: "/analytics", label: "Analytics" },
-  { icon: Settings, href: "/settings", label: "Settings" },
+  { icon: Home, href: "/", label: "대시보드" },
+  { icon: Package, href: "/products", label: "상품" },
+  { icon: Users, href: "/customers", label: "고객" },
+  { icon: BarChart3, href: "/analytics", label: "분석" },
+  { icon: Settings, href: "/settings", label: "설정" },
 ];
 
 export function Sidebar() {
@@ -26,18 +19,14 @@ export function Sidebar() {
   const { isExpanded, toggle } = useSidebar();
 
   return (
-    <div 
+    <div
       className={cn(
         "flex h-full flex-col border-r bg-background py-4 transition-all duration-300",
         isExpanded ? "w-[200px]" : "w-[60px]"
       )}
     >
-      <div className="mb-8 flex justify-center">
-        <Button 
-          variant="ghost" 
-          size="icon"
-          onClick={toggle}
-        >
+      <div className="mb-8 flex px-4">
+        <Button variant="ghost" size="icon" onClick={toggle}>
           <Menu className="h-6 w-6" />
         </Button>
       </div>
@@ -63,6 +52,14 @@ export function Sidebar() {
           );
         })}
       </nav>
+      <Link
+        href="https://coincoin.kr"
+        className="flex justify-center gap-2 flex-col items-center p-4"
+        target="_blank"
+      >
+        <Image src="/logo.webp" alt="logo" width={40} height={100} />
+        <Image src="/cocoa_black.webp" alt="cocoa" width={100} height={30} />
+      </Link>
     </div>
   );
-} 
+}

@@ -20,6 +20,24 @@ export interface LoginResponseDto {
   refreshToken: string;
 }
 
+export interface AdminProfile {
+  id: number;
+  email: string;
+  name: string;
+  phoneNumber: string;
+  role: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ApiResponse<T = any> {
+  success: boolean;
+  data: T;
+  message?: string;
+}
+
+export const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+
 export const API_ROUTE = {
   ADMIN: {
     LOGIN: {
@@ -46,26 +64,86 @@ export const API_ROUTE = {
       url: "/admin/logout",
       method: "POST",
     },
+    APPROVE_ADMIN: {
+      url: "/admin/approve/:id",
+      method: "PUT",
+    },
   },
   USER: {
-    // 추후 사용자 관련 API 라우트 추가
+    DETAIL_USER: {
+      url: "admin/detail/:userId",
+      method: "GET",
+    },
+    USER_LIST: {
+      url: "admin/list",
+      method: "GET",
+    },
+    STATISTIC: {
+      url: "admin/stats",
+      method: "GET",
+    },
   },
-  PRODUCT: {
-    // 추후 상품 관련 API 라우트 추가
+  PREDICT: {
+    STATISTIC: {
+      url: "predict/admin/stats",
+      method: "GET",
+    },
   },
-  ORDER: {
-    // 추후 주문 관련 API 라우트 추가
+  MESSAGE: {
+    CREATE_MESSAGE: {
+      url: "message",
+      method: "POST",
+    },
+    LIST_MESSAGE: {
+      url: "message/admin",
+      method: "GET",
+    },
   },
-  REVIEW: {
-    // 추후 리뷰 관련 API 라우트 추가
+  GUEST_BOOK: {
+    STATISTIC: {
+      url: "guestbook/admin/stats",
+      method: "GET",
+    },
   },
-  NOTIFICATION: {
-    // 추후 알림 관련 API 라우트 추가
-  },
-  SETTING: {
-    // 추후 설정 관련 API 라우트 추가
-  },
-  STATISTICS: {
-    // 추후 통계 관련 API 라우트 추가
-  },
+  MARKET: {},
+  ORDER: {},
+  REVIEW: {},
+  NOTIFICATION: {},
+  SETTING: {},
+  STATISTICS: {},
 } as const;
+
+export const payloadMaker = ({
+  method,
+  url,
+  body,
+  token,
+}: {
+  method: HttpMethod;
+  url: string;
+  body?: any;
+  token?: string;
+}) => {
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+  };
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const config: RequestInit = {
+    method,
+    headers,
+    credentials: 'include',
+  };
+
+  if (body && method !== 'GET') {
+    config.body = JSON.stringify(body);
+  }
+
+  return {
+    url: `${BASE_URL}${url}`,
+    config,
+  };
+};

@@ -8,7 +8,7 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   
   app.enableCors({
-    origin: configService.get('CORS_ORIGIN'),
+    origin: [configService.get('CORS_ORIGIN'), configService.get('ADMIN_ORIGIN')],
     credentials: true, // 쿠키를 주고받을 수 있도록 설정
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
     allowedHeaders: ['Authorization', 'Content-Type', 'Cookie'],
