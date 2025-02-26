@@ -85,7 +85,9 @@ docker-compose down -v
 
 ```bash
 docker-compose -f docker-compose.prod.yml up -d --build
-docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build api
+
+# 특정 서비스만 실행
+docker-compose -f docker-compose.prod.yml up -d --build api
 ```
 
 ### 프로덕션 환경 종료
