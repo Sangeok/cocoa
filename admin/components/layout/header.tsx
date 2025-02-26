@@ -15,15 +15,14 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/lib/store/use-auth";
-import { useProfile } from "@/lib/store/use-profile";
+import { useProfileQuery } from "@/lib/hooks/use-profile-query";
 export function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const breadcrumbs = getPathBreadcrumb(pathname);
   const { logout } = useAuth();
-  const { profile } = useProfile();
-  console.log(profile);
-
+  const { data: profile } = useProfileQuery();
+  
   const handleLogout = async () => {
     await logout();
     router.push("/login");

@@ -229,4 +229,10 @@ export const API_ROUTES = {
       method: "DELETE",
     },
   },
+  MESSAGE: {
+    GET: {
+      url: "/messages/:messageId",
+      method: "GET",
+    },
+  },
 } as const;

@@ -27,7 +27,7 @@ export class MessageController {
   ) {
     try {
       console.log('Current Admin:', admin);
-      
+
       if (!admin?.id) {
         throw new Error('관리자 인증이 필요합니다');
       }
@@ -75,6 +75,32 @@ export class MessageController {
   }
 
   @UseGuards(UserJwtAuthGuard)
+  @Get(':messageId')
+  async getMessage(
+    @CurrentUser() userId: number,
+    @Param('messageId') messageId: string,
+  ) {
+    try {
+      const message = await this.messageService.getMessage(
+        userId,
+        parseInt(messageId),
+      );
+      if (message) {
+        await this.messageService.markAsRead(userId, parseInt(messageId));
+      }
+      return {
+        success: true,
+        data: message,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message,
+      };
+    }
+  }
+
+  @UseGuards(UserJwtAuthGuard)
   @Patch(':messageId/read')
   async markAsRead(
     @CurrentUser() userId: number,
@@ -95,12 +121,13 @@ export class MessageController {
   }
 
   @UseGuards(JwtAdminAuthGuard)
-  @Get('admin')
+  @Get('admin/:userId')
   async getAdminMessages(
     @Query('page') page: string = '1',
     @Query('limit') limit: string = '10',
     @Query('isRead') isRead?: string,
     @Query('search') search?: string,
+    @Param('userId') userId?: string,
   ) {
     try {
       let isReadFilter: boolean | undefined;
@@ -112,6 +139,7 @@ export class MessageController {
         limit: parseInt(limit),
         isRead: isReadFilter,
         search,
+        userId: userId ? parseInt(userId) : undefined,
       });
 
       return {

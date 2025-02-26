@@ -24,6 +24,7 @@ export function useUserDetail(id: string) {
       const { url, config } = payloadMaker({
         ...API_ROUTE.USER.DETAIL_USER,
         params: { userId: id },
+        token: accessToken || undefined,
       });
 
       const response = await fetchWithAuth(url, config);

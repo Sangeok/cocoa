@@ -12,6 +12,7 @@ interface FindMessagesOptions {
   limit?: number;
   isRead?: boolean;
   search?: string; // 사용자 이름이나 이메일로 검색
+  userId?: number;
 }
 
 @Injectable()
@@ -33,7 +34,7 @@ export class MessageService {
     const [message] = await this.db
       .insert(messages)
       .values({
-        adminId,  // 명시적으로 adminId 할당
+        adminId, // 명시적으로 adminId 할당
         userId: createMessageDto.userId,
         title: createMessageDto.title,
         content: createMessageDto.content,
@@ -47,10 +48,23 @@ export class MessageService {
       userId: createMessageDto.userId,
       senderId: adminId,
       type: 'NEW_ADMIN_MESSAGE',
-      content: `새로운 메시지: ${createMessageDto.title}`,
+      content: `관리자 메시지: ${createMessageDto.title}`,
       targetId: message.id,
       targetUserId: createMessageDto.userId,
     });
+
+    return message;
+  }
+
+  async getMessage(userId: number, messageId: number): Promise<Message> {
+    const [message] = await this.db
+      .select()
+      .from(messages)
+      .where(and(eq(messages.id, messageId), eq(messages.userId, userId)));
+
+    if (!message) {
+      throw new NotFoundException('메시지를 찾을 수 없습니다');
+    }
 
     return message;
   }
@@ -103,7 +117,7 @@ export class MessageService {
   }
 
   async findAdminMessages(options: FindMessagesOptions = {}) {
-    const { page = 1, limit = 10, isRead, search } = options;
+    const { page = 1, limit = 10, isRead, search, userId } = options;
 
     const offset = (page - 1) * limit;
     const conditions: SQL[] = [];
@@ -113,8 +127,11 @@ export class MessageService {
       conditions.push(eq(messages.isRead, isRead) as SQL);
     }
 
+    if (userId) {
+      conditions.push(eq(messages.userId, userId) as SQL);
+    }
     // 검색 조건 추가
-    if (search) {
+    else if (search) {
       conditions.push(
         or(
           ilike(users.name, `%${search}%`),
@@ -148,7 +165,7 @@ export class MessageService {
         .where(whereClause),
     ]);
 
-    return {
+    const result = {
       messages: messageList,
       pagination: {
         total: count,
@@ -157,5 +174,8 @@ export class MessageService {
         totalPages: Math.ceil(count / limit),
       },
     };
+
+    console.log('Server result:', result); // 서버 측 응답 로깅
+    return result;
   }
 }

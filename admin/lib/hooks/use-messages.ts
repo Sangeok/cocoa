@@ -34,31 +34,53 @@ interface CreateMessageDto {
 }
 
 export const messageKeys = {
-  list: (userId?: number) => ["messages", { userId }] as const,
+  list: (userId?: string | number) => ["messages", { userId }] as const,
 };
 
-export function useMessages(userId?: number) {
+export function useMessages(userId?: string | number) {
   const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery<MessageListResponse>({
     queryKey: messageKeys.list(userId),
     queryFn: async () => {
-      const searchParams = new URLSearchParams();
-      if (userId) searchParams.append("userId", userId.toString());
+      const parsedUserId = userId ? Number(userId) : undefined;
+      if (!parsedUserId || isNaN(parsedUserId)) {
+        throw new Error("유효하지 않은 사용자 ID입니다");
+      }
 
       const { url, config } = payloadMaker({
         ...API_ROUTE.MESSAGE.LIST_MESSAGE,
-        url: `${API_ROUTE.MESSAGE.LIST_MESSAGE.url}?${searchParams.toString()}`,
+        params: {
+          userId: parsedUserId.toString(),
+        },
       });
 
       const response = await fetchWithAuth(url, config);
       if (!response.ok) {
-        throw new Error("메시지 목록을 가져오는데 실패했습니다");
+        const errorData = await response.json();
+        throw new Error(
+          errorData.message || "메시지 목록을 가져오는데 실패했습니다"
+        );
       }
 
-      const { data } = await response.json();
-      return data;
+      const result = await response.json();
+      console.log("Server raw response:", result);
+
+      if (!result.success || !result.data) {
+        return {
+          messages: [],
+          pagination: {
+            total: 0,
+            page: 1,
+            limit: 10,
+            totalPages: 0,
+          },
+        };
+      }
+
+      return result.data;
     },
+    enabled: !!userId && !isNaN(Number(userId)),
   });
 
   const createMessage = useMutation({
@@ -76,7 +98,9 @@ export function useMessages(userId?: number) {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(messageKeys.list(userId));
+      queryClient.invalidateQueries({
+        queryKey: messageKeys.list(userId),
+      });
     },
   });
 
@@ -86,4 +110,4 @@ export function useMessages(userId?: number) {
     isLoading,
     createMessage,
   };
-} 
+}

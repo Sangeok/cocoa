@@ -5,7 +5,7 @@ import { API_ROUTES } from "@/const/api";
 
 export interface Notification {
   id: number;
-  type: "NEW_GUESTBOOK" | "NEW_COMMENT" | "NEW_COMMENT_STOCK_DISCUSSION";
+  type: "NEW_GUESTBOOK" | "NEW_COMMENT" | "NEW_COMMENT_STOCK_DISCUSSION" | "NEW_ADMIN_MESSAGE";
   content: string;
   isRead: boolean;
   createdAt: string;

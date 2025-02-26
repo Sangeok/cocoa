@@ -91,13 +91,13 @@ export const API_ROUTE = {
     },
   },
   MESSAGE: {
+    LIST_MESSAGE: {
+      url: "/messages/admin/:userId",
+      method: "GET",
+    },
     CREATE_MESSAGE: {
       url: "/messages",
       method: "POST",
-    },
-    LIST_MESSAGE: {
-      url: "/messages/admin",
-      method: "GET",
     },
   },
   GUEST_BOOK: {

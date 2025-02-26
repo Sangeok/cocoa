@@ -30,13 +30,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
 
 export default function CustomerDetailPage() {
   const params = useParams();
   const id = params.id as string;
   const { data: user, isLoading: isUserLoading } = useUserDetail(id);
-  const { messages, isLoading: isMessagesLoading, createMessage } = useMessages(parseInt(id));
+  const { messages, isLoading: isMessagesLoading, createMessage } = useMessages(id);
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [title, setTitle] = useState("");

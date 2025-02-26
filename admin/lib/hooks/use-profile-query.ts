@@ -13,6 +13,7 @@ export function useProfileQuery() {
     queryFn: async () => {
       const { url, config } = payloadMaker({
         ...API_ROUTE.ADMIN.GET_PROFILE,
+        token: accessToken || undefined,
       });
 
       const response = await fetch(url, config);
@@ -21,7 +22,7 @@ export function useProfileQuery() {
         throw new Error("프로필 정보를 가져오는데 실패했습니다");
       }
 
-      const { data } = (await response.json()) as ApiResponse<AdminProfile>;
+      const data = await response.json();
       setProfile(data);
       return data;
     },
