@@ -47,9 +47,9 @@ export function useAuthMutation() {
       if (!profileResponse.ok) {
         throw new Error("프로필 정보를 가져오는데 실패했습니다");
       }
+      const profileData = (await profileResponse.json()) as AdminProfile;
 
-      const { data: profileData } =
-        (await profileResponse.json()) as ApiResponse<AdminProfile>;
+      console.log("profileData", profileData);
 
       return {
         tokens: loginData,
@@ -65,7 +65,6 @@ export function useAuthMutation() {
 
       document.cookie = `access_token=${data.tokens.accessToken}; path=/`;
       document.cookie = `refresh_token=${data.tokens.refreshToken}; path=/`;
-
       setProfile(data.profile);
       router.push("/");
     },

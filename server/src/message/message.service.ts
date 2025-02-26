@@ -25,10 +25,15 @@ export class MessageService {
     adminId: number,
     createMessageDto: CreateMessageDto,
   ): Promise<Message> {
+    // adminId가 제대로 들어오는지 확인
+    if (!adminId) {
+      throw new Error('관리자 ID가 필요합니다');
+    }
+
     const [message] = await this.db
       .insert(messages)
       .values({
-        adminId,
+        adminId,  // 명시적으로 adminId 할당
         userId: createMessageDto.userId,
         title: createMessageDto.title,
         content: createMessageDto.content,
@@ -39,11 +44,11 @@ export class MessageService {
 
     // 메시지 생성 후 알림 생성
     await this.notificationService.create({
-      userId: createMessageDto.userId, // 수신자
-      senderId: adminId, // 발신자 (관리자)
+      userId: createMessageDto.userId,
+      senderId: adminId,
       type: 'NEW_ADMIN_MESSAGE',
       content: `새로운 메시지: ${createMessageDto.title}`,
-      targetId: message.id, // 메시지 ID
+      targetId: message.id,
       targetUserId: createMessageDto.userId,
     });
 

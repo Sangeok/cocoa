@@ -13,7 +13,6 @@ export function useProfileQuery() {
     queryFn: async () => {
       const { url, config } = payloadMaker({
         ...API_ROUTE.ADMIN.GET_PROFILE,
-        token: accessToken!,
       });
 
       const response = await fetch(url, config);

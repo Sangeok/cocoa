@@ -36,7 +36,8 @@ export interface ApiResponse<T = any> {
   message?: string;
 }
 
-export const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+export const BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 export const API_ROUTE = {
   ADMIN: {
@@ -91,11 +92,11 @@ export const API_ROUTE = {
   },
   MESSAGE: {
     CREATE_MESSAGE: {
-      url: "message",
+      url: "/messages",
       method: "POST",
     },
     LIST_MESSAGE: {
-      url: "message/admin",
+      url: "/messages/admin",
       method: "GET",
     },
   },
@@ -117,24 +118,30 @@ export const payloadMaker = ({
   method,
   url,
   body,
+  token,
   params,
 }: {
   method: HttpMethod;
   url: string;
   body?: any;
+  token?: string;
   params?: Record<string, string>;
 }) => {
   const headers: HeadersInit = {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   };
 
-  const accessToken = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith("access_token="))
-    ?.split("=")[1];
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  } else {
+    const accessToken = document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("access_token="))
+      ?.split("=")[1];
 
-  if (accessToken) {
-    headers.Authorization = `Bearer ${accessToken}`;
+    if (accessToken) {
+      headers.Authorization = `Bearer ${accessToken}`;
+    }
   }
 
   // URL 파라미터 처리
@@ -148,10 +155,10 @@ export const payloadMaker = ({
   const config: RequestInit = {
     method,
     headers,
-    credentials: 'include',
+    credentials: "include",
   };
 
-  if (body && method !== 'GET') {
+  if (body && method !== "GET") {
     config.body = JSON.stringify(body);
   }
 

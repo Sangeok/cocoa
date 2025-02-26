@@ -1,9 +1,9 @@
-import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
-
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { deleteCookie } from "cookies-next/client";
 interface AuthState {
-  accessToken: string | null
-  refreshToken: string | null
+  accessToken: string | null;
+  refreshToken: string | null;
   isAuthenticated: boolean
   login: (tokens: { accessToken: string; refreshToken: string }) => Promise<void>
   logout: () => Promise<void>
@@ -29,11 +29,13 @@ export const useAuth = create<AuthState>()(
           accessToken: null,
           refreshToken: null,
           isAuthenticated: false,
-        })
+        });
+        deleteCookie("access_token");
+        deleteCookie("refresh_token");
       },
     }),
     {
-      name: 'auth-storage',
+      name: "auth-storage",
     }
   )
 ) 

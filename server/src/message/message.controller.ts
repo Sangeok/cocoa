@@ -22,12 +22,18 @@ export class MessageController {
   @UseGuards(JwtAdminAuthGuard)
   @Post()
   async create(
-    @CurrentAdmin() admin: { sub: number },
+    @CurrentAdmin() admin: { id: number },
     @Body() createMessageDto: CreateMessageDto,
   ) {
     try {
+      console.log('Current Admin:', admin);
+      
+      if (!admin?.id) {
+        throw new Error('관리자 인증이 필요합니다');
+      }
+
       const message = await this.messageService.create(
-        admin.sub,
+        admin.id,
         createMessageDto,
       );
       return {
@@ -35,9 +41,10 @@ export class MessageController {
         data: message,
       };
     } catch (error) {
+      console.error('Message creation error:', error);
       return {
         success: false,
-        message: error.message,
+        message: error.message || '메시지 생성에 실패했습니다',
       };
     }
   }
