@@ -18,6 +18,8 @@ import { GuestbookModule } from './guestbook/guestbook.module';
 import { ProfileStatsModule } from './profile-stats/profile-stats.module';
 import { NotificationModule } from './notification/notification.module';
 import { StockDiscussionModule } from './stock-discussion/stock-discussion.module';
+import { MessageModule } from './message/message.module';
+import { AdminModule } from './admin/admin.module';
 @Module({
   imports: [
     ConfigModule,
@@ -37,6 +39,8 @@ import { StockDiscussionModule } from './stock-discussion/stock-discussion.modul
     ProfileStatsModule,
     NotificationModule,
     StockDiscussionModule,
+    MessageModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],

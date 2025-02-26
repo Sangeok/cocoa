@@ -5,6 +5,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { DrizzleClient } from '../database/database.module';
+import { sql } from 'drizzle-orm';
 import {
   users,
   User,
@@ -12,15 +13,25 @@ import {
   FORBIDDEN_USERNAMES,
 } from '../database/schema/user';
 import { predicts } from '../database/schema/predict';
-import { eq } from 'drizzle-orm';
+import { eq, gte } from 'drizzle-orm';
+import { RedisService } from '../redis/redis.service';
 
 export interface UserWithPredict extends User {
   predict: typeof predicts.$inferSelect | null;
 }
 
+export interface UserStats {
+  totalUsers: number;
+  todayUsers: number;
+  updatedAt: string;
+}
+
 @Injectable()
 export class UserService {
-  constructor(@Inject('DATABASE') private readonly db: typeof DrizzleClient) {}
+  constructor(
+    @Inject('DATABASE') private readonly db: typeof DrizzleClient,
+    private readonly redisService: RedisService,
+  ) {}
 
   async findBySocialId(socialId: string): Promise<User | undefined> {
     const [user] = await this.db
@@ -185,5 +196,101 @@ export class UserService {
       .returning();
 
     return updatedUser;
+  }
+
+  async findUserDetail(userId: number): Promise<UserWithPredict> {
+    const [result] = await this.db
+      .select({
+        id: users.id,
+        socialId: users.socialId,
+        email: users.email,
+        name: users.name,
+        phoneNumber: users.phoneNumber,
+        provider: users.provider,
+        bio: users.bio,
+        telegram: users.telegram,
+        youtube: users.youtube,
+        instagram: users.instagram,
+        twitter: users.twitter,
+        discord: users.discord,
+        homepage: users.homepage,
+        github: users.github,
+        createdAt: users.createdAt,
+        updatedAt: users.updatedAt,
+        predict: predicts,
+      })
+      .from(users)
+      .where(eq(users.id, userId))
+      .leftJoin(predicts, eq(users.id, predicts.userId));
+
+    if (!result) {
+      throw new NotFoundException('User not found');
+    }
+
+    return result;
+  }
+
+  async findUsers(page: number = 1, limit: number = 10) {
+    const offset = (page - 1) * limit;
+
+    const [userList, [{ count }]] = await Promise.all([
+      this.db
+        .select({
+          id: users.id,
+          name: users.name,
+          email: users.email,
+          provider: users.provider,
+          createdAt: users.createdAt,
+        })
+        .from(users)
+        .limit(limit)
+        .offset(offset)
+        .orderBy(users.createdAt),
+      this.db
+        .select({ count: sql<number>`count(*)` })
+        .from(users),
+    ]);
+
+    return {
+      users: userList,
+      pagination: {
+        total: count,
+        page,
+        limit,
+        totalPages: Math.ceil(count / limit),
+      },
+    };
+  }
+
+  async getUserStats(): Promise<UserStats> {
+    const cacheKey = 'admin:user:stats';
+    const cached = await this.redisService.get(cacheKey);
+
+    if (cached) {
+      return JSON.parse(cached);
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const [[{ total }], [{ today: todayCount }]] = await Promise.all([
+      this.db
+        .select({ total: sql<number>`count(*)` })
+        .from(users),
+      this.db
+        .select({ today: sql<number>`count(*)` })
+        .from(users)
+        .where(gte(users.createdAt, today)),
+    ]);
+
+    const stats: UserStats = {
+      totalUsers: total,
+      todayUsers: todayCount,
+      updatedAt: new Date().toISOString(),
+    };
+
+    await this.redisService.set(cacheKey, JSON.stringify(stats), 3600);
+
+    return stats;
   }
 }

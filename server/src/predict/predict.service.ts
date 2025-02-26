@@ -2,7 +2,7 @@ import { Injectable, Logger, Inject, forwardRef } from '@nestjs/common';
 import { RedisService } from '../redis/redis.service';
 import { DrizzleClient } from '../database/database.module';
 import { predicts } from '../database/schema/predict';
-import { eq, sql, desc } from 'drizzle-orm';
+import { eq, sql, desc, gte } from 'drizzle-orm';
 import { users } from '../database/schema/user';
 import { predictLogs } from '../database/schema/predict-log';
 import { NewPredictLog } from '../database/schema/predict-log';
@@ -38,6 +38,12 @@ interface LongShortRatio {
   total: number;
   longPercent: number;
   shortPercent: number;
+}
+
+export interface PredictStats {
+  totalPredicts: number;
+  todayPredicts: number;
+  updatedAt: string;
 }
 
 @Injectable()
@@ -546,5 +552,37 @@ export class PredictService {
     );
     // WebSocket을 통해 emit
     this.appGateway.server.emit(`predict-result-${userId}`, result);
+  }
+
+  async getAdminPredictStats(): Promise<PredictStats> {
+    const cacheKey = 'admin:predict:stats';
+    const cached = await this.redisService.get(cacheKey);
+
+    if (cached) {
+      return JSON.parse(cached);
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const [[{ total }], [{ today: todayCount }]] = await Promise.all([
+      this.db
+        .select({ total: sql<number>`count(*)` })
+        .from(predictLogs),
+      this.db
+        .select({ today: sql<number>`count(*)` })
+        .from(predictLogs)
+        .where(gte(predictLogs.entryAt, today)),
+    ]);
+
+    const stats: PredictStats = {
+      totalPredicts: total,
+      todayPredicts: todayCount,
+      updatedAt: new Date().toISOString(),
+    };
+
+    await this.redisService.set(cacheKey, JSON.stringify(stats), 3600);
+
+    return stats;
   }
 }

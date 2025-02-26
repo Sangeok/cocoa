@@ -7,6 +7,7 @@ import {
   Res,
   Param,
   Req,
+  Query,
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
@@ -16,6 +17,7 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { AuthService } from '../auth/auth.service';
 import { Response, Request } from 'express';
 import { ConfigService } from '@nestjs/config';
+import { JwtAdminAuthGuard } from '../admin/guards/jwt-auth.guard';
 
 interface UpdateNameDto {
   name: string;
@@ -160,6 +162,67 @@ export class UserController {
         throw error;
       }
       throw new InternalServerErrorException('Failed to update profile');
+    }
+  }
+
+  @UseGuards(JwtAdminAuthGuard)
+  @Get('admin/detail/:userId')
+  async getUserDetail(@Param('userId') userId: string) {
+    try {
+      const user = await this.userService.findUserDetail(parseInt(userId));
+      return {
+        success: true,
+        data: user,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message,
+      };
+    }
+  }
+
+  @UseGuards(JwtAdminAuthGuard)
+  @Get('admin/list')
+  async getUserList(
+    @Query('page') page: string = '1',
+    @Query('limit') limit: string = '10',
+  ) {
+    try {
+      const pageNumber = parseInt(page);
+      const limitNumber = parseInt(limit);
+
+      if (isNaN(pageNumber) || isNaN(limitNumber) || pageNumber < 1 || limitNumber < 1) {
+        throw new BadRequestException('Invalid pagination parameters');
+      }
+
+      const result = await this.userService.findUsers(pageNumber, limitNumber);
+      return {
+        success: true,
+        data: result,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message,
+      };
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('admin/stats')
+  async getUserStats() {
+    try {
+      const stats = await this.userService.getUserStats();
+      return {
+        success: true,
+        data: stats,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message,
+      };
     }
   }
 }

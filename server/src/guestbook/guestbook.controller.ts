@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import { GuestbookService } from './guestbook.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { JwtAdminAuthGuard } from '../admin/guards/jwt-auth.guard';
 import { Request } from 'express';
 
 @Controller('guestbook')
@@ -142,5 +143,22 @@ export class GuestbookController {
         parseInt(commentId),
       ),
     };
+  }
+
+  @UseGuards(JwtAdminAuthGuard)
+  @Get('admin/stats')
+  async getAdminStats() {
+    try {
+      const stats = await this.guestbookService.getAdminGuestbookStats();
+      return {
+        success: true,
+        data: stats,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message,
+      };
+    }
   }
 }

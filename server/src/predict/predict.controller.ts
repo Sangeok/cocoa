@@ -11,6 +11,7 @@ import { PredictService } from './predict.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Request } from 'express';
 import { Logger } from '@nestjs/common';
+import { JwtAdminAuthGuard } from '../admin/guards/jwt-auth.guard';
 
 interface CreatePredictDto {
   market: string;
@@ -150,6 +151,23 @@ export class PredictController {
           reward: result.reward,
           newBalance: result.newBalance,
         },
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: error.message,
+      };
+    }
+  }
+
+  @UseGuards(JwtAdminAuthGuard)
+  @Get('admin/stats')
+  async getAdminStats() {
+    try {
+      const stats = await this.predictService.getAdminPredictStats();
+      return {
+        success: true,
+        data: stats,
       };
     } catch (error) {
       return {

@@ -4,6 +4,7 @@ import { UserService } from './user.service';
 import { AuthModule } from '../auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { DatabaseModule } from '../database/database.module';
+import { RedisService } from '../redis/redis.service';
 
 @Module({
   imports: [
@@ -12,7 +13,7 @@ import { DatabaseModule } from '../database/database.module';
     ConfigModule,
   ],
   controllers: [UserController],
-  providers: [UserService],
+  providers: [UserService, RedisService],
   exports: [UserService],
 })
 export class UserModule {}

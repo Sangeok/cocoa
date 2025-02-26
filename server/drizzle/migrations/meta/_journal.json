@@ -190,6 +190,20 @@
       "when": 1740392882769,
       "tag": "0026_lethal_garia",
       "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1740543540042,
+      "tag": "0027_amazing_skreet",
+      "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1740544213072,
+      "tag": "0028_oval_typhoid_mary",
+      "breakpoints": true
     }
   ]
 }

@@ -7,16 +7,24 @@ import { DrizzleClient } from '../database/database.module';
 import { Inject } from '@nestjs/common';
 import { guestbooks } from '../database/schema/guestbook';
 import { guestbookComments } from '../database/schema/guestbook-comment';
-import { eq, desc, and, sql, or } from 'drizzle-orm';
+import { eq, desc, and, sql, or, gte } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
 import { users } from '../database/schema/user';
 import { NotificationService } from '../notification/notification.service';
+import { RedisService } from '../redis/redis.service';
+
+export interface GuestbookStats {
+  totalGuestbooks: number;
+  todayGuestbooks: number;
+  updatedAt: string;
+}
 
 @Injectable()
 export class GuestbookService {
   constructor(
     @Inject('DATABASE') private readonly db: typeof DrizzleClient,
     private readonly notificationService: NotificationService,
+    private readonly redisService: RedisService,
   ) {}
 
   async getGuestbook(guestbookId: number) {
@@ -388,5 +396,43 @@ export class GuestbookService {
     });
 
     return { success: true };
+  }
+
+  async getAdminGuestbookStats(): Promise<GuestbookStats> {
+    const cacheKey = 'admin:guestbook:stats';
+    const cached = await this.redisService.get(cacheKey);
+
+    if (cached) {
+      return JSON.parse(cached);
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const [[{ total }], [{ today: todayCount }]] = await Promise.all([
+      this.db
+        .select({ total: sql<number>`count(*)` })
+        .from(guestbooks)
+        .where(eq(guestbooks.isDeleted, false)),
+      this.db
+        .select({ today: sql<number>`count(*)` })
+        .from(guestbooks)
+        .where(
+          and(
+            eq(guestbooks.isDeleted, false),
+            gte(guestbooks.createdAt, today),
+          ),
+        ),
+    ]);
+
+    const stats: GuestbookStats = {
+      totalGuestbooks: total,
+      todayGuestbooks: todayCount,
+      updatedAt: new Date().toISOString(),
+    };
+
+    await this.redisService.set(cacheKey, JSON.stringify(stats), 3600);
+
+    return stats;
   }
 }
