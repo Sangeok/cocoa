@@ -8,10 +8,10 @@ export const MarketDataSchema = z.object({
 })
 
 export const NewsDataSchema = z.object({
-  title: z.string(),
-  url: z.string(),
-  source: z.string(),
-  publishedAt: z.string(),
+  title: z.string().nullable(),
+  url: z.string().nullable(),
+  source: z.string().nullable(),
+  publishedAt: z.string().nullable(),
 })
 
 // News schema
