@@ -18,10 +18,12 @@ import { format } from "date-fns";
 import { ko } from "date-fns/locale";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { For } from "react-haiku";
 
 export default function CustomersPage() {
   const [page, setPage] = useState(1);
-  const { data, isLoading } = useUserList(page);
+  const [search, setSearch] = useState("");
+  const { data, isLoading } = useUserList(page, search);
   const router = useRouter();
 
   return (
@@ -36,7 +38,15 @@ export default function CustomersPage() {
       <div className="flex items-center gap-4">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input placeholder="이메일 또는 이름으로 검색" className="pl-9" />
+          <Input
+            placeholder="이메일 또는 이름으로 검색"
+            className="pl-9"
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1); // 검색어 변경시 첫 페이지로
+            }}
+          />
         </div>
       </div>
 
@@ -52,17 +62,26 @@ export default function CustomersPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {isLoading
-              ? Array.from({ length: 10 }).map((_, i) => (
+            {isLoading ? (
+              <For
+                each={Array.from({ length: 10 })}
+                render={(_, i) => (
                   <TableRow key={i}>
-                    {Array.from({ length: 5 }).map((_, j) => (
-                      <TableCell key={j}>
-                        <Skeleton className="h-4 w-[100px]" />
-                      </TableCell>
-                    ))}
+                    <For
+                      each={Array.from({ length: 5 })}
+                      render={(_, j) => (
+                        <TableCell key={j}>
+                          <Skeleton className="h-4 w-[100px]" />
+                        </TableCell>
+                      )}
+                    />
                   </TableRow>
-                ))
-              : data?.users.map((user) => (
+                )}
+              />
+            ) : (
+              <For
+                each={data?.users ?? []}
+                render={(user) => (
                   <TableRow
                     key={user.id}
                     className={cn(
@@ -86,7 +105,9 @@ export default function CustomersPage() {
                       {format(new Date(user.createdAt), "PPP", { locale: ko })}
                     </TableCell>
                   </TableRow>
-                ))}
+                )}
+              />
+            )}
           </TableBody>
         </Table>
       </div>

@@ -230,25 +230,34 @@ export class UserService {
     return result;
   }
 
-  async findUsers(page: number = 1, limit: number = 10) {
+  async findUsers(page: number = 1, limit: number = 10, search?: string) {
     const offset = (page - 1) * limit;
 
+    const baseQuery = this.db
+      .select({
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        provider: users.provider,
+        createdAt: users.createdAt,
+      })
+      .from(users);
+
+    const countQuery = this.db
+      .select({ count: sql<number>`count(*)` })
+      .from(users);
+
+    if (search) {
+      const searchCondition = sql`(${users.name} ILIKE ${`%${search}%`} OR ${
+        users.email
+      } ILIKE ${`%${search}%`})`;
+      baseQuery.where(searchCondition);
+      countQuery.where(searchCondition);
+    }
+
     const [userList, [{ count }]] = await Promise.all([
-      this.db
-        .select({
-          id: users.id,
-          name: users.name,
-          email: users.email,
-          provider: users.provider,
-          createdAt: users.createdAt,
-        })
-        .from(users)
-        .limit(limit)
-        .offset(offset)
-        .orderBy(users.createdAt),
-      this.db
-        .select({ count: sql<number>`count(*)` })
-        .from(users),
+      baseQuery.limit(limit).offset(offset).orderBy(users.createdAt),
+      countQuery,
     ]);
 
     return {

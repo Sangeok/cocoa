@@ -187,6 +187,7 @@ export class UserController {
   async getUserList(
     @Query('page') page: string = '1',
     @Query('limit') limit: string = '10',
+    @Query('search') search?: string,
   ) {
     try {
       const pageNumber = parseInt(page);
@@ -196,7 +197,7 @@ export class UserController {
         throw new BadRequestException('Invalid pagination parameters');
       }
 
-      const result = await this.userService.findUsers(pageNumber, limitNumber);
+      const result = await this.userService.findUsers(pageNumber, limitNumber, search);
       return {
         success: true,
         data: result,

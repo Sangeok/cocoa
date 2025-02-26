@@ -2,17 +2,11 @@
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Package, Users, BarChart3, Settings, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/lib/store/use-sidebar";
 import Image from "next/image";
-const sidebarItems = [
-  { icon: Home, href: "/", label: "대시보드" },
-  { icon: Package, href: "/products", label: "상품" },
-  { icon: Users, href: "/customers", label: "고객" },
-  { icon: BarChart3, href: "/analytics", label: "분석" },
-  { icon: Settings, href: "/settings", label: "설정" },
-];
+import { navigationItems } from "@/lib/constants/navigation";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -25,13 +19,13 @@ export function Sidebar() {
         isExpanded ? "w-[200px]" : "w-[60px]"
       )}
     >
-      <div className="mb-8 flex px-4">
-        <Button variant="ghost" size="icon" onClick={toggle}>
+      <div className="mb-8 flex">
+        <Button variant="ghost" onClick={toggle}>
           <Menu className="h-6 w-6" />
         </Button>
       </div>
       <nav className="flex flex-1 flex-col gap-4 px-2">
-        {sidebarItems.map((item) => {
+        {navigationItems.map((item) => {
           const Icon = item.icon;
           return (
             <Link
