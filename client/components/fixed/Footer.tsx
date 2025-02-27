@@ -16,11 +16,11 @@ export default function Footer() {
           <div className="space-y-4 max-w-sm">
             <Logo size="sm" />
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              코코아는 오픈소스로 공개 개발되었습니다. 코코아
-              내의 모든 데이터는 실제 데이터와 차이가 있을 수 있습니다. 사이트
-              내 모든 암호화폐 가격 및 투자 관련 정보에 대하여 어떠한 책임을
-              부담하지 않습니다. 디지털 자산 투자는 전적으로 스스로의 책임이므로
-              이에 유의하시기 바랍니다.
+              코코아는 오픈소스로 공개 개발되었습니다. 코코아 내의 모든 데이터는
+              실제 데이터와 차이가 있을 수 있습니다. 사이트 내 모든 암호화폐
+              가격 및 투자 관련 정보에 대하여 어떠한 책임을 부담하지 않습니다.
+              디지털 자산 투자는 전적으로 스스로의 책임이므로 이에 유의하시기
+              바랍니다.
             </p>
           </div>
 
@@ -35,6 +35,12 @@ export default function Footer() {
             {/* Links */}
             <div className="flex space-x-4">
               <Link
+                href="/banner"
+                className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+              >
+                배너 광고
+              </Link>
+              <Link
                 href="/tos"
                 className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
               >
@@ -46,6 +52,7 @@ export default function Footer() {
               >
                 개인정보처리방침
               </Link>
+
               <Link
                 href="https://github.com/joshephan/cocoa"
                 target="_blank"

@@ -1,4 +1,4 @@
-import { Home, Package, Users, BarChart3, Settings } from "lucide-react";
+import { Home, Package, Users, BarChart3, Settings, Image } from "lucide-react";
 import { LucideIcon } from "lucide-react";
 
 interface NavigationItem {
@@ -14,6 +14,12 @@ export const navigationItems: NavigationItem[] = [
     href: "/",
     label: "대시보드",
     breadcrumb: ["대시보드"],
+  },
+  {
+    icon: Image,
+    href: "/banners",
+    label: "배너",
+    breadcrumb: ["대시보드", "배너"],
   },
   {
     icon: Package,

@@ -10,6 +10,7 @@ interface CreateBannerDto {
   userId: number;
   position: number;
   pages: string[];
+  forwardUrl: string;
   desktopImage: Express.Multer.File;
   tabletImage: Express.Multer.File;
   mobileImage: Express.Multer.File;
@@ -32,6 +33,10 @@ export class BannerService {
     );
   }
 
+  async getPrice(): Promise<number> {
+    return this.pricePerDay;
+  }
+
   private calculateTotalPrice(startAt: Date, endAt: Date): number {
     const days = Math.ceil(
       (endAt.getTime() - startAt.getTime()) / (1000 * 60 * 60 * 24),
@@ -40,7 +45,8 @@ export class BannerService {
   }
 
   async create(createBannerDto: CreateBannerDto): Promise<Banner> {
-    const { userId, position, pages, startAt, endAt } = createBannerDto;
+    const { userId, position, pages, startAt, endAt, forwardUrl } =
+      createBannerDto;
 
     // 날짜 유효성 검사
     if (startAt <= new Date() || endAt <= startAt) {
@@ -93,6 +99,7 @@ export class BannerService {
           desktopImageUrl,
           tabletImageUrl,
           mobileImageUrl,
+          forwardUrl,
           amount: totalAmount.toString(),
           startAt,
           endAt,

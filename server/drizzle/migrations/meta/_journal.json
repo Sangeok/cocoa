@@ -211,6 +211,13 @@
       "when": 1740637230100,
       "tag": "0029_regular_rocket_racer",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1740645720674,
+      "tag": "0030_white_riptide",
+      "breakpoints": true
     }
   ]
 }

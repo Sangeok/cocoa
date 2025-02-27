@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { ServerAPICall } from "@/lib/axios";
+import { ClientAPICall } from "@/lib/axios";
 import { deleteCookie } from "cookies-next/client";
 
 interface User {
@@ -81,15 +81,15 @@ const useAuthStore = create<AuthStore>()(
           isAuthenticated: !!user,
         });
       },
-      setTokens: (refreshToken) => 
+      setTokens: (refreshToken) =>
         set({
           refreshToken,
         }),
       logout: async () => {
         try {
-          await ServerAPICall.post('/auth/logout');
+          await ClientAPICall.post("/auth/logout");
         } catch (error) {
-          console.error('Logout error:', error);
+          console.error("Logout error:", error);
         }
         set({
           user: null,

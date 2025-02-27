@@ -1,0 +1,1 @@
+ALTER TABLE "banners" ADD COLUMN "forward_url" text NOT NULL;

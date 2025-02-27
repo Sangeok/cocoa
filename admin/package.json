@@ -48,7 +48,7 @@
     "next": "15.1.7",
     "next-auth": "^4.24.11",
     "react": "^19.0.0",
-    "react-day-picker": "^9.5.1",
+    "react-day-picker": "^8.10.1",
     "react-dom": "^19.0.0",
     "react-haiku": "^2.2.0",
     "react-hook-form": "^7.54.2",

@@ -75,7 +75,6 @@ const useMarketStore = create<MarketStore>()(
 
 // 웹소켓 리스너 설정
 socket.on("coin-premium", (data: Record<string, CoinData>) => {
-  // console.log("🟢 coin-premium: ", Object.keys(data).length);
   useMarketStore.getState().updateMarketData(data);
 });
 

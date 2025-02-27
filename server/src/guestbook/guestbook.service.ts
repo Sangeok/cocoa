@@ -158,6 +158,9 @@ export class GuestbookService {
       eq(guestbooks.userId, targetUserId),
     ];
 
+    console.log('targetUserId', targetUserId);
+    console.log('viewerId', viewerId);
+
     const [items, total] = await Promise.all([
       this.db
         .select({

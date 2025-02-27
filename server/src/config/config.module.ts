@@ -63,7 +63,7 @@ const envSchema = z.object({
   AWS_S3_BUCKET_URL: z.string(),
 
   // Banner
-  BANNER_PRICE_PER_DAY: z.number().default(5000),
+  BANNER_PRICE_PER_DAY: z.string().default('5000'),
 });
 
 @Global()

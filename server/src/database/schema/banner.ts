@@ -22,6 +22,7 @@ export const banners = pgTable('banners', {
   mobileImageUrl: text('mobile_image_url').notNull(),
   registeredAt: timestamp('registered_at').notNull().defaultNow(),
   amount: decimal('amount', { precision: 10, scale: 2 }).notNull(),
+  forwardUrl: text('forward_url').notNull(),
   startAt: timestamp('start_at').notNull(),
   endAt: timestamp('end_at').notNull(),
   isApproved: boolean('is_approved').notNull().default(false),

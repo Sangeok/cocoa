@@ -20,6 +20,7 @@ import { CurrentUser } from '../auth/decorators/current-user.decorator';
 interface CreateBannerRequest {
   position: number;
   pages: string[];
+  forwardUrl: string;
   startAt: string;
   endAt: string;
 }
@@ -47,7 +48,11 @@ export class BannerController {
       mobileImage?: Express.Multer.File[];
     },
   ) {
-    if (!files.desktopImage?.[0] || !files.tabletImage?.[0] || !files.mobileImage?.[0]) {
+    if (
+      !files.desktopImage?.[0] ||
+      !files.tabletImage?.[0] ||
+      !files.mobileImage?.[0]
+    ) {
       throw new BadRequestException('All images are required');
     }
 
@@ -55,6 +60,7 @@ export class BannerController {
       userId,
       position: createBannerRequest.position,
       pages: createBannerRequest.pages,
+      forwardUrl: createBannerRequest.forwardUrl,
       desktopImage: files.desktopImage[0],
       tabletImage: files.tabletImage[0],
       mobileImage: files.mobileImage[0],
@@ -74,6 +80,15 @@ export class BannerController {
     return {
       success: true,
       data: banners,
+    };
+  }
+
+  @Get('price')
+  async getPrice() {
+    const price = await this.bannerService.getPrice();
+    return {
+      success: true,
+      data: price,
     };
   }
 
@@ -98,10 +113,7 @@ export class BannerController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  async deleteBanner(
-    @CurrentUser() userId: number,
-    @Param('id') id: string,
-  ) {
+  async deleteBanner(@CurrentUser() userId: number, @Param('id') id: string) {
     await this.bannerService.delete(userId, parseInt(id));
     return {
       success: true,

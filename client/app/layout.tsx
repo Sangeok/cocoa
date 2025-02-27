@@ -8,6 +8,7 @@ import Footer from "@/components/fixed/Footer";
 import MarketTicker from "@/components/fixed/MarketTicker";
 import SystemWarning from "@/components/fixed/SystemWarning";
 import { Toaster } from "react-hot-toast";
+import { Providers } from "@/providers/QueryClientProviders";
 
 const font = localFont({
   src: [
@@ -106,13 +107,15 @@ export default function RootLayout({
             style={{ display: "none", visibility: "hidden" }}
           />
         </noscript>
-        <ThemeProvider>
-          <Navbar />
-          <MarketTicker />
-          <main className="flex-1">{children}</main>
-          <Footer />
-          <SystemWarning />
-        </ThemeProvider>
+        <Providers>
+          <ThemeProvider>
+            <Navbar />
+            <MarketTicker />
+            <main className="flex-1">{children}</main>
+            <Footer />
+            <SystemWarning />
+          </ThemeProvider>
+        </Providers>
         <Toaster />
       </body>
     </html>

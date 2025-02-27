@@ -1,17 +1,24 @@
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
 type TextPart = {
-  type: 'text' | 'url';
+  type: "text" | "url";
   text: string;
   displayText?: string;
 };
 
 function truncateUrl(url: string, maxLength: number = 30): string {
   if (url.length <= maxLength) return url;
-  return url.substring(0, maxLength) + '...';
+  return url.substring(0, maxLength) + "...";
 }
 
 export function findUrls(text: string): TextPart[] {
-  if (!text) return [{ type: 'text', text: '' }];
-  
+  if (!text) return [{ type: "text", text: "" }];
+
   const urlRegex = /(https?:\/\/[^\s]+)/g;
   const parts: TextPart[] = [];
   let lastIndex = 0;
@@ -23,15 +30,15 @@ export function findUrls(text: string): TextPart[] {
 
     if (index > lastIndex) {
       parts.push({
-        type: 'text',
-        text: text.slice(lastIndex, index)
+        type: "text",
+        text: text.slice(lastIndex, index),
       });
     }
 
     parts.push({
-      type: 'url',
+      type: "url",
       text: url,
-      displayText: truncateUrl(url)
+      displayText: truncateUrl(url),
     });
 
     lastIndex = index + url.length;
@@ -39,10 +46,10 @@ export function findUrls(text: string): TextPart[] {
 
   if (lastIndex < text.length) {
     parts.push({
-      type: 'text',
-      text: text.slice(lastIndex)
+      type: "text",
+      text: text.slice(lastIndex),
     });
   }
 
-  return parts.length ? parts : [{ type: 'text', text: text }];
-} 
+  return parts.length ? parts : [{ type: "text", text: text }];
+}

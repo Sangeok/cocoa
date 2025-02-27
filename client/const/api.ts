@@ -241,4 +241,18 @@ export const API_ROUTES = {
       method: "POST",
     },
   },
+  BANNER: {
+    PRICE: {
+      url: "/banners/price",
+      method: "GET",
+    },
+    CREATE: {
+      url: "/banners",
+      method: "POST",
+    },
+    LIST: {
+      url: "/banners/active",
+      method: "GET",
+    },
+  },
 } as const;

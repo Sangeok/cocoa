@@ -68,7 +68,6 @@ const useMarketsStore = create<MarketsStore>()((set, get) => ({
 
   getKoreanName: (symbol: string) => {
     const markets = get().markets;
-    // console.log(markets?.upbit);
     if (!markets) return symbol;
 
     const [baseToken, quoteToken] = symbol.split("-");

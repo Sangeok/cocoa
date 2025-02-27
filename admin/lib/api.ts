@@ -106,6 +106,24 @@ export const API_ROUTE = {
       method: "GET",
     },
   },
+  BANNER: {
+    LIST: {
+      url: "/banners/active",
+      method: "GET",
+    },
+    DETAIL: {
+      url: "/banners/:id",
+      method: "GET",
+    },
+    APPROVE: {
+      url: "/banners/:id/approve",
+      method: "POST",
+    },
+    DELETE: {
+      url: "/banners/:id",
+      method: "DELETE",
+    },
+  },
   MARKET: {},
   ORDER: {},
   REVIEW: {},
@@ -167,3 +185,21 @@ export const payloadMaker = ({
     config,
   };
 };
+
+export interface Banner {
+  id: number;
+  userId: number;
+  position: number;
+  pages: string[];
+  desktopImageUrl: string;
+  tabletImageUrl: string;
+  mobileImageUrl: string;
+  registeredAt: string;
+  amount: string;
+  forwardUrl: string;
+  startAt: string;
+  endAt: string;
+  isApproved: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
