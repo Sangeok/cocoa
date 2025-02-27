@@ -1,5 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { ServerAPICall } from "@/lib/axios";
+import { deleteCookie } from "cookies-next/client";
 
 interface User {
   id: number;
@@ -29,7 +31,9 @@ interface User {
 interface AuthStore {
   user: User | null;
   isAuthenticated: boolean;
+  refreshToken: string | null;
   setUser: (user: User | null) => void;
+  setTokens: (refreshToken: string) => void;
   logout: () => void;
   updateVault: (newVault: number) => void;
 }
@@ -39,6 +43,7 @@ const useAuthStore = create<AuthStore>()(
     (set) => ({
       user: null,
       isAuthenticated: false,
+      refreshToken: null,
       setUser: (user) => {
         if (!user) {
           return set({
@@ -76,11 +81,25 @@ const useAuthStore = create<AuthStore>()(
           isAuthenticated: !!user,
         });
       },
-      logout: () =>
+      setTokens: (refreshToken) => 
+        set({
+          refreshToken,
+        }),
+      logout: async () => {
+        try {
+          await ServerAPICall.post('/auth/logout');
+        } catch (error) {
+          console.error('Logout error:', error);
+        }
         set({
           user: null,
           isAuthenticated: false,
-        }),
+          refreshToken: null,
+        });
+
+        deleteCookie("access_token");
+        deleteCookie("refresh_token");
+      },
       updateVault: (newVault) =>
         set((state) => ({
           user: state.user
@@ -96,6 +115,11 @@ const useAuthStore = create<AuthStore>()(
     }),
     {
       name: "auth-storage",
+      partialize: (state) => ({
+        user: state.user,
+        isAuthenticated: state.isAuthenticated,
+        refreshToken: state.refreshToken,
+      }),
     }
   )
 );

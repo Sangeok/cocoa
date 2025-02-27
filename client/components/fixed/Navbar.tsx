@@ -23,7 +23,6 @@ import { useNotificationStore } from "@/store/useNotificationStore";
 
 const navigation = [
   { name: "🔥 가격 예측", href: "/predict" },
-  { name: "실시간 김프", href: "/premium" },
   { name: "코코아 뉴스", href: "/news" },
   { name: "송금 계산기", href: "/withdraw" },
   { name: "국내 KOL 목록", href: "/kol" },

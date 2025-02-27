@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, UnauthorizedException } from '@nestjs/common';
 import { GoogleClient } from './client/google.client';
 import { NaverClient } from './client/naver.client';
 import { UserService } from '../user/user.service';
@@ -59,13 +59,65 @@ export class AuthService {
     });
   }
 
-  generateToken(user: any) {
+  async generateToken(user: any) {
+    const [accessToken, refreshToken] = await Promise.all([
+      this.generateAccessToken(user),
+      this.generateRefreshToken(user),
+    ]);
+
+    return {
+      accessToken,
+      refreshToken,
+    };
+  }
+
+  private async generateAccessToken(user: any): Promise<string> {
     const payload = {
       email: user.email,
       sub: user.id,
       name: user.name,
     };
-    return this.jwtService.sign(payload);
+    
+    return this.jwtService.signAsync(payload, {
+      secret: this.configService.get<string>('JWT_ACCESS_SECRET'),
+      expiresIn: '15m',
+    });
+  }
+
+  private async generateRefreshToken(user: any): Promise<string> {
+    const payload = {
+      sub: user.id,
+    };
+    
+    return this.jwtService.signAsync(payload, {
+      secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+      expiresIn: '7d',
+    });
+  }
+
+  async refreshToken(refreshToken: string) {
+    try {
+      const payload = await this.jwtService.verifyAsync(refreshToken, {
+        secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
+      });
+
+      const user = await this.userService.findById(payload.sub);
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
+
+      const [accessToken, newRefreshToken] = await Promise.all([
+        this.generateAccessToken(user),
+        this.generateRefreshToken(user),
+      ]);
+
+      return {
+        accessToken,
+        refreshToken: newRefreshToken,
+      };
+    } catch {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
   }
 
   setTokenCookie(response: Response, token: string) {
@@ -79,15 +131,5 @@ export class AuthService {
       domain: isProduction ? domain : undefined, // production에서만 domain 설정
       path: '/',
     });
-  }
-
-  // 로그인 메서드
-  async login(user: any, response: Response) {
-    const token = this.generateToken(user);
-    this.setTokenCookie(response, token);
-    return {
-      success: true,
-      data: user,
-    };
   }
 }

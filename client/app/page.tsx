@@ -9,7 +9,6 @@ import PremiumTable from "@/components/premium/PremiumTable";
 import GlobalMetric from "@/components/metrics/GlobalMetric";
 import { globalMetricAPI, GlobalMetricData } from "@/lib/api/globalMetric";
 import Link from "next/link";
-import EventBanner from "@/components/event/EventBanner";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import { useSwipeable } from "react-swipeable";
 

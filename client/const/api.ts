@@ -235,4 +235,10 @@ export const API_ROUTES = {
       method: "GET",
     },
   },
+  AUTH: {
+    REFRESH: {
+      url: "/auth/refresh",
+      method: "POST",
+    },
+  },
 } as const;

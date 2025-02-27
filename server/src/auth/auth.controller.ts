@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Res } from '@nestjs/common';
+import { Controller, Get, Query, Res, Post, Body } from '@nestjs/common';
 import { Response } from 'express';
 import { AuthService } from './auth.service';
 import { ConfigService } from '@nestjs/config';
@@ -18,10 +18,18 @@ export class AuthController {
 
   @Get('google/callback')
   async googleCallback(@Query('code') code: string, @Res() res: Response) {
-    const access_token = await this.authService.googleLogin(code);
+    const tokens = await this.authService.googleLogin(code);
     const isProduction = this.configService.get('NODE_ENV') === 'production';
     
-    res.cookie('access_token', access_token, {
+    res.cookie('access_token', tokens.accessToken, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
+      path: '/',
+      domain: this.getCookieDomain(),
+    });
+
+    res.cookie('refresh_token', tokens.refreshToken, {
       httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? 'none' : 'lax',
@@ -54,5 +62,49 @@ export class AuthController {
     res.redirect(
       `${this.configService.get('CORS_ORIGIN')}/auth/naver/callback`,
     );
+  }
+
+  @Post('refresh')
+  async refreshToken(
+    @Body('refreshToken') refreshToken: string,
+    @Res() res: Response,
+  ) {
+    const tokens = await this.authService.refreshToken(refreshToken);
+    const isProduction = this.configService.get('NODE_ENV') === 'production';
+    
+    res.cookie('access_token', tokens.accessToken, {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? "none" : "lax",
+      path: "/",
+      domain: this.getCookieDomain(),
+    });
+    
+    return tokens;
+  }
+
+  @Post('logout')
+  async logout(@Res() res: Response) {
+    const isProduction = this.configService.get('NODE_ENV') === 'production';
+    
+    res.cookie('access_token', '', {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
+      path: '/',
+      domain: this.getCookieDomain(),
+      maxAge: 0,
+    });
+
+    res.cookie('refresh_token', '', {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
+      path: '/',
+      domain: this.getCookieDomain(),
+      maxAge: 0,
+    });
+
+    return { success: true };
   }
 }

@@ -12,9 +12,3 @@ export interface GlobalChatMessageData {
   nickname: string;
   userId?: number;
 }
-
-interface GuestbookWithComments extends Guestbook {
-  comments?: GuestbookComment[];
-  isCommentsOpen?: boolean;
-  hasMoreComments?: boolean;
-} 
