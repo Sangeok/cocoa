@@ -1,4 +1,4 @@
-FROM node:22.13.0-alpine
+FROM node:22.13.0-alpine as builder
 
 WORKDIR /app
 
@@ -7,6 +7,14 @@ RUN npm install
 
 COPY . .
 RUN npm run build
+
+FROM node:22.13.0-alpine
+
+WORKDIR /app
+
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+COPY package*.json ./
 
 EXPOSE 3000
 

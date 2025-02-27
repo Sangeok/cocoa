@@ -84,10 +84,14 @@ docker-compose down -v
 ### 프로덕션 환경 실행
 
 ```bash
+# 빌드 후 실행
 docker-compose -f docker-compose.prod.yml up -d --build
 
-# 특정 서비스만 실행
-docker-compose -f docker-compose.prod.yml up -d --build api
+# 캐시 없이 빌드
+docker-compose -f docker-compose.prod.yml build --no-cache api
+
+# 프로덕션 환경 실행
+docker-compose -f docker-compose.prod.yml up -d
 ```
 
 ### 프로덕션 환경 종료

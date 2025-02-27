@@ -2,9 +2,13 @@ version: '3.8'
 
 services:
   api:
+    container_name: cocoa-api
     build:
       context: .
       dockerfile: Dockerfile
+      no_cache: true
+    ports:
+      - "3000:3000"
     environment:
       - NODE_ENV=production
       - DATABASE_URL=${DATABASE_URL}
@@ -14,20 +18,44 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
       - POSTGRES_DB=${POSTGRES_DB:-cocoa_dev}
       - NODE_OPTIONS="--max-old-space-size=1024"
-      - REDIS_HOST=redis
+      - COINMARKETCAP_API_KEY=${COINMARKETCAP_API_KEY:-}
     env_file:
       - .env
-    volumes: []
-    command: npm run start:prod
-    networks:
-      - cocoa-network
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - cocoa-network
+    command: >
+      sh -c "
+        npm run db:generate &&
+        npm run db:migrate || true &&
+        npm run start:prod
+      "
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1.5G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
+    restart: unless-stopped
 
   postgres:
+    container_name: cocoa-postgres
     image: postgres:15-alpine
-    restart: unless-stopped
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
+      - POSTGRES_DB=${POSTGRES_DB:-cocoa_dev}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - cocoa-network
     healthcheck:
@@ -35,6 +63,24 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
+
+  redis:
+    container_name: cocoa-redis
+    image: redis:7-alpine
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    networks:
+      - cocoa-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
 
 networks:
   cocoa-network:
