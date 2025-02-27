@@ -20,7 +20,7 @@ export class AuthController {
   async googleCallback(@Query('code') code: string, @Res() res: Response) {
     const tokens = await this.authService.googleLogin(code);
     const isProduction = this.configService.get('NODE_ENV') === 'production';
-    
+
     res.cookie('access_token', tokens.accessToken, {
       httpOnly: true,
       secure: isProduction,
@@ -36,7 +36,7 @@ export class AuthController {
       path: '/',
       domain: this.getCookieDomain(),
     });
-    
+
     res.redirect(
       `${this.configService.get('CORS_ORIGIN')}/auth/google/callback`,
     );
@@ -50,7 +50,7 @@ export class AuthController {
   ) {
     const access_token = await this.authService.naverLogin(code, state);
     const isProduction = this.configService.get('NODE_ENV') === 'production';
-    
+
     res.cookie('access_token', access_token, {
       httpOnly: true,
       secure: isProduction,
@@ -58,7 +58,7 @@ export class AuthController {
       path: '/',
       domain: this.getCookieDomain(),
     });
-    
+
     res.redirect(
       `${this.configService.get('CORS_ORIGIN')}/auth/naver/callback`,
     );
@@ -69,25 +69,23 @@ export class AuthController {
     @Body('refreshToken') refreshToken: string,
     @Res() res: Response,
   ) {
-    console.log("refreshToken", refreshToken);
     const tokens = await this.authService.refreshToken(refreshToken);
     const isProduction = this.configService.get('NODE_ENV') === 'production';
-    
+
     res.cookie('access_token', tokens.accessToken, {
       httpOnly: true,
       secure: isProduction,
-      sameSite: isProduction ? "none" : "lax",
-      path: "/",
+      sameSite: isProduction ? 'none' : 'lax',
+      path: '/',
       domain: this.getCookieDomain(),
     });
     res.cookie('refresh_token', tokens.refreshToken, {
       httpOnly: true,
       secure: isProduction,
-      sameSite: isProduction ? "none" : "lax",
-      path: "/",
+      sameSite: isProduction ? 'none' : 'lax',
+      path: '/',
       domain: this.getCookieDomain(),
     });
-    console.log("tokens", tokens);
     return res.status(200).json({
       accessToken: tokens.accessToken,
       refreshToken: tokens.refreshToken,
@@ -97,7 +95,7 @@ export class AuthController {
   @Post('logout')
   async logout(@Res() res: Response) {
     const isProduction = this.configService.get('NODE_ENV') === 'production';
-    
+
     res.cookie('access_token', '', {
       httpOnly: true,
       secure: isProduction,
