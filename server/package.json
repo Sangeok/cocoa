@@ -27,6 +27,8 @@
     "docker:prod:api:logs": "docker-compose -f docker-compose.prod.yml logs -f api"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.750.0",
+    "@aws-sdk/s3-request-presigner": "^3.750.0",
     "@electric-sql/pglite": "^0.2.16",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.0",
@@ -70,10 +72,11 @@
     "@types/cookie-parser": "^1.4.8",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.14",
+    "@types/multer": "^1.4.12",
     "@types/node": "^22.10.7",
     "@types/pg": "^8.11.11",
     "@types/supertest": "^6.0.2",
-    "@types/uuid": "^9.0.1",
+    "@types/uuid": "^9.0.8",
     "@types/ws": "^8.5.10",
     "dotenv": "^16.4.7",
     "drizzle-kit": "^0.30.4",

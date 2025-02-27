@@ -20,6 +20,7 @@ import { NotificationModule } from './notification/notification.module';
 import { StockDiscussionModule } from './stock-discussion/stock-discussion.module';
 import { MessageModule } from './message/message.module';
 import { AdminModule } from './admin/admin.module';
+import { BannerModule } from './banner/banner.module';
 @Module({
   imports: [
     ConfigModule,
@@ -41,6 +42,7 @@ import { AdminModule } from './admin/admin.module';
     StockDiscussionModule,
     MessageModule,
     AdminModule,
+    BannerModule,
   ],
   controllers: [AppController],
   providers: [AppService],
