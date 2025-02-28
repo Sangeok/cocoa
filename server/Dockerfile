@@ -16,7 +16,7 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/config ./config
 COPY package*.json ./
-COPY drizzle.config.json ./
+COPY drizzle.config.ts ./
 
 EXPOSE 3000
 
