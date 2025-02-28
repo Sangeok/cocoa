@@ -86,19 +86,14 @@ const useAuthStore = create<AuthStore>()(
           refreshToken,
         }),
       logout: async () => {
-        try {
-          await ClientAPICall.post("/auth/logout");
-        } catch (error) {
-          console.error("Logout error:", error);
-        }
         set({
           user: null,
           isAuthenticated: false,
           refreshToken: null,
         });
 
-        deleteCookie("access_token");
-        deleteCookie("refresh_token");
+        deleteCookie("cocoa_access_token");
+        deleteCookie("cocoa_refresh_token");
       },
       updateVault: (newVault) =>
         set((state) => ({

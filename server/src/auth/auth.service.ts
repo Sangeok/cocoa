@@ -124,7 +124,7 @@ export class AuthService {
     const isProduction = this.configService.get('NODE_ENV') === 'production';
     const domain = this.configService.get('CORS_ORIGIN'); // 예: .yourdomain.com
 
-    response.cookie('access_token', token, {
+    response.cookie('cocoa_access_token', token, {
       httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? 'none' : 'lax', // production에서는 'none'으로 설정

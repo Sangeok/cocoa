@@ -6,11 +6,16 @@ import axios from "axios";
 const getAuthHeaders = (request: NextRequest) => {
   const authHeader = request.headers.get("authorization");
   const cookie = request.cookies.toString();
-  return {
-    "Content-Type": "application/json",
-    ...(authHeader && { Authorization: authHeader }),
-    ...(cookie && { Cookie: cookie }),
-  };
+  const headers: Record<string, string> = {};
+
+  if (authHeader) {
+    headers["Authorization"] = authHeader;
+  }
+  if (cookie) {
+    headers["Cookie"] = cookie;
+  }
+
+  return headers;
 };
 
 // API URL 선택 함수
@@ -35,6 +40,11 @@ async function handleApiRequest(
   const headers = getAuthHeaders(request);
   const searchParams = request.nextUrl.searchParams.toString();
 
+  // FormData인 경우 Content-Type 헤더 제거 (브라우저가 자동으로 설정)
+  if (body instanceof FormData) {
+    delete headers["Content-Type"];
+  }
+
   const urlWithQuery = `/${pathString}${
     searchParams ? `?${searchParams}` : ""
   }`;
@@ -56,13 +66,12 @@ async function handleApiRequest(
       const cookie = request.headers.get("cookie");
       const refreshToken = cookie
         ?.split("; ")
-        .find((row) => row.startsWith("refresh_token="))
+        .find((row) => row.startsWith("cocoa_refresh_token="))
         ?.split("=")[1];
 
       if (refreshToken) {
         try {
           // 리프레시 토큰으로 새 액세스 토큰 요청
-          console.log("refreshToken", refreshToken);
           const response = await axios.post(
             `${baseUrl}/auth/refresh`,
             { refreshToken },
@@ -70,12 +79,11 @@ async function handleApiRequest(
               headers: { "Content-Type": "application/json" },
             }
           );
-          const { accessToken, refreshToken: newRefreshToken } =
-            response.data;
+          const { accessToken, refreshToken: newRefreshToken } = response.data;
 
           // 새 토큰으로 원래 요청 재시도
           headers.Authorization = `Bearer ${accessToken}`;
-          headers.Cookie = `refresh_token=${newRefreshToken}`;
+          headers.Cookie = `cocoa_refresh_token=${newRefreshToken}`;
           const retryResponse = await ServerAPICall.request({
             method,
             url: urlWithQuery,
@@ -85,11 +93,13 @@ async function handleApiRequest(
             withCredentials: true,
           });
 
+          console.log("retryResponse", retryResponse.data);
+
           // 새 토큰을 클라이언트에 전달
           const res = NextResponse.json(retryResponse.data);
           res.headers.set(
             "Set-Cookie",
-            `access_token=${accessToken}; refresh_token=${newRefreshToken}; Path=/; HttpOnly; SameSite=Lax`
+            `cocoa_access_token=${accessToken}; cocoa_refresh_token=${newRefreshToken}; Path=/; HttpOnly; SameSite=Lax`
           );
           return res;
         } catch (refreshError) {
@@ -123,7 +133,15 @@ export async function POST(
   { params }: { params: { path: string[] } }
 ) {
   const { path } = await params;
-  const body = await request.json();
+  const contentType = request.headers.get("content-type");
+  let body;
+
+  if (contentType?.includes("multipart/form-data")) {
+    body = await request.formData();
+  } else {
+    body = await request.json();
+  }
+
   return handleApiRequest(request, "POST", path, body);
 }
 

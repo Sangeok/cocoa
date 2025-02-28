@@ -47,7 +47,6 @@ export class AwsService {
       Key: fileName,
       Body: file.buffer,
       ContentType: file.mimetype,
-      ACL: 'public-read',
     });
 
     try {

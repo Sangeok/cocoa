@@ -5,7 +5,11 @@ import { API_ROUTES } from "@/const/api";
 
 export interface Notification {
   id: number;
-  type: "NEW_GUESTBOOK" | "NEW_COMMENT" | "NEW_COMMENT_STOCK_DISCUSSION" | "NEW_ADMIN_MESSAGE";
+  type:
+    | "NEW_GUESTBOOK"
+    | "NEW_COMMENT"
+    | "NEW_COMMENT_STOCK_DISCUSSION"
+    | "NEW_ADMIN_MESSAGE";
   content: string;
   isRead: boolean;
   createdAt: string;
@@ -131,8 +135,7 @@ export const useNotificationStore = create<NotificationStore>((set, get) => ({
   fetchUnreadCount: async () => {
     try {
       const response = await ClientAPICall.get(
-        API_ROUTES.NOTIFICATIONS.UNREAD.url,
-        
+        API_ROUTES.NOTIFICATIONS.UNREAD.url
       );
       set({ unreadCount: response.data.data });
     } catch (error) {

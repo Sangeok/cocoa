@@ -3,7 +3,6 @@ import {
   API_ROUTE,
   LoginDto,
   LoginResponseDto,
-  ApiResponse,
   AdminProfile,
   payloadMaker,
 } from "../api";

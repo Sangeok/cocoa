@@ -13,7 +13,7 @@ export default function Footer() {
       <div className="max-w-[2000px] mx-auto px-4 sm:px-6 py-8">
         <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-8">
           {/* Logo and Description */}
-          <div className="space-y-4 max-w-sm">
+          <div className="space-y-4 lg:max-w-sm">
             <Logo size="sm" />
             <p className="text-sm text-gray-500 dark:text-gray-400">
               코코아는 오픈소스로 공개 개발되었습니다. 코코아 내의 모든 데이터는

@@ -254,5 +254,11 @@ export const API_ROUTES = {
       url: "/banners/active",
       method: "GET",
     },
+    ITEMS: {
+      LIST: {
+        url: "/banners/items",
+        method: "GET",
+      },
+    },
   },
 } as const;

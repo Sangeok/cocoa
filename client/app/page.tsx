@@ -11,7 +11,7 @@ import { globalMetricAPI, GlobalMetricData } from "@/lib/api/globalMetric";
 import Link from "next/link";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import { useSwipeable } from "react-swipeable";
-
+import Banner from "@/components/banner/Banner";
 export default function Home() {
   const [recentNews, setRecentNews] = useState<NewsListResponse>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -80,6 +80,7 @@ export default function Home() {
   return (
     <main>
       <div className="container mx-auto px-4 py-4 sm:py-8">
+        <Banner position="top" />
         <div className="flex xl:flex-row flex-col gap-2 sm:gap-4">
           <div className="xl:w-1/2 w-full">
             <div className="flex items-center justify-between mb-3">
@@ -124,8 +125,12 @@ export default function Home() {
             <GlobalMetric metric={globalMetrics} />
           )}
         </div>
+        <Banner position="middle" />
       </div>
       <PremiumTable />
+      <div className="container mx-auto px-4 py-4 sm:py-8">
+        <Banner position="bottom" />
+      </div>
     </main>
   );
 }

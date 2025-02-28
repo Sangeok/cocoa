@@ -21,7 +21,7 @@ export class AuthController {
     const tokens = await this.authService.googleLogin(code);
     const isProduction = this.configService.get('NODE_ENV') === 'production';
 
-    res.cookie('access_token', tokens.accessToken, {
+    res.cookie('cocoa_access_token', tokens.accessToken, {
       httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? 'none' : 'lax',
@@ -29,7 +29,7 @@ export class AuthController {
       domain: this.getCookieDomain(),
     });
 
-    res.cookie('refresh_token', tokens.refreshToken, {
+    res.cookie('cocoa_refresh_token', tokens.refreshToken, {
       httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? 'none' : 'lax',
@@ -51,7 +51,7 @@ export class AuthController {
     const access_token = await this.authService.naverLogin(code, state);
     const isProduction = this.configService.get('NODE_ENV') === 'production';
 
-    res.cookie('access_token', access_token, {
+    res.cookie('cocoa_access_token', access_token, {
       httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? 'none' : 'lax',
@@ -72,14 +72,14 @@ export class AuthController {
     const tokens = await this.authService.refreshToken(refreshToken);
     const isProduction = this.configService.get('NODE_ENV') === 'production';
 
-    res.cookie('access_token', tokens.accessToken, {
+    res.cookie('cocoa_access_token', tokens.accessToken, {
       httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? 'none' : 'lax',
       path: '/',
       domain: this.getCookieDomain(),
     });
-    res.cookie('refresh_token', tokens.refreshToken, {
+    res.cookie('cocoa_refresh_token', tokens.refreshToken, {
       httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? 'none' : 'lax',
@@ -96,7 +96,7 @@ export class AuthController {
   async logout(@Res() res: Response) {
     const isProduction = this.configService.get('NODE_ENV') === 'production';
 
-    res.cookie('access_token', '', {
+    res.cookie('cocoa_access_token', '', {
       httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? 'none' : 'lax',
@@ -105,7 +105,7 @@ export class AuthController {
       maxAge: 0,
     });
 
-    res.cookie('refresh_token', '', {
+    res.cookie('cocoa_refresh_token', '', {
       httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? 'none' : 'lax',

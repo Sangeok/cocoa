@@ -31,9 +31,6 @@ const isServer = () => typeof window === "undefined";
 // ClientAPICall은 route.ts를 통해 서버와 통신
 export const ClientAPICall = axios.create({
   baseURL: CLIENT_API_URL + "/api",
-  headers: {
-    "Content-Type": "application/json",
-  },
   withCredentials: true,
 });
 
@@ -48,11 +45,20 @@ export const DirectAPICall = axios.create({
 
 ClientAPICall.interceptors.request.use((config) => {
   if (!isServer()) {
-    const token = getTokenFromCookie("access_token");
+    const token = getTokenFromCookie("cocoa_access_token");
     if (token) {
       config.headers.set("Authorization", `Bearer ${token}`);
     }
   }
+
+  // FormData가 아닌 경우에만 Content-Type을 application/json으로 설정
+  if (!(config.data instanceof FormData)) {
+    config.headers["Content-Type"] = "application/json";
+  } else {
+    // FormData인 경우 Content-Type 헤더를 명시적으로 삭제
+    delete config.headers["Content-Type"];
+  }
+
   return config;
 });
 
@@ -78,7 +84,7 @@ ClientAPICall.interceptors.response.use(
         );
 
         const { accessToken } = response.data.data;
-        document.cookie = `access_token=${accessToken}; path=/`;
+        document.cookie = `cocoa_access_token=${accessToken}; path=/`;
 
         // 원래 요청 재시도
         return ClientAPICall(error.config);
@@ -94,9 +100,6 @@ ClientAPICall.interceptors.response.use(
 
 export const ServerAPICall = axios.create({
   baseURL: SERVER_API_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
   withCredentials: true,
 });
 
@@ -104,6 +107,14 @@ ServerAPICall.interceptors.request.use((config) => {
   if (config.url?.startsWith("/scamscanner/")) {
     config.baseURL = SCAMSCANNER_API_URL;
     config.url = config.url.substring("/scamscanner/".length);
+  }
+
+  // FormData가 아닌 경우에만 Content-Type을 application/json으로 설정
+  if (!(config.data instanceof FormData)) {
+    config.headers["Content-Type"] = "application/json";
+  } else {
+    // FormData인 경우 Content-Type 헤더를 명시적으로 삭제
+    delete config.headers["Content-Type"];
   }
 
   return config;

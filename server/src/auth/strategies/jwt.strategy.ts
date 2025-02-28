@@ -12,7 +12,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         (request: Request) => {
           let token = null;
           if (request && request.cookies) {
-            token = request.cookies['access_token'];
+            token = request.cookies['cocoa_access_token'];
           }
           return token;
         },

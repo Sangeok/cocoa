@@ -21,12 +21,22 @@ export default function BannerPage() {
 
   const pricePerDay = priceData?.data || 5000; // 기본값 5000
 
+  const handleCreateBanner = () => {
+    if (!user) {
+      alert("로그인 후 이용해주세요.");
+      router.push("/signin");
+      return;
+    }
+    router.push("/banner/create");
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="text-center mb-12">
         <h1 className="text-3xl font-bold">코코아 배너 광고</h1>
         <p className="mt-4 text-gray-600 dark:text-gray-400">
-          코코아 머니로 배너를 등록하여 광고를 시작하세요.
+          코코아에 배너를 등록하여 광고를 시작하세요. 코코아 머니로도 광고가
+          가능합니다!
         </p>
       </div>
 
@@ -47,7 +57,8 @@ export default function BannerPage() {
           </div>
           <h3 className="text-lg font-semibold mb-2">반응형 디자인</h3>
           <p className="text-gray-600 dark:text-gray-400">
-            데스크톱, 태블릿, 모바일 등 모든 기기에서 최적화된 배너를 보여줍니다.
+            데스크톱, 태블릿, 모바일 등 모든 기기에서 최적화된 배너를
+            보여줍니다.
           </p>
         </div>
 
@@ -90,7 +101,7 @@ export default function BannerPage() {
 
       <div className="text-center">
         <button
-          onClick={() => router.push("/banner/create")}
+          onClick={handleCreateBanner}
           className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-900"
         >
           배너 광고 등록하기

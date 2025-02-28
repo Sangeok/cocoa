@@ -1,4 +1,4 @@
-export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
+export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
 export interface UpdateAdminDto {
   name?: string;
@@ -108,7 +108,7 @@ export const API_ROUTE = {
   },
   BANNER: {
     LIST: {
-      url: "/banners/active",
+      url: "/banners",
       method: "GET",
     },
     DETAIL: {
@@ -122,6 +122,28 @@ export const API_ROUTE = {
     DELETE: {
       url: "/banners/:id",
       method: "DELETE",
+    },
+    UPDATE: {
+      url: "/banners/:id",
+      method: "PATCH",
+    },
+    UPDATE_IMAGE: {
+      url: "/banners/:id/image",
+      method: "POST",
+    },
+    ITEMS: {
+      LIST: {
+        url: "/banners/items",
+        method: "GET",
+      },
+      CREATE: {
+        url: "/banners/items",
+        method: "POST",
+      },
+      DEACTIVATE: {
+        url: "/banners/items/:id/deactivate",
+        method: "POST",
+      },
     },
   },
   MARKET: {},
@@ -145,9 +167,7 @@ export const payloadMaker = ({
   token?: string;
   params?: Record<string, string>;
 }) => {
-  const headers: HeadersInit = {
-    "Content-Type": "application/json",
-  };
+  const headers: HeadersInit = {};
 
   if (token) {
     headers.Authorization = `Bearer ${token}`;
@@ -177,7 +197,12 @@ export const payloadMaker = ({
   };
 
   if (body && method !== "GET") {
-    config.body = JSON.stringify(body);
+    if (!(body instanceof FormData)) {
+      headers["Content-Type"] = "application/json";
+      config.body = JSON.stringify(body);
+    } else {
+      config.body = body;
+    }
   }
 
   return {
@@ -189,17 +214,27 @@ export const payloadMaker = ({
 export interface Banner {
   id: number;
   userId: number;
-  position: number;
-  pages: string[];
-  desktopImageUrl: string;
-  tabletImageUrl: string;
-  mobileImageUrl: string;
-  registeredAt: string;
-  amount: string;
+  bannerItemId: number;
+  imageUrl: string;
   forwardUrl: string;
   startAt: string;
   endAt: string;
+  amount: string;
   isApproved: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BannerItem {
+  id: number;
+  routePath: string;
+  previewImageUrl: string;
+  deviceType: 'desktop' | 'tablet' | 'mobile';
+  position: 'top' | 'middle' | 'bottom';
+  recommendedImageSize: string;
+  pricePerDay: string;
+  cocoaMoneyPerDay: string;
+  isActive: boolean;
   createdAt: string;
   updatedAt: string;
 }

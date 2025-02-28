@@ -1,18 +1,19 @@
-'use client'
+"use client";
 
 import { Header } from "@/components/layout/header";
 import { Sidebar } from "@/components/layout/sidebar";
 import { useAuth } from "@/lib/store/use-auth";
-
+import { useProfileQuery } from "@/lib/hooks/use-profile-query";
 export default function DashboardLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, accessToken } = useAuth();
+  // useProfileQuery();
 
   if (!isAuthenticated) {
-    return null
+    return <></>;
   }
 
   return (
