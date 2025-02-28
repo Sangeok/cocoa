@@ -98,6 +98,18 @@ docker-compose -f docker-compose.prod.yml up -d
 
 ```bash
 docker-compose -f docker-compose.prod.yml down
+
+# 미사용 컨테이너 제거
+docker system prune -a
+
+# 미사용 이미지 제거
+docker image prune -a
+
+# 미사용 볼륨 제거
+docker volume prune
+
+# 미사용 네트워크 제거
+docker network prune
 ```
 
 ### 서버 실행

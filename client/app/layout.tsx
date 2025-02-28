@@ -66,6 +66,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const isServerMaintaining = process.env.NEXT_PUBLIC_IS_SERVER_MAINTAINING === "true";
+
   return (
     <html lang="ko">
       <head>
@@ -109,11 +111,16 @@ export default function RootLayout({
         </noscript>
         <Providers>
           <ThemeProvider>
-            <Navbar />
-            <MarketTicker />
-            <main className="flex-1">{children}</main>
-            <Footer />
-            <SystemWarning />
+            {isServerMaintaining ? (
+              <SystemWarning />
+            ) : (
+              <>
+                <Navbar />
+                <MarketTicker />
+                <main className="flex-1">{children}</main>
+                <Footer />
+              </>
+            )}
           </ThemeProvider>
         </Providers>
         <Toaster />
