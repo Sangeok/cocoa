@@ -93,8 +93,6 @@ async function handleApiRequest(
             withCredentials: true,
           });
 
-          console.log("retryResponse", retryResponse.data);
-
           // 새 토큰을 클라이언트에 전달
           const res = NextResponse.json(retryResponse.data);
           res.headers.set(

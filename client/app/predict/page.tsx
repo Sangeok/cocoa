@@ -256,7 +256,7 @@ export default function PredictPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <Banner position="top" />
-      <section className="mb-12 flex gap-6 lg:flex-row flex-col">
+      <section className="mb-6 flex gap-6 lg:flex-row flex-col">
         <div className="lg:w-2/3 w-full" {...handlers}>
           <div className="flex items-center justify-between mb-4 sm:mb-6">
             <h2 className="text-2xl font-bold">
