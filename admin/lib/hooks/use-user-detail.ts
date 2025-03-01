@@ -8,6 +8,15 @@ interface UserDetail {
   name: string;
   email: string;
   provider: string;
+  phoneNumber: string;
+  telegram: string;
+  youtube: string;
+  instagram: string;
+  twitter: string;
+  discord: string;
+  homepage: string;
+  github: string;
+  bio: string;
   createdAt: string;
 }
 

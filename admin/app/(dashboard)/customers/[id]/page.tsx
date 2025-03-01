@@ -35,17 +35,23 @@ export default function CustomerDetailPage() {
   const params = useParams();
   const id = params.id as string;
   const { data: user, isLoading: isUserLoading } = useUserDetail(id);
-  const { messages, isLoading: isMessagesLoading, createMessage } = useMessages(id);
+  const {
+    messages,
+    isLoading: isMessagesLoading,
+    createMessage,
+  } = useMessages(id);
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedMessage, setSelectedMessage] = useState<typeof messages[0] | null>(null);
+  const [selectedMessage, setSelectedMessage] = useState<
+    (typeof messages)[0] | null
+  >(null);
 
   const handleSendMessage = async () => {
     if (!title || !content) return;
-    
+
     setIsLoading(true);
     try {
       const response = await createMessage.mutateAsync({
@@ -63,10 +69,9 @@ export default function CustomerDetailPage() {
       setContent("");
       toast.success("메시지를 전송했습니다");
     } catch (error) {
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : "메시지 전송에 실패했습니다";
-      
+      const errorMessage =
+        error instanceof Error ? error.message : "메시지 전송에 실패했습니다";
+
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -112,8 +117,8 @@ export default function CustomerDetailPage() {
                 />
               </div>
               <div className="flex justify-end">
-                <Button 
-                  onClick={handleSendMessage} 
+                <Button
+                  onClick={handleSendMessage}
                   disabled={!title || !content || isLoading}
                 >
                   {isLoading ? "전송 중..." : "보내기"}
@@ -138,6 +143,12 @@ export default function CustomerDetailPage() {
           </div>
           <div className="space-y-1.5">
             <h3 className="text-sm font-medium text-muted-foreground">
+              소개
+            </h3>
+            <p>{user.bio}</p>
+          </div>
+          <div className="space-y-1.5">
+            <h3 className="text-sm font-medium text-muted-foreground">
               이메일
             </h3>
             <p>{user.email}</p>
@@ -153,6 +164,54 @@ export default function CustomerDetailPage() {
               가입일
             </h3>
             <p>{format(new Date(user.createdAt), "PPP", { locale: ko })}</p>
+          </div>
+          <div className="space-y-1.5">
+            <h3 className="text-sm font-medium text-muted-foreground">
+              전화번호
+            </h3>
+            <p>{user.phoneNumber}</p>
+          </div>
+          <div className="space-y-1.5">
+            <h3 className="text-sm font-medium text-muted-foreground">
+              텔레그램
+            </h3>
+            <p>{user.telegram}</p>
+          </div>
+          <div className="space-y-1.5">
+            <h3 className="text-sm font-medium text-muted-foreground">
+              유튜브
+            </h3>
+            <p>{user.youtube}</p>
+          </div>
+          <div className="space-y-1.5">
+            <h3 className="text-sm font-medium text-muted-foreground">
+              인스타그램
+            </h3>
+            <p>{user.instagram}</p>
+          </div>
+          <div className="space-y-1.5">
+            <h3 className="text-sm font-medium text-muted-foreground">
+              트위터
+            </h3>
+            <p>{user.twitter}</p>
+          </div>
+          <div className="space-y-1.5">
+            <h3 className="text-sm font-medium text-muted-foreground">
+              디스코드
+            </h3>
+            <p>{user.discord}</p>
+          </div>
+          <div className="space-y-1.5">
+            <h3 className="text-sm font-medium text-muted-foreground">
+              홈페이지
+            </h3>
+            <p>{user.homepage}</p>
+          </div>
+          <div className="space-y-1.5">
+            <h3 className="text-sm font-medium text-muted-foreground">
+              깃허브
+            </h3>
+            <p>{user.github}</p>
           </div>
         </div>
       ) : (
@@ -193,7 +252,7 @@ export default function CustomerDetailPage() {
                 <For
                   each={messages}
                   render={(message) => (
-                    <TableRow 
+                    <TableRow
                       key={message.message.id}
                       className="cursor-pointer hover:bg-muted/50"
                       onClick={() => setSelectedMessage(message)}
@@ -203,8 +262,10 @@ export default function CustomerDetailPage() {
                         <p className="truncate">{message.message.content}</p>
                       </TableCell>
                       <TableCell>
-                        <Badge 
-                          variant={message.message.isRead ? "secondary" : "default"}
+                        <Badge
+                          variant={
+                            message.message.isRead ? "secondary" : "default"
+                          }
                         >
                           {message.message.isRead ? "읽음" : "안읽음"}
                         </Badge>
@@ -222,7 +283,9 @@ export default function CustomerDetailPage() {
                   <TableCell colSpan={4} className="h-24 text-center">
                     <div className="flex flex-col items-center justify-center text-muted-foreground">
                       <p>아직 보낸 메시지가 없습니다</p>
-                      <p className="text-sm">상단의 메시지 보내기 버튼을 눌러 메시지를 보내보세요</p>
+                      <p className="text-sm">
+                        상단의 메시지 보내기 버튼을 눌러 메시지를 보내보세요
+                      </p>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -233,7 +296,10 @@ export default function CustomerDetailPage() {
       </div>
 
       {/* 메시지 상세 보기 다이얼로그 */}
-      <Dialog open={!!selectedMessage} onOpenChange={() => setSelectedMessage(null)}>
+      <Dialog
+        open={!!selectedMessage}
+        onOpenChange={() => setSelectedMessage(null)}
+      >
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
             <DialogTitle>{selectedMessage?.message.title}</DialogTitle>
@@ -243,18 +309,23 @@ export default function CustomerDetailPage() {
               <div className="flex items-center justify-between text-sm text-muted-foreground">
                 <div>
                   보낸 날짜:{" "}
-                  {selectedMessage && format(new Date(selectedMessage.message.createdAt), "PPP", {
-                    locale: ko,
-                  })}
+                  {selectedMessage &&
+                    format(new Date(selectedMessage.message.createdAt), "PPP", {
+                      locale: ko,
+                    })}
                 </div>
-                <Badge 
-                  variant={selectedMessage?.message.isRead ? "secondary" : "default"}
+                <Badge
+                  variant={
+                    selectedMessage?.message.isRead ? "secondary" : "default"
+                  }
                 >
                   {selectedMessage?.message.isRead ? "읽음" : "안읽음"}
                 </Badge>
               </div>
               <div className="rounded-md border p-4">
-                <p className="whitespace-pre-wrap">{selectedMessage?.message.content}</p>
+                <p className="whitespace-pre-wrap">
+                  {selectedMessage?.message.content}
+                </p>
               </div>
             </div>
           </div>
