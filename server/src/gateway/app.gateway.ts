@@ -77,15 +77,18 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
     );
   }
 
+  // 실시간 접속자 수
   private emitActiveUsers() {
     const data: ActiveUsersData = { count: this.connectedClients.size };
     this.server.emit('active-users', data);
   }
 
+  // 실시간 환율 정보
   emitExchangeRate(data: ExchangeRateData) {
     this.server.emit('exchange-rate', data);
   }
 
+  // 실시간 전체 거래소에 대한 코인 프리미엄 정보
   emitCoinPremium(data: CoinPremiumData) {
     this.server.emit('coin-premium', data);
   }
@@ -138,9 +141,12 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
       ...(data.symbol && { symbol: data.symbol }),
     };
 
+    // 특정 코인 마켓 채팅방
     if (data.symbol) {
       this.server.to(data.symbol).emit('newMessage', messageData);
-    } else {
+    } 
+    // 전체 채팅방
+    else {
       this.server.emit('newMessage', messageData);
     }
 
