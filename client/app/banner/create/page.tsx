@@ -16,7 +16,7 @@ import { addDays, differenceInDays, startOfDay } from "date-fns";
 import { formatDollar } from "@/lib/format";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-
+import Link from "next/link";
 interface BannerItem {
   id: number;
   routePath: string;
@@ -122,7 +122,10 @@ export default function CreateBannerPage() {
     formData.append("paymentType", paymentType);
 
     try {
-      const response = await ClientAPICall.post(API_ROUTES.BANNER.CREATE.url, formData);
+      const response = await ClientAPICall.post(
+        API_ROUTES.BANNER.CREATE.url,
+        formData
+      );
       if (response.data.success) {
         alert("배너가 등록되었습니다. 관리자 승인 후 게시됩니다.");
         router.push("/"); // 메인 페이지로 이동
@@ -140,8 +143,8 @@ export default function CreateBannerPage() {
   const isBalanceInsufficient =
     paymentType === "cocoaMoney" && totalCost > userBalance;
 
-  // 최소 선택 가능 날짜를 이틀 후로 설정
-  const minSelectableDate = startOfDay(addDays(new Date(), 2));
+  // 최소 선택 가능 날짜를 1일 후로 설정
+  const minSelectableDate = startOfDay(addDays(new Date(), 1));
 
   // 기존 배너 일정을 캘린더에 표시하기 위한 타일 컨텐츠 설정
   const tileContent = ({ date }: { date: Date }) => {
@@ -339,6 +342,63 @@ export default function CreateBannerPage() {
           placeholder="https://"
           required
         />
+
+        <div className="mt-8 space-y-6">
+          <div className="space-y-4">
+            <h3 className="text-lg font-bold text-red-500">⚠️ 주의사항</h3>
+            <ul className="list-disc pl-5 space-y-2 text-gray-700">
+              <li>
+                현금 결제시{" "}
+                <span className="font-semibold">
+                  광고 검토 및 입금이 완료되어야
+                </span>{" "}
+                가능합니다.
+              </li>
+              <li>
+                세금 계산서 발행 등의 문의는 이메일{" "}
+                <Link
+                  href="mailto:joseph.han@nullenterprise.com"
+                  className="text-blue-600"
+                >
+                  joseph.han@nullenterprise.com
+                </Link>{" "}
+                로 연락 부탁드립니다.
+              </li>
+              <li>
+                <span className="font-semibold">코코아 머니</span>로 등록된
+                광고가 승인 거절된 경우 코코아 머니는 반환됩니다.
+              </li>
+              <li>
+                광고는{" "}
+                <span className="font-semibold">
+                  "데스크탑", "테블릿", "모바일"
+                </span>
+                에 따라 별도로 등록되며 데스크탑 뷰에 올린 광고는 테블릿이나
+                모바일 뷰에서는 나타나지 않습니다.
+              </li>
+            </ul>
+          </div>
+
+          <div className="space-y-4">
+            <h3 className="text-lg font-bold text-gray-900">
+              📱 기기별 광고 표시 기준
+            </h3>
+            <ul className="list-disc pl-5 space-y-2 text-gray-700">
+              <li>
+                <span className="font-semibold">데스크탑:</span> 가로 너비
+                1024px 이상
+              </li>
+              <li>
+                <span className="font-semibold">테블릿:</span> 가로 너비 640px ~
+                1023px
+              </li>
+              <li>
+                <span className="font-semibold">모바일:</span> 가로 너비 640px
+                미만
+              </li>
+            </ul>
+          </div>
+        </div>
 
         <Button
           type="submit"

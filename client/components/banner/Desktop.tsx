@@ -19,7 +19,7 @@ export default function DesktopBanner({
   return (
     <div
       className={cn(
-        "hidden md:block relative w-full h-[300px] bg-muted overflow-hidden cursor-pointer mb-4",
+        "hidden lg:block relative w-full h-[300px] bg-muted overflow-hidden cursor-pointer mb-4",
         "hover:opacity-95 transition-opacity",
         className
       )}

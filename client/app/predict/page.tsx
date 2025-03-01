@@ -13,7 +13,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import { useSwipeable } from "react-swipeable";
 import useAuthStore from "@/store/useAuthStore";
 import useLongShortStore from "@/store/useLongShort";
-
+import Banner from "@/components/banner/Banner";
 interface Ranking {
   userId: number;
   name: string;
@@ -255,6 +255,7 @@ export default function PredictPage() {
 
   return (
     <div className="container mx-auto px-4 py-8">
+      <Banner position="top" />
       <section className="mb-12 flex gap-6 lg:flex-row flex-col">
         <div className="lg:w-2/3 w-full" {...handlers}>
           <div className="flex items-center justify-between mb-4 sm:mb-6">
@@ -410,7 +411,7 @@ export default function PredictPage() {
           <EventBanner />
         </div>
       </section>
-
+      <Banner position="middle" />
       <section>
         <h2 className="text-2xl font-bold mb-4 sm:mb-6">인기 마켓</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-4">
