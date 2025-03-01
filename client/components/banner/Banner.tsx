@@ -41,15 +41,12 @@ export default function Banner({ position }: BannerProps) {
         routePath = "/";
       }
 
-      console.log("Fetching banners for path:", routePath); // 디버깅용 로그
-
       const response = await ClientAPICall.get(API_ROUTES.BANNER.LIST.url, {
         params: {
           routePath,
         },
       });
 
-      console.log("Banner response:", response.data); // 디버깅용 로그
       return response.data;
     },
   });

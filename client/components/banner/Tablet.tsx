@@ -19,7 +19,7 @@ export default function TabletBanner({
   return (
     <div
       className={cn(
-        "hidden sm:block md:hidden relative w-full h-[200px] bg-muted overflow-hidden cursor-pointer mb-4",
+        "hidden sm:block lg:hidden relative w-full h-[200px] bg-muted overflow-hidden cursor-pointer mb-4",
         "hover:opacity-95 transition-opacity",
         className
       )}
@@ -28,9 +28,8 @@ export default function TabletBanner({
       {imageUrl ? (
         <Image
           src={imageUrl}
-          alt="Advertisement"
-          fill
-          className="object-cover"
+          alt={`${imageUrl} 배너`}
+          className="object-contain"
           sizes="(min-width: 768px) 768px, 100vw"
           priority
         />
@@ -38,7 +37,7 @@ export default function TabletBanner({
         <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-r from-muted to-muted/80 border-2 border-red-500">
           {" "}
           <div className="text-center space-y-2">
-            <p className="text-2xl font-bold text-muted-foreground">768x200</p>
+            <p className="text-2xl font-bold text-muted-foreground">768x100</p>
             <p className="text-xl text-muted-foreground font-bold">
               태블릿 광고
             </p>

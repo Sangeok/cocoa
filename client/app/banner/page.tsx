@@ -78,7 +78,7 @@ export default function BannerPage() {
           </div>
           <h3 className="text-lg font-semibold mb-2">코코아 머니로 결제</h3>
           <p className="text-gray-600 dark:text-gray-400">
-            1일 {pricePerDay.toLocaleString()} 코코아 머니로 광고할 수 있습니다.
+            코코아 머니로도 광고할 수 있습니다.(물론 현금으로도 가능합니다!)
           </p>
         </div>
       </div>

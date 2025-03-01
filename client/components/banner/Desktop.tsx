@@ -19,7 +19,7 @@ export default function DesktopBanner({
   return (
     <div
       className={cn(
-        "hidden lg:block relative w-full h-[300px] bg-muted overflow-hidden cursor-pointer mb-4",
+        "hidden lg:block relative w-full h-[125px] bg-muted overflow-hidden cursor-pointer mb-4",
         "hover:opacity-95 transition-opacity",
         className
       )}
@@ -28,16 +28,15 @@ export default function DesktopBanner({
       {imageUrl ? (
         <Image
           src={imageUrl}
-          alt="Advertisement"
-          fill
-          className="object-cover"
+          alt={`${imageUrl} 배너`}
+          className="object-contain"
           sizes="(min-width: 1280px) 1200px, 100vw"
           priority
         />
       ) : (
         <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-r from-muted to-muted/80 border-2 border-red-500">
           <div className="text-center space-y-2">
-            <p className="text-2xl font-bold text-muted-foreground">1920x300</p>
+            <p className="text-2xl font-bold text-muted-foreground">1920x125</p>
             <p className="text-xl text-muted-foreground font-bold">
               데스크탑 광고
             </p>

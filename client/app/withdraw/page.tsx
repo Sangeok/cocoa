@@ -13,6 +13,7 @@ import { API_ROUTES } from "@/const/api";
 import { ClientAPICall } from "@/lib/axios";
 import WithdrawPathCard from "@/components/withdraw/WithdrawPathCard";
 import { sendGAEvent } from "@/lib/gtag";
+import Banner from "@/components/banner/Banner";
 
 export default function WithdrawPage() {
   const [fromExchange, setFromExchange] = useState<string>("");
@@ -121,7 +122,7 @@ export default function WithdrawPage() {
             <li>참고용 정보로만 활용해 주시기 바랍니다.</li>
           </ul>
         </div>
-
+        <Banner position="middle" />
         {pathResults.length > 0 && (
           <div className="space-y-4">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
