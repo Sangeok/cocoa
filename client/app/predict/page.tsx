@@ -8,7 +8,6 @@ import { UPBIT_STATIC_IMAGE_URL } from "@/const";
 import useMarketsStore from "@/store/useMarketsStore";
 import { API_ROUTES } from "@/const/api";
 import { formatNumber } from "@/lib/format";
-import EventBanner from "@/components/event/EventBanner";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import { useSwipeable } from "react-swipeable";
 import useAuthStore from "@/store/useAuthStore";
@@ -408,7 +407,6 @@ export default function PredictPage() {
         </div>
         <div className="flex flex-col gap-6">
           <LongShortRatioSection />
-          <EventBanner />
         </div>
       </section>
       <Banner position="middle" />
