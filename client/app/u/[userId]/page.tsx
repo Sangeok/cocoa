@@ -761,6 +761,7 @@ export default function UserProfilePage() {
                 <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-800 space-y-2">
                   <button
                     onClick={canCheckIn ? handleCheckIn : undefined}
+                    disabled={!canCheckIn}
                     className={clsx(
                       "w-full px-4 py-2 rounded-lg transition-colors",
                       canCheckIn
@@ -768,7 +769,7 @@ export default function UserProfilePage() {
                         : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-default"
                     )}
                   >
-                    {canCheckIn ? "출석체크" : "출석 완료 (내일 다시 받기)"}
+                    {canCheckIn ? "출석 체크" : "출석 완료 (내일 다시 받기)"}
                   </button>
                   <Link
                     href="/profile"
